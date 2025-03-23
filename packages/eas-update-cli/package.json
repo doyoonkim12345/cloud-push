@@ -1,0 +1,55 @@
+{
+  "type": "module",
+  "name": "eas-update-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/config.cjs",
+  "module": "./dist/config.js",
+  "types": "./dist/config.d.ts",
+  "bin": {
+    "eas-update-cli": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/config.js",
+      "types": "./dist/config.d.ts"
+    }
+  },
+  "scripts": {
+    "start": "tsx ./src/index.ts",
+    "dev": "rslib build --watch",
+    "build": "rslib build",
+    "lint": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.1",
+  "devDependencies": {
+    "@rslib/core": "^0.5.5",
+    "@types/archiver": "^6.0.3",
+    "@types/commander": "^2.12.5",
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20",
+    "execa": "^9.5.2",
+    "fast-glob": "^3.3.3",
+    "fflate": "^0.8.2",
+    "picocolors": "^1.1.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "workspace-tools": "^0.38.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.772.0",
+    "@aws-sdk/lib-storage": "^3.772.0",
+    "@clack/prompts": "^0.10.0",
+    "@types/semver": "^7.5.8",
+    "boxen": "^8.0.1",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "cosmiconfig": "^9.0.0",
+    "cosmiconfig-typescript-loader": "^6.1.0",
+    "read-package-up": "^11.0.0",
+    "semver": "^7.7.1"
+  }
+}
