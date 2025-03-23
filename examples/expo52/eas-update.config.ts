@@ -1,4 +1,4 @@
-import { defineConfig } from "eas-update-cli";
+import { defineConfig } from "eas-update";
 
 export const version = {
   runtimeVersion: "10.0.1",
