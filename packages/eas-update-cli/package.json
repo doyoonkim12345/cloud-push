@@ -1,13 +1,13 @@
 {
   "type": "module",
-  "name": "eas-update-cli",
+  "name": "eas-update-test",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/config.cjs",
   "module": "./dist/config.js",
   "types": "./dist/config.d.ts",
   "bin": {
-    "eas-update-cli": "./dist/index.js"
+    "eas-update": "./dist/index.js"
   },
   "exports": {
     ".": {

@@ -13,6 +13,7 @@ import { unlink } from "fs/promises";
 import loadEnv from "@/lib/loadEnv";
 import * as prompts from "@clack/prompts";
 import { Environment, Platform } from "./types";
+import semver from "semver";
 
 const program = new Command();
 
@@ -82,6 +83,30 @@ program
         throw new Error("No environment selected. Exiting...");
       }
 
+      const config = await loadConfig();
+
+      let runtimeVersion = config.runtimeVersion;
+
+      if (runtimeVersion && semver.valid(runtimeVersion)) {
+        prompts.log.success(`runtimeVersion : ${runtimeVersion}`);
+      } else {
+        runtimeVersion = (await prompts.text({
+          message: "What runtimeVersion would you like to set?",
+          placeholder: "1.0.0",
+          validate: (value) => {
+            if (!semver.valid(value)) {
+              return new Error(
+                "Please enter a valid semantic version (e.g., 1.0.0)"
+              );
+            }
+          },
+        })) as string;
+
+        if (typeof runtimeVersion !== "string") {
+          throw new Error("No runtimeVersion");
+        }
+      }
+
       await prompts.tasks([
         {
           title: `Exporting ${platforms
@@ -108,8 +133,6 @@ program
         {
           title: "Uploading bundles",
           task: async () => {
-            const config = await loadConfig();
-
             switch (config.storage) {
               case "AWS_S3":
                 const env = await loadEnv([
@@ -118,12 +141,16 @@ program
                   "AWS_REGION",
                   "AWS_BUCKET_NAME",
                 ]);
-                await uploadS3(zippedBundlePath, `${Date.now()}.zip`, {
-                  accessKeyId: env.AWS_ACCESS_KEY_ID,
-                  bucketName: env.AWS_BUCKET_NAME,
-                  region: env.AWS_REGION,
-                  secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
-                });
+                await uploadS3(
+                  zippedBundlePath,
+                  `${runtimeVersion}/${environment}/${Date.now()}.zip`,
+                  {
+                    accessKeyId: env.AWS_ACCESS_KEY_ID,
+                    bucketName: env.AWS_BUCKET_NAME,
+                    region: env.AWS_REGION,
+                    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+                  }
+                );
                 break;
               default:
                 throw new Error(

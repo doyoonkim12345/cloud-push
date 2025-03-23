@@ -8208,192 +8208,6 @@ var __webpack_modules__ = {
             return result;
         };
     },
-    "../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
-        const cp = __webpack_require__("child_process");
-        const parse = __webpack_require__("../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/lib/parse.js");
-        const enoent = __webpack_require__("../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/lib/enoent.js");
-        function spawn(command, args, options) {
-            const parsed = parse(command, args, options);
-            const spawned = cp.spawn(parsed.command, parsed.args, parsed.options);
-            enoent.hookChildProcess(spawned, parsed);
-            return spawned;
-        }
-        function spawnSync(command, args, options) {
-            const parsed = parse(command, args, options);
-            const result = cp.spawnSync(parsed.command, parsed.args, parsed.options);
-            result.error = result.error || enoent.verifyENOENTSync(result.status, parsed);
-            return result;
-        }
-        module.exports = spawn;
-        module.exports.spawn = spawn;
-        module.exports.sync = spawnSync;
-        module.exports._parse = parse;
-        module.exports._enoent = enoent;
-    },
-    "../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/lib/enoent.js": function(module) {
-        const isWin = 'win32' === process.platform;
-        function notFoundError(original, syscall) {
-            return Object.assign(new Error(`${syscall} ${original.command} ENOENT`), {
-                code: 'ENOENT',
-                errno: 'ENOENT',
-                syscall: `${syscall} ${original.command}`,
-                path: original.command,
-                spawnargs: original.args
-            });
-        }
-        function hookChildProcess(cp, parsed) {
-            if (!isWin) return;
-            const originalEmit = cp.emit;
-            cp.emit = function(name, arg1) {
-                if ('exit' === name) {
-                    const err = verifyENOENT(arg1, parsed);
-                    if (err) return originalEmit.call(cp, 'error', err);
-                }
-                return originalEmit.apply(cp, arguments);
-            };
-        }
-        function verifyENOENT(status, parsed) {
-            if (isWin && 1 === status && !parsed.file) return notFoundError(parsed.original, 'spawn');
-            return null;
-        }
-        function verifyENOENTSync(status, parsed) {
-            if (isWin && 1 === status && !parsed.file) return notFoundError(parsed.original, 'spawnSync');
-            return null;
-        }
-        module.exports = {
-            hookChildProcess,
-            verifyENOENT,
-            verifyENOENTSync,
-            notFoundError
-        };
-    },
-    "../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/lib/parse.js": function(module, __unused_webpack_exports, __webpack_require__) {
-        const path = __webpack_require__("path");
-        const resolveCommand = __webpack_require__("../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/lib/util/resolveCommand.js");
-        const escape = __webpack_require__("../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/lib/util/escape.js");
-        const readShebang = __webpack_require__("../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/lib/util/readShebang.js");
-        const isWin = 'win32' === process.platform;
-        const isExecutableRegExp = /\.(?:com|exe)$/i;
-        const isCmdShimRegExp = /node_modules[\\/].bin[\\/][^\\/]+\.cmd$/i;
-        function detectShebang(parsed) {
-            parsed.file = resolveCommand(parsed);
-            const shebang = parsed.file && readShebang(parsed.file);
-            if (shebang) {
-                parsed.args.unshift(parsed.file);
-                parsed.command = shebang;
-                return resolveCommand(parsed);
-            }
-            return parsed.file;
-        }
-        function parseNonShell(parsed) {
-            if (!isWin) return parsed;
-            const commandFile = detectShebang(parsed);
-            const needsShell = !isExecutableRegExp.test(commandFile);
-            if (parsed.options.forceShell || needsShell) {
-                const needsDoubleEscapeMetaChars = isCmdShimRegExp.test(commandFile);
-                parsed.command = path.normalize(parsed.command);
-                parsed.command = escape.command(parsed.command);
-                parsed.args = parsed.args.map((arg)=>escape.argument(arg, needsDoubleEscapeMetaChars));
-                const shellCommand = [
-                    parsed.command
-                ].concat(parsed.args).join(' ');
-                parsed.args = [
-                    '/d',
-                    '/s',
-                    '/c',
-                    `"${shellCommand}"`
-                ];
-                parsed.command = process.env.comspec || 'cmd.exe';
-                parsed.options.windowsVerbatimArguments = true;
-            }
-            return parsed;
-        }
-        function parse(command, args, options) {
-            if (args && !Array.isArray(args)) {
-                options = args;
-                args = null;
-            }
-            args = args ? args.slice(0) : [];
-            options = Object.assign({}, options);
-            const parsed = {
-                command,
-                args,
-                options,
-                file: void 0,
-                original: {
-                    command,
-                    args
-                }
-            };
-            return options.shell ? parsed : parseNonShell(parsed);
-        }
-        module.exports = parse;
-    },
-    "../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/lib/util/escape.js": function(module) {
-        const metaCharsRegExp = /([()\][%!^"`<>&|;, *?])/g;
-        function escapeCommand(arg) {
-            arg = arg.replace(metaCharsRegExp, '^$1');
-            return arg;
-        }
-        function escapeArgument(arg, doubleEscapeMetaChars) {
-            arg = `${arg}`;
-            arg = arg.replace(/(?=(\\+?)?)\1"/g, '$1$1\\"');
-            arg = arg.replace(/(?=(\\+?)?)\1$/, '$1$1');
-            arg = `"${arg}"`;
-            arg = arg.replace(metaCharsRegExp, '^$1');
-            if (doubleEscapeMetaChars) arg = arg.replace(metaCharsRegExp, '^$1');
-            return arg;
-        }
-        module.exports.command = escapeCommand;
-        module.exports.argument = escapeArgument;
-    },
-    "../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/lib/util/readShebang.js": function(module, __unused_webpack_exports, __webpack_require__) {
-        const fs = __webpack_require__("fs");
-        const shebangCommand = __webpack_require__("../../node_modules/.pnpm/shebang-command@2.0.0/node_modules/shebang-command/index.js");
-        function readShebang(command) {
-            const size = 150;
-            const buffer = Buffer.alloc(size);
-            let fd;
-            try {
-                fd = fs.openSync(command, 'r');
-                fs.readSync(fd, buffer, 0, size, 0);
-                fs.closeSync(fd);
-            } catch (e) {}
-            return shebangCommand(buffer.toString());
-        }
-        module.exports = readShebang;
-    },
-    "../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/lib/util/resolveCommand.js": function(module, __unused_webpack_exports, __webpack_require__) {
-        const path = __webpack_require__("path");
-        const which = __webpack_require__("../../node_modules/.pnpm/which@2.0.2/node_modules/which/which.js");
-        const getPathKey = __webpack_require__("../../node_modules/.pnpm/path-key@3.1.1/node_modules/path-key/index.js");
-        function resolveCommandAttempt(parsed, withoutPathExt) {
-            const env = parsed.options.env || process.env;
-            const cwd = process.cwd();
-            const hasCustomCwd = null != parsed.options.cwd;
-            const shouldSwitchCwd = hasCustomCwd && void 0 !== process.chdir && !process.chdir.disabled;
-            if (shouldSwitchCwd) try {
-                process.chdir(parsed.options.cwd);
-            } catch (err) {}
-            let resolved;
-            try {
-                resolved = which.sync(parsed.command, {
-                    path: env[getPathKey({
-                        env
-                    })],
-                    pathExt: withoutPathExt ? path.delimiter : void 0
-                });
-            } catch (e) {} finally{
-                if (shouldSwitchCwd) process.chdir(cwd);
-            }
-            if (resolved) resolved = path.resolve(hasCustomCwd ? parsed.options.cwd : '', resolved);
-            return resolved;
-        }
-        function resolveCommand(parsed) {
-            return resolveCommandAttempt(parsed) || resolveCommandAttempt(parsed, true);
-        }
-        module.exports = resolveCommand;
-    },
     "../../node_modules/.pnpm/fast-glob@3.3.3/node_modules/fast-glob/out/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
         const taskManager = __webpack_require__("../../node_modules/.pnpm/fast-glob@3.3.3/node_modules/fast-glob/out/managers/tasks.js");
         const async_1 = __webpack_require__("../../node_modules/.pnpm/fast-glob@3.3.3/node_modules/fast-glob/out/providers/async.js");
@@ -10236,102 +10050,6 @@ var __webpack_modules__ = {
             return !input.match(urlPortPattern) && input.indexOf("@") < input.indexOf(":");
         }
         module.exports = isSsh;
-    },
-    "../../node_modules/.pnpm/isexe@2.0.0/node_modules/isexe/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
-        __webpack_require__("fs");
-        var core;
-        core = 'win32' === process.platform || global.TESTING_WINDOWS ? __webpack_require__("../../node_modules/.pnpm/isexe@2.0.0/node_modules/isexe/windows.js") : __webpack_require__("../../node_modules/.pnpm/isexe@2.0.0/node_modules/isexe/mode.js");
-        module.exports = isexe;
-        isexe.sync = sync;
-        function isexe(path, options, cb) {
-            if ('function' == typeof options) {
-                cb = options;
-                options = {};
-            }
-            if (!cb) {
-                if ('function' != typeof Promise) throw new TypeError('callback not provided');
-                return new Promise(function(resolve, reject) {
-                    isexe(path, options || {}, function(er, is) {
-                        if (er) reject(er);
-                        else resolve(is);
-                    });
-                });
-            }
-            core(path, options || {}, function(er, is) {
-                if (er) {
-                    if ('EACCES' === er.code || options && options.ignoreErrors) {
-                        er = null;
-                        is = false;
-                    }
-                }
-                cb(er, is);
-            });
-        }
-        function sync(path, options) {
-            try {
-                return core.sync(path, options || {});
-            } catch (er) {
-                if (options && options.ignoreErrors || 'EACCES' === er.code) return false;
-                throw er;
-            }
-        }
-    },
-    "../../node_modules/.pnpm/isexe@2.0.0/node_modules/isexe/mode.js": function(module, __unused_webpack_exports, __webpack_require__) {
-        module.exports = isexe;
-        isexe.sync = sync;
-        var fs = __webpack_require__("fs");
-        function isexe(path, options, cb) {
-            fs.stat(path, function(er, stat) {
-                cb(er, er ? false : checkStat(stat, options));
-            });
-        }
-        function sync(path, options) {
-            return checkStat(fs.statSync(path), options);
-        }
-        function checkStat(stat, options) {
-            return stat.isFile() && checkMode(stat, options);
-        }
-        function checkMode(stat, options) {
-            var mod = stat.mode;
-            var uid = stat.uid;
-            var gid = stat.gid;
-            var myUid = void 0 !== options.uid ? options.uid : process.getuid && process.getuid();
-            var myGid = void 0 !== options.gid ? options.gid : process.getgid && process.getgid();
-            var u = parseInt('100', 8);
-            var g = parseInt('010', 8);
-            var o = parseInt('001', 8);
-            var ug = u | g;
-            var ret = mod & o || mod & g && gid === myGid || mod & u && uid === myUid || mod & ug && 0 === myUid;
-            return ret;
-        }
-    },
-    "../../node_modules/.pnpm/isexe@2.0.0/node_modules/isexe/windows.js": function(module, __unused_webpack_exports, __webpack_require__) {
-        module.exports = isexe;
-        isexe.sync = sync;
-        var fs = __webpack_require__("fs");
-        function checkPathExt(path, options) {
-            var pathext = void 0 !== options.pathExt ? options.pathExt : process.env.PATHEXT;
-            if (!pathext) return true;
-            pathext = pathext.split(';');
-            if (-1 !== pathext.indexOf('')) return true;
-            for(var i = 0; i < pathext.length; i++){
-                var p = pathext[i].toLowerCase();
-                if (p && path.substr(-p.length).toLowerCase() === p) return true;
-            }
-            return false;
-        }
-        function checkStat(stat, path, options) {
-            if (!stat.isSymbolicLink() && !stat.isFile()) return false;
-            return checkPathExt(path, options);
-        }
-        function isexe(path, options, cb) {
-            fs.stat(path, function(er, stat) {
-                cb(er, er ? false : checkStat(stat, path, options));
-            });
-        }
-        function sync(path, options) {
-            return checkStat(fs.statSync(path), path, options);
-        }
     },
     "../../node_modules/.pnpm/jju@1.4.0/node_modules/jju/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
         module.exports.__defineGetter__('parse', function() {
@@ -14020,16 +13738,6 @@ var __webpack_modules__ = {
         parseUrl.MAX_INPUT_LENGTH = 2048;
         module.exports = parseUrl;
     },
-    "../../node_modules/.pnpm/path-key@3.1.1/node_modules/path-key/index.js": function(module) {
-        const pathKey = (options = {})=>{
-            const environment = options.env || process.env;
-            const platform = options.platform || process.platform;
-            if ('win32' !== platform) return 'PATH';
-            return Object.keys(environment).reverse().find((key)=>'PATH' === key.toUpperCase()) || 'Path';
-        };
-        module.exports = pathKey;
-        module.exports["default"] = pathKey;
-    },
     "../../node_modules/.pnpm/picocolors@1.1.1/node_modules/picocolors/picocolors.js": function(module) {
         let p = process || {}, argv = p.argv || [], env = p.env || {};
         let isColorSupported = !(!!env.NO_COLOR || argv.includes("--no-color")) && (!!env.FORCE_COLOR || argv.includes("--color") || "win32" === p.platform || (p.stdout || {}).isTTY && "dumb" !== env.TERM || !!env.CI);
@@ -15576,20 +15284,6 @@ var __webpack_modules__ = {
             isSync = false;
         }
     },
-    "../../node_modules/.pnpm/shebang-command@2.0.0/node_modules/shebang-command/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
-        const shebangRegex = __webpack_require__("../../node_modules/.pnpm/shebang-regex@3.0.0/node_modules/shebang-regex/index.js");
-        module.exports = (string = '')=>{
-            const match = string.match(shebangRegex);
-            if (!match) return null;
-            const [path, argument] = match[0].replace(/#! ?/, '').split(' ');
-            const binary = path.split('/').pop();
-            if ('env' === binary) return argument;
-            return argument ? `${binary} ${argument}` : binary;
-        };
-    },
-    "../../node_modules/.pnpm/shebang-regex@3.0.0/node_modules/shebang-regex/index.js": function(module) {
-        module.exports = /^#!(.*)/;
-    },
     "../../node_modules/.pnpm/to-regex-range@5.0.1/node_modules/to-regex-range/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
         /*!
  * to-regex-range <https://github.com/micromatch/to-regex-range>
@@ -15785,97 +15479,6 @@ var __webpack_modules__ = {
         toRegexRange.cache = {};
         toRegexRange.clearCache = ()=>toRegexRange.cache = {};
         module.exports = toRegexRange;
-    },
-    "../../node_modules/.pnpm/which@2.0.2/node_modules/which/which.js": function(module, __unused_webpack_exports, __webpack_require__) {
-        const isWindows = 'win32' === process.platform || 'cygwin' === process.env.OSTYPE || 'msys' === process.env.OSTYPE;
-        const path = __webpack_require__("path");
-        const COLON = isWindows ? ';' : ':';
-        const isexe = __webpack_require__("../../node_modules/.pnpm/isexe@2.0.0/node_modules/isexe/index.js");
-        const getNotFoundError = (cmd)=>Object.assign(new Error(`not found: ${cmd}`), {
-                code: 'ENOENT'
-            });
-        const getPathInfo = (cmd, opt)=>{
-            const colon = opt.colon || COLON;
-            const pathEnv = cmd.match(/\//) || isWindows && cmd.match(/\\/) ? [
-                ''
-            ] : [
-                ...isWindows ? [
-                    process.cwd()
-                ] : [],
-                ...(opt.path || process.env.PATH || '').split(colon)
-            ];
-            const pathExtExe = isWindows ? opt.pathExt || process.env.PATHEXT || '.EXE;.CMD;.BAT;.COM' : '';
-            const pathExt = isWindows ? pathExtExe.split(colon) : [
-                ''
-            ];
-            if (isWindows) {
-                if (-1 !== cmd.indexOf('.') && '' !== pathExt[0]) pathExt.unshift('');
-            }
-            return {
-                pathEnv,
-                pathExt,
-                pathExtExe
-            };
-        };
-        const which = (cmd, opt, cb)=>{
-            if ('function' == typeof opt) {
-                cb = opt;
-                opt = {};
-            }
-            if (!opt) opt = {};
-            const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
-            const found = [];
-            const step = (i)=>new Promise((resolve, reject)=>{
-                    if (i === pathEnv.length) return opt.all && found.length ? resolve(found) : reject(getNotFoundError(cmd));
-                    const ppRaw = pathEnv[i];
-                    const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
-                    const pCmd = path.join(pathPart, cmd);
-                    const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
-                    resolve(subStep(p, i, 0));
-                });
-            const subStep = (p, i, ii)=>new Promise((resolve, reject)=>{
-                    if (ii === pathExt.length) return resolve(step(i + 1));
-                    const ext = pathExt[ii];
-                    isexe(p + ext, {
-                        pathExt: pathExtExe
-                    }, (er, is)=>{
-                        if (!er && is) {
-                            if (!opt.all) return resolve(p + ext);
-                            found.push(p + ext);
-                        }
-                        return resolve(subStep(p, i, ii + 1));
-                    });
-                });
-            return cb ? step(0).then((res)=>cb(null, res), cb) : step(0);
-        };
-        const whichSync = (cmd, opt)=>{
-            opt = opt || {};
-            const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
-            const found = [];
-            for(let i = 0; i < pathEnv.length; i++){
-                const ppRaw = pathEnv[i];
-                const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
-                const pCmd = path.join(pathPart, cmd);
-                const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
-                for(let j = 0; j < pathExt.length; j++){
-                    const cur = p + pathExt[j];
-                    try {
-                        const is = isexe.sync(cur, {
-                            pathExt: pathExtExe
-                        });
-                        if (is) {
-                            if (!opt.all) return cur;
-                            found.push(cur);
-                        }
-                    } catch (ex) {}
-                }
-            }
-            if (opt.all && found.length) return found;
-            if (opt.nothrow) return null;
-            throw getNotFoundError(cmd);
-        };
-        module.exports = which;
-        which.sync = whichSync;
     },
     "../../node_modules/.pnpm/workspace-tools@0.38.1/node_modules/workspace-tools/lib/dependencies/index.js": function(__unused_webpack_module, exports, __webpack_require__) {
         Object.defineProperty(exports, "__esModule", {
@@ -17995,11 +17598,408 @@ var __webpack_modules__ = {
         }
         exports.listOfWorkspacePackageNames = listOfWorkspacePackageNames;
     },
+    "../../node_modules/cross-spawn/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
+        const cp = __webpack_require__("child_process");
+        const parse = __webpack_require__("../../node_modules/cross-spawn/lib/parse.js");
+        const enoent = __webpack_require__("../../node_modules/cross-spawn/lib/enoent.js");
+        function spawn(command, args, options) {
+            const parsed = parse(command, args, options);
+            const spawned = cp.spawn(parsed.command, parsed.args, parsed.options);
+            enoent.hookChildProcess(spawned, parsed);
+            return spawned;
+        }
+        function spawnSync(command, args, options) {
+            const parsed = parse(command, args, options);
+            const result = cp.spawnSync(parsed.command, parsed.args, parsed.options);
+            result.error = result.error || enoent.verifyENOENTSync(result.status, parsed);
+            return result;
+        }
+        module.exports = spawn;
+        module.exports.spawn = spawn;
+        module.exports.sync = spawnSync;
+        module.exports._parse = parse;
+        module.exports._enoent = enoent;
+    },
+    "../../node_modules/cross-spawn/lib/enoent.js": function(module) {
+        const isWin = 'win32' === process.platform;
+        function notFoundError(original, syscall) {
+            return Object.assign(new Error(`${syscall} ${original.command} ENOENT`), {
+                code: 'ENOENT',
+                errno: 'ENOENT',
+                syscall: `${syscall} ${original.command}`,
+                path: original.command,
+                spawnargs: original.args
+            });
+        }
+        function hookChildProcess(cp, parsed) {
+            if (!isWin) return;
+            const originalEmit = cp.emit;
+            cp.emit = function(name, arg1) {
+                if ('exit' === name) {
+                    const err = verifyENOENT(arg1, parsed);
+                    if (err) return originalEmit.call(cp, 'error', err);
+                }
+                return originalEmit.apply(cp, arguments);
+            };
+        }
+        function verifyENOENT(status, parsed) {
+            if (isWin && 1 === status && !parsed.file) return notFoundError(parsed.original, 'spawn');
+            return null;
+        }
+        function verifyENOENTSync(status, parsed) {
+            if (isWin && 1 === status && !parsed.file) return notFoundError(parsed.original, 'spawnSync');
+            return null;
+        }
+        module.exports = {
+            hookChildProcess,
+            verifyENOENT,
+            verifyENOENTSync,
+            notFoundError
+        };
+    },
+    "../../node_modules/cross-spawn/lib/parse.js": function(module, __unused_webpack_exports, __webpack_require__) {
+        const path = __webpack_require__("path");
+        const resolveCommand = __webpack_require__("../../node_modules/cross-spawn/lib/util/resolveCommand.js");
+        const escape = __webpack_require__("../../node_modules/cross-spawn/lib/util/escape.js");
+        const readShebang = __webpack_require__("../../node_modules/cross-spawn/lib/util/readShebang.js");
+        const isWin = 'win32' === process.platform;
+        const isExecutableRegExp = /\.(?:com|exe)$/i;
+        const isCmdShimRegExp = /node_modules[\\/].bin[\\/][^\\/]+\.cmd$/i;
+        function detectShebang(parsed) {
+            parsed.file = resolveCommand(parsed);
+            const shebang = parsed.file && readShebang(parsed.file);
+            if (shebang) {
+                parsed.args.unshift(parsed.file);
+                parsed.command = shebang;
+                return resolveCommand(parsed);
+            }
+            return parsed.file;
+        }
+        function parseNonShell(parsed) {
+            if (!isWin) return parsed;
+            const commandFile = detectShebang(parsed);
+            const needsShell = !isExecutableRegExp.test(commandFile);
+            if (parsed.options.forceShell || needsShell) {
+                const needsDoubleEscapeMetaChars = isCmdShimRegExp.test(commandFile);
+                parsed.command = path.normalize(parsed.command);
+                parsed.command = escape.command(parsed.command);
+                parsed.args = parsed.args.map((arg)=>escape.argument(arg, needsDoubleEscapeMetaChars));
+                const shellCommand = [
+                    parsed.command
+                ].concat(parsed.args).join(' ');
+                parsed.args = [
+                    '/d',
+                    '/s',
+                    '/c',
+                    `"${shellCommand}"`
+                ];
+                parsed.command = process.env.comspec || 'cmd.exe';
+                parsed.options.windowsVerbatimArguments = true;
+            }
+            return parsed;
+        }
+        function parse(command, args, options) {
+            if (args && !Array.isArray(args)) {
+                options = args;
+                args = null;
+            }
+            args = args ? args.slice(0) : [];
+            options = Object.assign({}, options);
+            const parsed = {
+                command,
+                args,
+                options,
+                file: void 0,
+                original: {
+                    command,
+                    args
+                }
+            };
+            return options.shell ? parsed : parseNonShell(parsed);
+        }
+        module.exports = parse;
+    },
+    "../../node_modules/cross-spawn/lib/util/escape.js": function(module) {
+        const metaCharsRegExp = /([()\][%!^"`<>&|;, *?])/g;
+        function escapeCommand(arg) {
+            arg = arg.replace(metaCharsRegExp, '^$1');
+            return arg;
+        }
+        function escapeArgument(arg, doubleEscapeMetaChars) {
+            arg = `${arg}`;
+            arg = arg.replace(/(?=(\\+?)?)\1"/g, '$1$1\\"');
+            arg = arg.replace(/(?=(\\+?)?)\1$/, '$1$1');
+            arg = `"${arg}"`;
+            arg = arg.replace(metaCharsRegExp, '^$1');
+            if (doubleEscapeMetaChars) arg = arg.replace(metaCharsRegExp, '^$1');
+            return arg;
+        }
+        module.exports.command = escapeCommand;
+        module.exports.argument = escapeArgument;
+    },
+    "../../node_modules/cross-spawn/lib/util/readShebang.js": function(module, __unused_webpack_exports, __webpack_require__) {
+        const fs = __webpack_require__("fs");
+        const shebangCommand = __webpack_require__("../../node_modules/shebang-command/index.js");
+        function readShebang(command) {
+            const size = 150;
+            const buffer = Buffer.alloc(size);
+            let fd;
+            try {
+                fd = fs.openSync(command, 'r');
+                fs.readSync(fd, buffer, 0, size, 0);
+                fs.closeSync(fd);
+            } catch (e) {}
+            return shebangCommand(buffer.toString());
+        }
+        module.exports = readShebang;
+    },
+    "../../node_modules/cross-spawn/lib/util/resolveCommand.js": function(module, __unused_webpack_exports, __webpack_require__) {
+        const path = __webpack_require__("path");
+        const which = __webpack_require__("../../node_modules/which/which.js");
+        const getPathKey = __webpack_require__("../../node_modules/path-key/index.js");
+        function resolveCommandAttempt(parsed, withoutPathExt) {
+            const env = parsed.options.env || process.env;
+            const cwd = process.cwd();
+            const hasCustomCwd = null != parsed.options.cwd;
+            const shouldSwitchCwd = hasCustomCwd && void 0 !== process.chdir && !process.chdir.disabled;
+            if (shouldSwitchCwd) try {
+                process.chdir(parsed.options.cwd);
+            } catch (err) {}
+            let resolved;
+            try {
+                resolved = which.sync(parsed.command, {
+                    path: env[getPathKey({
+                        env
+                    })],
+                    pathExt: withoutPathExt ? path.delimiter : void 0
+                });
+            } catch (e) {} finally{
+                if (shouldSwitchCwd) process.chdir(cwd);
+            }
+            if (resolved) resolved = path.resolve(hasCustomCwd ? parsed.options.cwd : '', resolved);
+            return resolved;
+        }
+        function resolveCommand(parsed) {
+            return resolveCommandAttempt(parsed) || resolveCommandAttempt(parsed, true);
+        }
+        module.exports = resolveCommand;
+    },
+    "../../node_modules/isexe/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
+        __webpack_require__("fs");
+        var core;
+        core = 'win32' === process.platform || global.TESTING_WINDOWS ? __webpack_require__("../../node_modules/isexe/windows.js") : __webpack_require__("../../node_modules/isexe/mode.js");
+        module.exports = isexe;
+        isexe.sync = sync;
+        function isexe(path, options, cb) {
+            if ('function' == typeof options) {
+                cb = options;
+                options = {};
+            }
+            if (!cb) {
+                if ('function' != typeof Promise) throw new TypeError('callback not provided');
+                return new Promise(function(resolve, reject) {
+                    isexe(path, options || {}, function(er, is) {
+                        if (er) reject(er);
+                        else resolve(is);
+                    });
+                });
+            }
+            core(path, options || {}, function(er, is) {
+                if (er) {
+                    if ('EACCES' === er.code || options && options.ignoreErrors) {
+                        er = null;
+                        is = false;
+                    }
+                }
+                cb(er, is);
+            });
+        }
+        function sync(path, options) {
+            try {
+                return core.sync(path, options || {});
+            } catch (er) {
+                if (options && options.ignoreErrors || 'EACCES' === er.code) return false;
+                throw er;
+            }
+        }
+    },
+    "../../node_modules/isexe/mode.js": function(module, __unused_webpack_exports, __webpack_require__) {
+        module.exports = isexe;
+        isexe.sync = sync;
+        var fs = __webpack_require__("fs");
+        function isexe(path, options, cb) {
+            fs.stat(path, function(er, stat) {
+                cb(er, er ? false : checkStat(stat, options));
+            });
+        }
+        function sync(path, options) {
+            return checkStat(fs.statSync(path), options);
+        }
+        function checkStat(stat, options) {
+            return stat.isFile() && checkMode(stat, options);
+        }
+        function checkMode(stat, options) {
+            var mod = stat.mode;
+            var uid = stat.uid;
+            var gid = stat.gid;
+            var myUid = void 0 !== options.uid ? options.uid : process.getuid && process.getuid();
+            var myGid = void 0 !== options.gid ? options.gid : process.getgid && process.getgid();
+            var u = parseInt('100', 8);
+            var g = parseInt('010', 8);
+            var o = parseInt('001', 8);
+            var ug = u | g;
+            var ret = mod & o || mod & g && gid === myGid || mod & u && uid === myUid || mod & ug && 0 === myUid;
+            return ret;
+        }
+    },
+    "../../node_modules/isexe/windows.js": function(module, __unused_webpack_exports, __webpack_require__) {
+        module.exports = isexe;
+        isexe.sync = sync;
+        var fs = __webpack_require__("fs");
+        function checkPathExt(path, options) {
+            var pathext = void 0 !== options.pathExt ? options.pathExt : process.env.PATHEXT;
+            if (!pathext) return true;
+            pathext = pathext.split(';');
+            if (-1 !== pathext.indexOf('')) return true;
+            for(var i = 0; i < pathext.length; i++){
+                var p = pathext[i].toLowerCase();
+                if (p && path.substr(-p.length).toLowerCase() === p) return true;
+            }
+            return false;
+        }
+        function checkStat(stat, path, options) {
+            if (!stat.isSymbolicLink() && !stat.isFile()) return false;
+            return checkPathExt(path, options);
+        }
+        function isexe(path, options, cb) {
+            fs.stat(path, function(er, stat) {
+                cb(er, er ? false : checkStat(stat, path, options));
+            });
+        }
+        function sync(path, options) {
+            return checkStat(fs.statSync(path), path, options);
+        }
+    },
+    "../../node_modules/path-key/index.js": function(module) {
+        const pathKey = (options = {})=>{
+            const environment = options.env || process.env;
+            const platform = options.platform || process.platform;
+            if ('win32' !== platform) return 'PATH';
+            return Object.keys(environment).reverse().find((key)=>'PATH' === key.toUpperCase()) || 'Path';
+        };
+        module.exports = pathKey;
+        module.exports["default"] = pathKey;
+    },
+    "../../node_modules/shebang-command/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
+        const shebangRegex = __webpack_require__("../../node_modules/shebang-regex/index.js");
+        module.exports = (string = '')=>{
+            const match = string.match(shebangRegex);
+            if (!match) return null;
+            const [path, argument] = match[0].replace(/#! ?/, '').split(' ');
+            const binary = path.split('/').pop();
+            if ('env' === binary) return argument;
+            return argument ? `${binary} ${argument}` : binary;
+        };
+    },
+    "../../node_modules/shebang-regex/index.js": function(module) {
+        module.exports = /^#!(.*)/;
+    },
+    "../../node_modules/which/which.js": function(module, __unused_webpack_exports, __webpack_require__) {
+        const isWindows = 'win32' === process.platform || 'cygwin' === process.env.OSTYPE || 'msys' === process.env.OSTYPE;
+        const path = __webpack_require__("path");
+        const COLON = isWindows ? ';' : ':';
+        const isexe = __webpack_require__("../../node_modules/isexe/index.js");
+        const getNotFoundError = (cmd)=>Object.assign(new Error(`not found: ${cmd}`), {
+                code: 'ENOENT'
+            });
+        const getPathInfo = (cmd, opt)=>{
+            const colon = opt.colon || COLON;
+            const pathEnv = cmd.match(/\//) || isWindows && cmd.match(/\\/) ? [
+                ''
+            ] : [
+                ...isWindows ? [
+                    process.cwd()
+                ] : [],
+                ...(opt.path || process.env.PATH || '').split(colon)
+            ];
+            const pathExtExe = isWindows ? opt.pathExt || process.env.PATHEXT || '.EXE;.CMD;.BAT;.COM' : '';
+            const pathExt = isWindows ? pathExtExe.split(colon) : [
+                ''
+            ];
+            if (isWindows) {
+                if (-1 !== cmd.indexOf('.') && '' !== pathExt[0]) pathExt.unshift('');
+            }
+            return {
+                pathEnv,
+                pathExt,
+                pathExtExe
+            };
+        };
+        const which = (cmd, opt, cb)=>{
+            if ('function' == typeof opt) {
+                cb = opt;
+                opt = {};
+            }
+            if (!opt) opt = {};
+            const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
+            const found = [];
+            const step = (i)=>new Promise((resolve, reject)=>{
+                    if (i === pathEnv.length) return opt.all && found.length ? resolve(found) : reject(getNotFoundError(cmd));
+                    const ppRaw = pathEnv[i];
+                    const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
+                    const pCmd = path.join(pathPart, cmd);
+                    const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
+                    resolve(subStep(p, i, 0));
+                });
+            const subStep = (p, i, ii)=>new Promise((resolve, reject)=>{
+                    if (ii === pathExt.length) return resolve(step(i + 1));
+                    const ext = pathExt[ii];
+                    isexe(p + ext, {
+                        pathExt: pathExtExe
+                    }, (er, is)=>{
+                        if (!er && is) {
+                            if (!opt.all) return resolve(p + ext);
+                            found.push(p + ext);
+                        }
+                        return resolve(subStep(p, i, ii + 1));
+                    });
+                });
+            return cb ? step(0).then((res)=>cb(null, res), cb) : step(0);
+        };
+        const whichSync = (cmd, opt)=>{
+            opt = opt || {};
+            const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
+            const found = [];
+            for(let i = 0; i < pathEnv.length; i++){
+                const ppRaw = pathEnv[i];
+                const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
+                const pCmd = path.join(pathPart, cmd);
+                const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
+                for(let j = 0; j < pathExt.length; j++){
+                    const cur = p + pathExt[j];
+                    try {
+                        const is = isexe.sync(cur, {
+                            pathExt: pathExtExe
+                        });
+                        if (is) {
+                            if (!opt.all) return cur;
+                            found.push(cur);
+                        }
+                    } catch (ex) {}
+                }
+            }
+            if (opt.all && found.length) return found;
+            if (opt.nothrow) return null;
+            throw getNotFoundError(cmd);
+        };
+        module.exports = which;
+        which.sync = whichSync;
+    },
     "./src/lib/loadEnv.ts": function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
         __webpack_require__.d(__webpack_exports__, {
             Z: ()=>loadEnv
         });
-        var execa__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("../../node_modules/.pnpm/execa@9.5.2/node_modules/execa/index.js");
+        var execa__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./node_modules/execa/index.js");
         async function loadEnv(keys) {
             const { stdout } = await (0, execa__WEBPACK_IMPORTED_MODULE_0__.r)("eas", [
                 "env:exec",
@@ -18052,7 +18052,7 @@ var __webpack_modules__ = {
     util: function(module) {
         module.exports = __WEBPACK_EXTERNAL_MODULE_util__;
     },
-    "../../node_modules/.pnpm/execa@9.5.2/node_modules/execa/index.js": function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+    "./node_modules/execa/index.js": function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
         __webpack_require__.d(__webpack_exports__, {
             r: ()=>execa
         });
@@ -18835,7 +18835,7 @@ Please set the "stdio" option to ensure that file descriptor exists.`);
                 verboseInfo
             };
         };
-        var cross_spawn = __webpack_require__("../../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/index.js");
+        var cross_spawn = __webpack_require__("../../node_modules/cross-spawn/index.js");
         function pathKey(options = {}) {
             const { env = process.env, platform = process.platform } = options;
             if ('win32' !== platform) return 'PATH';
@@ -24102,13 +24102,9 @@ function __webpack_require__(moduleId) {
 (()=>{
     __webpack_require__.o = (obj, prop)=>Object.prototype.hasOwnProperty.call(obj, prop);
 })();
-var picocolors = __webpack_require__("../../node_modules/.pnpm/picocolors@1.1.1/node_modules/picocolors/picocolors.js");
-const banner_link = (url)=>picocolors.green(picocolors.underline(url));
+var picocolors_picocolors = __webpack_require__("../../node_modules/.pnpm/picocolors@1.1.1/node_modules/picocolors/picocolors.js");
 const banner = (0, __WEBPACK_EXTERNAL_MODULE_boxen__["default"])([
-    `${picocolors.bold("eas-update")}`,
-    "",
-    `Github: ${banner_link("https://github.com/gronxb/hot-updater")}`,
-    "Give a ⭐️ if you like it!"
+    `${picocolors_picocolors.bold("eas-update")}`
 ].join("\n"), {
     padding: 1,
     borderStyle: "round",
@@ -24125,7 +24121,7 @@ function checkPackageAvailable(packageName, satisfiesVersion) {
     const isSatisfiedVersion = void 0 !== packageVersion && __WEBPACK_EXTERNAL_MODULE_semver__.satisfies(packageVersion, satisfiesVersion);
     if (!isSatisfiedVersion) throw new Error(`This package requires version ${satisfiesVersion}`);
 }
-var execa = __webpack_require__("../../node_modules/.pnpm/execa@9.5.2/node_modules/execa/index.js");
+var execa = __webpack_require__("./node_modules/execa/index.js");
 var lib = __webpack_require__("../../node_modules/.pnpm/workspace-tools@0.38.1/node_modules/workspace-tools/lib/index.js");
 const getCwd = ()=>(0, lib.findPackageRoot)(process.cwd());
 var external_path_ = __webpack_require__("path");
@@ -24937,6 +24933,19 @@ program.command("deploy").description("Upload bundle").action(async ()=>{
             initialValue: "PRODUCTION"
         });
         if (!environment) throw new Error("No environment selected. Exiting...");
+        const config = await loadConfig();
+        let runtimeVersion = config.runtimeVersion;
+        if (runtimeVersion && __WEBPACK_EXTERNAL_MODULE_semver__["default"].valid(runtimeVersion)) __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.log.success(`runtimeVersion : ${runtimeVersion}`);
+        else {
+            runtimeVersion = await __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.text({
+                message: "What runtimeVersion would you like to set?",
+                placeholder: "1.0.0",
+                validate: (value1)=>{
+                    if (!__WEBPACK_EXTERNAL_MODULE_semver__["default"].valid(value1)) return new Error("Please enter a valid semantic version (e.g., 1.0.0)");
+                }
+            });
+            if ("string" != typeof runtimeVersion) throw new Error("No runtimeVersion");
+        }
         await __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.tasks([
             {
                 title: `Exporting ${platforms.join(", ").toLocaleLowerCase()} bundles`,
@@ -24962,7 +24971,6 @@ program.command("deploy").description("Upload bundle").action(async ()=>{
             {
                 title: "Uploading bundles",
                 task: async ()=>{
-                    const config = await loadConfig();
                     switch(config.storage){
                         case "AWS_S3":
                             const env = await (0, loadEnv.Z)([
@@ -24971,7 +24979,7 @@ program.command("deploy").description("Upload bundle").action(async ()=>{
                                 "AWS_REGION",
                                 "AWS_BUCKET_NAME"
                             ]);
-                            await uploadS3(zippedBundlePath, `${Date.now()}.zip`, {
+                            await uploadS3(zippedBundlePath, `${runtimeVersion}/${environment}/${Date.now()}.zip`, {
                                 accessKeyId: env.AWS_ACCESS_KEY_ID,
                                 bucketName: env.AWS_BUCKET_NAME,
                                 region: env.AWS_REGION,
