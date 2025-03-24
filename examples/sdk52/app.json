@@ -13,14 +13,15 @@
       "enabled": true
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.expo.sdk52"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.durun_onout.sdk52"
+      "package": "com.expo.sdk52"
     },
     "web": {
       "bundler": "metro",
