@@ -19,5 +19,15 @@ export default defineConfig({
         },
       },
     },
+    {
+      format: "cjs",
+      dts: true,
+      source: {
+        entry: {
+          index: "./src/index.ts",
+          config: "./src/config.ts",
+        },
+      },
+    },
   ],
 });

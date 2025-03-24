@@ -1,11 +1,11 @@
 import { ExpoConfig, ConfigContext } from "expo/config";
-import { version } from "./eas-update.config";
+import version from "./version";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "sdk52",
   slug: "sdk52",
-  version: version.runtimeVersion,
+  version: version.VERSION,
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "myapp",
