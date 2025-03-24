@@ -8,7 +8,7 @@
   },
   "pnpm": {
     "overrides": {
-      "eas-update-test": "workspace:*"
+      "eas-update-cli": "workspace:*"
     }
   },
   "keywords": [],

@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "eas-update-test",
+  "name": "eas-update-cli",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/config.cjs",
