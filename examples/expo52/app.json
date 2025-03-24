@@ -11,6 +11,10 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "updates": {
+      "url": "http://localhost:3000/api/manifest",
+      "enabled": true
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -18,7 +22,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.durun_onout.expo52"
     },
     "web": {
       "bundler": "metro",

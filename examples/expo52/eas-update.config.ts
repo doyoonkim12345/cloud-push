@@ -4,11 +4,9 @@ export const version = {
   runtimeVersion: "10.0.1",
 };
 
-const config = (() => {
-  return defineConfig({
-    storage: "AWS_S3",
-    runtimeVersion: version.runtimeVersion,
-  });
-})();
+const config = defineConfig({
+  storage: "AWS_S3",
+  runtimeVersion: version.runtimeVersion,
+});
 
 export default config;
