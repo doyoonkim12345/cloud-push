@@ -18,19 +18,16 @@ export async function exportBundles({
   const spinner = prompts.spinner();
   spinner.start(`Starting ${title}...`);
 
-  await checkPackageAvailable("expo", "52.x.x");
-  await execa("expo", [
-    "export",
-    ...platforms.flatMap((platform) => [
-      "--platform",
-      platform.toLocaleLowerCase(),
-    ]),
-    ...["--output-dir", bundlePath],
-  ]);
-
   try {
-    // Your export logic here
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate async operation
+    await checkPackageAvailable("expo", "52.x.x");
+    await execa("expo", [
+      "export",
+      ...platforms.flatMap((platform) => [
+        "--platform",
+        platform.toLocaleLowerCase(),
+      ]),
+      ...["--output-dir", bundlePath],
+    ]);
     spinner.stop(`✅ ${title} completed successfully!`);
   } catch (error) {
     spinner.stop(`❌ ${title} failed: ${(error as Error).message}`);
