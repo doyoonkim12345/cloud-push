@@ -12,7 +12,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   updates: {
-    url: "http://192.168.0.36:3000/api/manifest",
+    url: `http://192.168.0.36:3000/api/${process.env.ENVIRONMENT}/manifest`,
     enabled: true,
   },
   runtimeVersion: {
