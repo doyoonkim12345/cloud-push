@@ -1,27 +1,19 @@
-import convertSHA256HashToUUID from "@/features/helpers/lib/convertSHA256HashToUUID";
-import convertToDictionaryItemsRepresentation from "@/features/helpers/lib/convertToDictionaryItemsRepresentation";
-import createNoUpdateAvailableDirectiveAsync from "@/features/helpers/lib/createNoUpdateAvailableDirectiveAsync";
-import createRollBackDirectiveAsync from "@/features/helpers/lib/createRollBackDirectiveAsync";
-import getAssetMetadataAsync from "@/features/helpers/lib/getAssetMetadataAsync";
-import getExpoConfigAsync from "@/features/helpers/lib/getExpoConfigAsync";
 import getLatestUpdateBundlePathForRuntimeVersionAsync, {
   NoUpdateAvailableError,
 } from "@/features/helpers/lib/getLatestUpdateBundlePathForRuntimeVersionAsync";
-import getMetadataAsync from "@/features/helpers/lib/getMetadataAsync";
-import getPrivateKeyAsync from "@/features/helpers/lib/getPrivateKeyAsync";
-import signRSASHA256 from "@/features/helpers/lib/signRSASHA256";
-import FormData from "form-data";
-import fs from "fs/promises";
+import { getS3LastestBundle } from "@/features/s3/lib/update";
+import getTypeOfUpdateAsync from "@/features/updates/lib/getTypeOfUpdateAsync";
+import putNoUpdateAvailableInResponseAsync from "@/features/updates/lib/putNoUpdateAvailableInResponseAsync";
+import putRollBackInResponseAsync from "@/features/updates/lib/putRollBackInResponseAsync";
+import putUpdateInResponseAsync from "@/features/updates/lib/putUpdateInResponseAsync";
+import { Environment, UpdateType } from "@/features/updates/types";
 import { NextRequest } from "next/server";
-import { serializeDictionary } from "structured-headers";
-
-type Environment = "PRODUCTION" | "DEVELOPMENT" | "PREVIEW";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { environment: Environment } }
+  { params }: { params: Promise<{ environment: Environment }> }
 ) {
-  const { environment } = params;
+  const { environment } = await params;
 
   const protocolVersionHeader = request.headers.get("expo-protocol-version");
   const protocolVersion = parseInt(protocolVersionHeader ?? "0", 10);
@@ -62,9 +54,12 @@ export async function GET(
 
   let updateBundlePath: string;
   try {
-    updateBundlePath = await getLatestUpdateBundlePathForRuntimeVersionAsync(
-      runtimeVersion
-    );
+    updateBundlePath = await getS3LastestBundle({
+      runtimeVersion,
+      environment,
+    });
+    console.log(updateBundlePath);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return new Response(
       JSON.stringify({
@@ -112,273 +107,4 @@ export async function GET(
       headers: { "Content-Type": "application/json" },
     });
   }
-}
-
-enum UpdateType {
-  NORMAL_UPDATE,
-  ROLLBACK,
-}
-
-async function getTypeOfUpdateAsync(
-  updateBundlePath: string
-): Promise<UpdateType> {
-  const directoryContents = await fs.readdir(updateBundlePath);
-  return directoryContents.includes("rollback")
-    ? UpdateType.ROLLBACK
-    : UpdateType.NORMAL_UPDATE;
-}
-
-async function putUpdateInResponseAsync(
-  req: NextRequest,
-  updateBundlePath: string,
-  runtimeVersion: string,
-  platform: string,
-  protocolVersion: number
-): Promise<Response> {
-  const currentUpdateId = req.headers.get("expo-current-update-id");
-  const { metadataJson, createdAt, id } = await getMetadataAsync({
-    updateBundlePath,
-    runtimeVersion,
-  });
-
-  // NoUpdateAvailable directive only supported on protocol version 1
-  // for protocol version 0, serve most recent update as normal
-  if (
-    currentUpdateId === convertSHA256HashToUUID(id) &&
-    protocolVersion === 1
-  ) {
-    throw new NoUpdateAvailableError();
-  }
-
-  const expoConfig = await getExpoConfigAsync({
-    updateBundlePath,
-    runtimeVersion,
-  });
-  const platformSpecificMetadata = metadataJson.fileMetadata[platform];
-  const manifest = {
-    id: convertSHA256HashToUUID(id),
-    createdAt,
-    runtimeVersion,
-    assets: await Promise.all(
-      (platformSpecificMetadata.assets as any[]).map((asset: any) =>
-        getAssetMetadataAsync({
-          updateBundlePath,
-          filePath: asset.path,
-          ext: asset.ext,
-          runtimeVersion,
-          platform,
-          isLaunchAsset: false,
-        })
-      )
-    ),
-    launchAsset: await getAssetMetadataAsync({
-      updateBundlePath,
-      filePath: platformSpecificMetadata.bundle,
-      isLaunchAsset: true,
-      runtimeVersion,
-      platform,
-      ext: null,
-    }),
-    metadata: {},
-    extra: {
-      expoClient: expoConfig,
-    },
-  };
-
-  let signature = null;
-  const expectSignatureHeader = req.headers.get("expo-expect-signature");
-  if (expectSignatureHeader) {
-    const privateKey = await getPrivateKeyAsync();
-    if (!privateKey) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "Code signing requested but no key supplied when starting server.",
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-    const manifestString = JSON.stringify(manifest);
-    const hashSignature = signRSASHA256(manifestString, privateKey);
-    const dictionary = convertToDictionaryItemsRepresentation({
-      sig: hashSignature,
-      keyid: "main",
-    });
-    signature = serializeDictionary(dictionary);
-  }
-
-  const assetRequestHeaders: { [key: string]: object } = {};
-  [...manifest.assets, manifest.launchAsset].forEach((asset) => {
-    assetRequestHeaders[asset.key] = {
-      "test-header": "test-header-value",
-    };
-  });
-
-  const form = new FormData();
-  form.append("manifest", JSON.stringify(manifest), {
-    contentType: "application/json",
-    header: {
-      "content-type": "application/json; charset=utf-8",
-      ...(signature ? { "expo-signature": signature } : {}),
-    },
-  });
-  form.append("extensions", JSON.stringify({ assetRequestHeaders }), {
-    contentType: "application/json",
-  });
-
-  const buffer = form.getBuffer();
-
-  const headers = new Headers();
-  headers.set("expo-protocol-version", protocolVersion.toString());
-  headers.set("expo-sfv-version", "0");
-  headers.set("cache-control", "private, max-age=0");
-  headers.set(
-    "content-type",
-    `multipart/mixed; boundary=${form.getBoundary()}`
-  );
-
-  return new Response(buffer, {
-    status: 200,
-    headers,
-  });
-}
-
-async function putRollBackInResponseAsync(
-  req: NextRequest,
-  updateBundlePath: string,
-  protocolVersion: number
-): Promise<Response> {
-  if (protocolVersion === 0) {
-    throw new Error("Rollbacks not supported on protocol version 0");
-  }
-
-  const embeddedUpdateId = req.headers.get("expo-embedded-update-id");
-  if (!embeddedUpdateId) {
-    throw new Error(
-      "Invalid Expo-Embedded-Update-ID request header specified."
-    );
-  }
-
-  const currentUpdateId = req.headers.get("expo-current-update-id");
-  if (currentUpdateId === embeddedUpdateId) {
-    throw new NoUpdateAvailableError();
-  }
-
-  const directive = await createRollBackDirectiveAsync(updateBundlePath);
-
-  let signature = null;
-  const expectSignatureHeader = req.headers.get("expo-expect-signature");
-  if (expectSignatureHeader) {
-    const privateKey = await getPrivateKeyAsync();
-    if (!privateKey) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "Code signing requested but no key supplied when starting server.",
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-    const directiveString = JSON.stringify(directive);
-    const hashSignature = signRSASHA256(directiveString, privateKey);
-    const dictionary = convertToDictionaryItemsRepresentation({
-      sig: hashSignature,
-      keyid: "main",
-    });
-    signature = serializeDictionary(dictionary);
-  }
-
-  const form = new FormData();
-  form.append("directive", JSON.stringify(directive), {
-    contentType: "application/json",
-    header: {
-      "content-type": "application/json; charset=utf-8",
-      ...(signature ? { "expo-signature": signature } : {}),
-    },
-  });
-
-  const buffer = form.getBuffer();
-
-  const headers = new Headers();
-  headers.set("expo-protocol-version", "1");
-  headers.set("expo-sfv-version", "0");
-  headers.set("cache-control", "private, max-age=0");
-  headers.set(
-    "content-type",
-    `multipart/mixed; boundary=${form.getBoundary()}`
-  );
-
-  return new Response(buffer, {
-    status: 200,
-    headers,
-  });
-}
-
-async function putNoUpdateAvailableInResponseAsync(
-  req: NextRequest,
-  protocolVersion: number
-): Promise<Response> {
-  if (protocolVersion === 0) {
-    throw new Error(
-      "NoUpdateAvailable directive not available in protocol version 0"
-    );
-  }
-
-  const directive = await createNoUpdateAvailableDirectiveAsync();
-
-  let signature = null;
-  const expectSignatureHeader = req.headers.get("expo-expect-signature");
-  if (expectSignatureHeader) {
-    const privateKey = await getPrivateKeyAsync();
-    if (!privateKey) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "Code signing requested but no key supplied when starting server.",
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-    const directiveString = JSON.stringify(directive);
-    const hashSignature = signRSASHA256(directiveString, privateKey);
-    const dictionary = convertToDictionaryItemsRepresentation({
-      sig: hashSignature,
-      keyid: "main",
-    });
-    signature = serializeDictionary(dictionary);
-  }
-
-  const form = new FormData();
-  form.append("directive", JSON.stringify(directive), {
-    contentType: "application/json",
-    header: {
-      "content-type": "application/json; charset=utf-8",
-      ...(signature ? { "expo-signature": signature } : {}),
-    },
-  });
-
-  const buffer = form.getBuffer();
-
-  const headers = new Headers();
-  headers.set("expo-protocol-version", "1");
-  headers.set("expo-sfv-version", "0");
-  headers.set("cache-control", "private, max-age=0");
-  headers.set(
-    "content-type",
-    `multipart/mixed; boundary=${form.getBoundary()}`
-  );
-
-  return new Response(buffer, {
-    status: 200,
-    headers,
-  });
 }

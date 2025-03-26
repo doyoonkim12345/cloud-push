@@ -1,3 +1,4 @@
+import { Environment } from "@/features/updates/types";
 import truthy from "./truthy";
 import fsSync from "fs";
 import fs from "fs/promises";
@@ -6,7 +7,8 @@ import path from "path";
 export class NoUpdateAvailableError extends Error {}
 
 export default async function getLatestUpdateBundlePathForRuntimeVersionAsync(
-  runtimeVersion: string
+  runtimeVersion: string,
+  environment: Environment
 ) {
   const updatesDirectoryForRuntimeVersion = `updates/${runtimeVersion}`;
   if (!fsSync.existsSync(updatesDirectoryForRuntimeVersion)) {
