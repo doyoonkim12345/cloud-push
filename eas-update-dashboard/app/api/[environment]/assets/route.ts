@@ -7,7 +7,9 @@ import { NextRequest, NextResponse } from "next/server";
 import getLatestUpdateBundlePathForRuntimeVersionAsync from "@/features/helpers/lib/getLatestUpdateBundlePathForRuntimeVersionAsync";
 import getMetadataAsync from "@/features/helpers/lib/getMetadataAsync";
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }) {
+  console.log((await params).environment);
+
   const searchParams = request.nextUrl.searchParams;
   const assetName = searchParams.get("asset");
   const runtimeVersion = searchParams.get("runtimeVersion");

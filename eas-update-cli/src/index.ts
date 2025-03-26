@@ -32,13 +32,6 @@ process.on("SIGINT", async () => {
 // CLI 버전 및 설명 설정
 program.name("eas-update").description(banner).version("1.0.0");
 
-// Function to load configuration
-async function loadConfiguration() {
-  // Replace this with your actual configuration loading logic
-  const config = await loadConfig(); // Assume loadConfig is a valid function
-  return config;
-}
-
 // 명령어 추가
 program
   .command("deploy")
@@ -52,7 +45,7 @@ program
     try {
       const platforms = await selectPlatforms();
       const environment = await selectEnvironment();
-      const config = await loadConfiguration();
+      const config = await loadConfig();
       const runtimeVersion = await getRuntimeVersion(config.runtimeVersion);
       await exportBundles({ platforms, bundlePath });
       await zipBundles({ bundlePath, zippedBundlePath });

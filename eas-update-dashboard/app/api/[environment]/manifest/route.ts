@@ -15,7 +15,14 @@ import fs from "fs/promises";
 import { NextRequest } from "next/server";
 import { serializeDictionary } from "structured-headers";
 
-export async function GET(request: NextRequest) {
+type Environment = "PRODUCTION" | "DEVELOPMENT" | "PREVIEW";
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { environment: Environment } }
+) {
+  const { environment } = params;
+
   const protocolVersionHeader = request.headers.get("expo-protocol-version");
   const protocolVersion = parseInt(protocolVersionHeader ?? "0", 10);
 
