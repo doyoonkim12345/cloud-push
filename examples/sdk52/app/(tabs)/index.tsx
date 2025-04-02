@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, Button } from "react-native";
+import { Image, StyleSheet, Platform, Button, Text } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -29,6 +29,7 @@ export default function HomeScreen() {
       }
     >
       <Button onPress={onFetchUpdateAsync} title="리패칭" />
+      <Text>탠님 안녕하세요!</Text>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />

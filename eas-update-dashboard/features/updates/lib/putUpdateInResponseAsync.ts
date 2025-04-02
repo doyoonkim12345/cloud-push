@@ -2,13 +2,15 @@ import convertSHA256HashToUUID from "@/features/helpers/lib/convertSHA256HashToU
 import convertToDictionaryItemsRepresentation from "@/features/helpers/lib/convertToDictionaryItemsRepresentation";
 import getAssetMetadataAsync from "@/features/helpers/lib/getAssetMetadataAsync";
 import getExpoConfigAsync from "@/features/helpers/lib/getExpoConfigAsync";
-import { NoUpdateAvailableError } from "@/features/helpers/lib/getLatestUpdateBundlePathForRuntimeVersionAsync";
 import getMetadataAsync from "@/features/helpers/lib/getMetadataAsync";
 import getPrivateKeyAsync from "@/features/helpers/lib/getPrivateKeyAsync";
 import signRSASHA256 from "@/features/helpers/lib/signRSASHA256";
 import { NextRequest } from "next/server";
 import { serializeDictionary } from "structured-headers";
 import FormData from "form-data";
+import { getFile } from "@/features/api/client";
+import { parseJsonFile } from "next/dist/build/load-jsconfig";
+import { createJsonFile } from "eas-update-core";
 
 export default async function putUpdateInResponseAsync(
   req: NextRequest,
@@ -23,14 +25,21 @@ export default async function putUpdateInResponseAsync(
     runtimeVersion,
   });
 
+  const metadata = await getFile({
+    key: updateBundlePath,
+    mimeType: "application/json",
+    bucketName: process.env.AWS_BUCKET_NAME!,
+  });
+
+
   // NoUpdateAvailable directive only supported on protocol version 1
   // for protocol version 0, serve most recent update as normal
-  if (
-    currentUpdateId === convertSHA256HashToUUID(id) &&
-    protocolVersion === 1
-  ) {
-    throw new NoUpdateAvailableError();
-  }
+  // if (
+  //   currentUpdateId === convertSHA256HashToUUID(id) &&
+  //   protocolVersion === 1
+  // ) {
+  //   throw new NoUpdateAvailableError();
+  // }
 
   const expoConfig = await getExpoConfigAsync({
     updateBundlePath,

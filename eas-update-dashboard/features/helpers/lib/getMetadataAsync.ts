@@ -1,6 +1,7 @@
-import path from "path";
-import fs from "fs/promises";
-import createHash from "./createHash";
+import { getFile } from "@/features/api/client";
+import createHash from "../../hash/lib/createHash";
+import { ExpoMetadata } from "@/features/s3/lib/types";
+import { createJsonFile } from "eas-update-core";
 
 export default async function getMetadataAsync({
   updateBundlePath,
@@ -11,17 +12,17 @@ export default async function getMetadataAsync({
 }) {
   try {
     const metadataPath = `${updateBundlePath}/metadata.json`;
-    const updateMetadataBuffer = await fs.readFile(
-      path.resolve(metadataPath),
-      null
-    );
-    const metadataJson = JSON.parse(updateMetadataBuffer.toString("utf-8"));
-    const metadataStat = await fs.stat(metadataPath);
+    const metadataJsonFile = await getFile({
+      key: metadataPath,
+      mimeType: "application/json",
+      bucketName: process.env.AWS_BUCKET_NAME!,
+    });
+    const metadataJson = await parseFileAsJson<ExpoMetadata>(metadataJsonFile);
 
     return {
       metadataJson,
-      createdAt: new Date(metadataStat.birthtime).toISOString(),
-      id: createHash(updateMetadataBuffer, "sha256", "hex"),
+      createdAt: new Date(metadataJsonFile.lastModified).toISOString(),
+      id: createHash(metadataJsonFile, "sha256", "hex"),
     };
   } catch (error) {
     throw new Error(

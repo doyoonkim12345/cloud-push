@@ -6,11 +6,11 @@ export async function selectEnvironment(): Promise<Environment> {
   const environment = (await prompts.select<Environment>({
     message: "Select environment",
     options: [
-      { value: "PRODUCTION", label: "production" },
-      { value: "DEVELOPMENT", label: "development" },
-      { value: "PREVIEW", label: "preview" },
+      { value: "production", label: "production" },
+      { value: "development", label: "development" },
+      { value: "preview", label: "preview" },
     ],
-    initialValue: "PRODUCTION",
+    initialValue: "production",
   })) as Environment;
 
   // Handle prompt cancellation

@@ -5,14 +5,16 @@ import { banner } from "@/components/banner";
 import { getCwd } from "@/lib/getCwd";
 import { loadConfig } from "@/lib/loadConfig";
 import * as path from "path";
-import { unlink } from "fs/promises";
+import { rm } from "fs/promises";
 import * as prompts from "@clack/prompts";
 import { selectPlatforms } from "./commands/selectPlatforms";
 import { selectEnvironment } from "./commands/selectEnvironment";
 import { getRuntimeVersion } from "./commands/getRuntimeVersion";
 import { exportBundles } from "./commands/exportBundles";
-import { zipBundles } from "./commands/zipBundles";
-import { uploadBundles } from "./commands/uploadBundles";
+import loadEnv from "./lib/loadEnv";
+import { v4 as uuidv4 } from "uuid";
+import s3Client, { createJsonFile } from "eas-update-core";
+import { exportExpoConfig } from "./commands/exportExpoConfig";
 
 const program = new Command();
 
@@ -40,7 +42,6 @@ program
     const cwd = getCwd();
 
     const bundlePath = path.resolve(cwd, "./dist");
-    const zippedBundlePath = path.resolve(cwd, "./dist.zip");
 
     try {
       const platforms = await selectPlatforms();
@@ -48,13 +49,59 @@ program
       const config = await loadConfig();
       const runtimeVersion = await getRuntimeVersion(config.runtimeVersion);
       await exportBundles({ platforms, bundlePath });
-      await zipBundles({ bundlePath, zippedBundlePath });
-      await uploadBundles({
-        zippedBundlePath,
-        runtimeVersion,
-        environment,
-        config,
-      });
+      await exportExpoConfig({ environment, expoConfigPath: bundlePath });
+      const bundleId = uuidv4();
+
+      switch (config.storage) {
+        case "AWS_S3":
+          const env = await loadEnv(environment, [
+            "AWS_ACCESS_KEY_ID",
+            "AWS_SECRET_ACCESS_KEY",
+            "AWS_REGION",
+            "AWS_BUCKET_NAME",
+          ]);
+
+          const s3Key = `${runtimeVersion}/${environment}/${bundleId}`;
+
+          const client = s3Client({
+            region: env.AWS_REGION,
+            credentials: {
+              accessKeyId: env.AWS_ACCESS_KEY_ID,
+              secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+            },
+          });
+
+          const spinner = prompts.spinner();
+          spinner.start("Preparing file upload...");
+
+          try {
+            await client.uploadDirectory({
+              bucketName: env.AWS_BUCKET_NAME,
+              s3Path: s3Key,
+              directoryPath: bundlePath,
+            });
+
+            const cursorJson = createJsonFile<{ key: string }>(
+              { key: s3Key },
+              "cursor.json"
+            );
+
+            await client.uploadFile({
+              file: cursorJson,
+              bucketName: env.AWS_BUCKET_NAME,
+              key: "cursor.json",
+            });
+
+            spinner.stop("✅ Uploading completed successfully!");
+          } catch (e) {
+            spinner.stop(`❌ Uploading failed: ${(e as Error).message}`);
+          }
+
+          break;
+        default:
+          break;
+      }
+
       prompts.outro("🚀 Deployment Successful");
     } catch (e) {
       console.error(e as any);
@@ -62,7 +109,7 @@ program
     } finally {
       // Cleanup logic
       try {
-        await unlink(zippedBundlePath);
+        // await rm(bundlePath, { recursive: true, force: true });
         prompts.log.error("Cleaned up temporary files.");
       } catch (err) {
         // Ignore if file doesn't exist

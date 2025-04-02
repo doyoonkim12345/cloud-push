@@ -2,7 +2,8 @@ import path from "path";
 import getBase64URLEncoding from "./getBase64URLEncoding";
 import fs from "fs/promises";
 import mime from "mime";
-import createHash from "./createHash";
+import createHash from "../../hash/lib/createHash";
+import { getFile } from "@/features/api/client";
 
 type GetAssetMetadataArg =
   | {
@@ -23,10 +24,13 @@ type GetAssetMetadataArg =
     };
 
 export default async function getAssetMetadataAsync(arg: GetAssetMetadataArg) {
-  const assetFilePath = `${arg.updateBundlePath}/${arg.filePath}`;
-  const asset = await fs.readFile(path.resolve(assetFilePath), null);
-  const assetHash = getBase64URLEncoding(createHash(asset, "sha256", "base64"));
-  const key = createHash(asset, "md5", "hex");
+  const assetFile = await getFile({ bucketName: process.env.AWS_BUCKET_NAME!, 
+    key : arg.updateBundlePath
+   });
+  const assetHash = getBase64URLEncoding(
+    await createHash(assetFile, "sha256", "base64")
+  );
+  const key = await createHash(assetFile, "md5", "hex");
   const keyExtensionSuffix = arg.isLaunchAsset ? "bundle" : arg.ext;
   const contentType = arg.isLaunchAsset
     ? "application/javascript"
