@@ -1,6 +1,6 @@
 import { parseEnv } from "@/lib/parseEnv";
-import { Environment } from "@/types";
 import * as prompts from "@clack/prompts";
+import { type Environment } from "eas-update-core";
 import { execa } from "execa";
 import fs from "fs/promises";
 import * as path from "path";

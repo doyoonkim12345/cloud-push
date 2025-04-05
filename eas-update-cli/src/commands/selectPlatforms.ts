@@ -1,15 +1,15 @@
-import { Platform } from "@/types";
 import * as prompts from "@clack/prompts";
+import { Platform } from "eas-update-core";
 
 // Function to select platforms
 export async function selectPlatforms(): Promise<Platform[]> {
   const platforms = (await prompts.multiselect<Platform>({
     message: "Select platforms",
     options: [
-      { label: "Android", value: "ANDROID" },
-      { label: "Ios", value: "IOS" },
+      { label: "Android", value: "android" },
+      { label: "Ios", value: "ios" },
     ],
-    initialValues: ["ANDROID", "IOS"],
+    initialValues: ["android", "ios"],
     required: true,
   })) as Platform[];
 

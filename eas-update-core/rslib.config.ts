@@ -7,14 +7,9 @@ export default defineConfig({
       dts: true,
       source: {
         entry: {
-          index: "./src/index.ts",
-        },
-      },
-      shims: {
-        esm: {
-          __dirname: true,
-          __filename: true,
-          require: true,
+          s3: "./src/features/s3/index.ts",
+          utils: "./src/features/utils/index.ts",
+          versionCursor: "./src/features/versionCursor/index.ts",
         },
       },
     },
@@ -23,7 +18,9 @@ export default defineConfig({
       dts: true,
       source: {
         entry: {
-          index: "./src/index.ts",
+          s3: "./src/features/s3/index.ts",
+          utils: "./src/features/utils/index.ts",
+          versionCursor: "./src/features/versionCursor/index.ts",
         },
       },
     },

@@ -1,6 +1,6 @@
 "use server";
 
-import s3Client from "eas-update-core";
+import s3Client from "eas-update-core/s3";
 
 const client = s3Client({
   region: process.env.AWS_REGION!,

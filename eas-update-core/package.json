@@ -3,13 +3,24 @@
   "name": "eas-update-core",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/types.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils.js",
+      "require": "./dist/utils.cjs",
+      "types": "./dist/features/utils/index.d.ts"
+    },
+    "./s3": {
+      "import": "./dist/s3.js",
+      "require": "./dist/s3.cjs",
+      "types": "./dist/features/s3/index.d.ts"
+    },
+    "./version-cursor": {
+      "import": "./dist/versionCursor.js",
+      "require": "./dist/versionCursor.cjs",
+      "types": "./dist/features/versionCursor/index.d.ts"
     }
   },
   "scripts": {
@@ -24,7 +35,9 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.777.0",
     "@aws-sdk/lib-storage": "^3.777.0",
-    "@aws-sdk/s3-request-presigner": "^3.779.0"
+    "@aws-sdk/s3-request-presigner": "^3.779.0",
+    "@types/git-rev-sync": "^2.0.2",
+    "git-rev-sync": "^3.0.2"
   },
   "devDependencies": {
     "@rslib/core": "^0.5.5",

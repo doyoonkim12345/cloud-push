@@ -1,23 +1,11 @@
-import { Image, StyleSheet, Platform, Button, Text } from "react-native";
+import { Image, StyleSheet, Platform } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import * as Updates from "expo-updates";
 
 export default function HomeScreen() {
-  async function onFetchUpdateAsync() {
-    try {
-      const update = await Updates.checkForUpdateAsync();
-      if (update.isAvailable) {
-        await Updates.fetchUpdateAsync();
-        await Updates.reloadAsync();
-      }
-    } catch (error) {
-      alert(`Error fetching update: ${error}`);
-    }
-  }
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -28,10 +16,8 @@ export default function HomeScreen() {
         />
       }
     >
-      <Button onPress={onFetchUpdateAsync} title="리패칭" />
-      <Text>탠님 안녕하세요!</Text>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <ThemedText type="title">Ryan 님 Welcome!</ThemedText>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>

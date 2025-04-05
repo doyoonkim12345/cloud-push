@@ -9,8 +9,6 @@ import { NextRequest } from "next/server";
 import { serializeDictionary } from "structured-headers";
 import FormData from "form-data";
 import { getFile } from "@/features/api/client";
-import { parseJsonFile } from "next/dist/build/load-jsconfig";
-import { createJsonFile } from "eas-update-core";
 
 export default async function putUpdateInResponseAsync(
   req: NextRequest,
@@ -30,7 +28,6 @@ export default async function putUpdateInResponseAsync(
     mimeType: "application/json",
     bucketName: process.env.AWS_BUCKET_NAME!,
   });
-
 
   // NoUpdateAvailable directive only supported on protocol version 1
   // for protocol version 0, serve most recent update as normal

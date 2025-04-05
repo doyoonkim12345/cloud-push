@@ -1,5 +1,5 @@
-import { Environment } from "@/types";
 import * as prompts from "@clack/prompts";
+import { type Environment } from "eas-update-core";
 
 // Function to select environment
 export async function selectEnvironment(): Promise<Environment> {

@@ -13,8 +13,10 @@ import { getRuntimeVersion } from "./commands/getRuntimeVersion";
 import { exportBundles } from "./commands/exportBundles";
 import loadEnv from "./lib/loadEnv";
 import { v4 as uuidv4 } from "uuid";
-import s3Client, { createJsonFile } from "eas-update-core";
+import { createJsonFile } from "eas-update-core/utils";
+import s3Client from "eas-update-core/s3";
 import { exportExpoConfig } from "./commands/exportExpoConfig";
+import { VersionCursorStore } from "eas-update-core/version-cursor";
 
 const program = new Command();
 
@@ -81,8 +83,45 @@ program
               directoryPath: bundlePath,
             });
 
-            const cursorJson = createJsonFile<{ key: string }>(
-              { key: s3Key },
+            spinner.stop("✅ Uploading completed successfully!");
+          } catch (e) {
+            spinner.stop(`❌ Uploading failed: ${(e as Error).message}`);
+          }
+
+          const cursorSpinner = prompts.spinner();
+          cursorSpinner.start("Version cursor updating...");
+
+          try {
+            let file: File | null;
+            try {
+              file = await client.getFile({
+                bucketName: env.AWS_BUCKET_NAME,
+                key: "cursor.json",
+              });
+            } catch (e) {
+              file = null;
+            }
+
+            const versionCursorStore = new VersionCursorStore();
+
+            if (file) {
+              await versionCursorStore.loadFromJSON(file);
+            } else {
+              prompts.log.info(
+                "The version cursor does not exist, so a version cursor will be created."
+              );
+            }
+
+            versionCursorStore.addVersion(bundleId, {
+              createdAt: Date.now(),
+              environment,
+              gitHash: "",
+              platforms,
+              runtimeVersion,
+            });
+
+            const cursorJson = createJsonFile(
+              versionCursorStore.serialize(),
               "cursor.json"
             );
 
@@ -92,9 +131,15 @@ program
               key: "cursor.json",
             });
 
-            spinner.stop("✅ Uploading completed successfully!");
+            cursorSpinner.stop(
+              "✅ Updating version cursor completed successfully!"
+            );
           } catch (e) {
-            spinner.stop(`❌ Uploading failed: ${(e as Error).message}`);
+            cursorSpinner.stop(
+              `❌ Uploading version cursor failed:failed successfully! ${
+                (e as Error).message
+              }`
+            );
           }
 
           break;
@@ -109,7 +154,7 @@ program
     } finally {
       // Cleanup logic
       try {
-        // await rm(bundlePath, { recursive: true, force: true });
+        await rm(bundlePath, { recursive: true, force: true });
         prompts.log.error("Cleaned up temporary files.");
       } catch (err) {
         // Ignore if file doesn't exist

@@ -1,24 +1,17 @@
-import {
-  getFile,
-  getFileSignedUrl,
-  listFoldersWithPagination,
-} from "@/features/api/client";
+import { getFile, getFileSignedUrl } from "@/features/api/client";
 import createHash from "@/features/hash/lib/createHash";
-import convertSHA256HashToUUID from "@/features/helpers/lib/convertSHA256HashToUUID";
-import getAssetMetadataAsync from "@/features/helpers/lib/getAssetMetadataAsync";
 import getBase64URLEncoding from "@/features/helpers/lib/getBase64URLEncoding";
 import { NoUpdateAvailableError } from "@/features/helpers/lib/getLatestUpdateBundlePathForRuntimeVersionAsync";
 import { ExpoMetadata } from "@/features/s3/lib/types";
-import getTypeOfUpdateAsync from "@/features/updates/lib/getTypeOfUpdateAsync";
 import putNoUpdateAvailableInResponseAsync from "@/features/updates/lib/putNoUpdateAvailableInResponseAsync";
 import putRollBackInResponseAsync from "@/features/updates/lib/putRollBackInResponseAsync";
-import putUpdateInResponseAsync from "@/features/updates/lib/putUpdateInResponseAsync";
-import { Environment, UpdateType } from "@/features/updates/types";
-import { parseFileAsJson } from "eas-update-core";
-import { NextRequest, NextResponse } from "next/server";
+import { UpdateType } from "@/features/updates/types";
+import { NextRequest } from "next/server";
 import mime from "mime";
-import path from "path";
 import FormData from "form-data";
+import { Environment } from "eas-update-core";
+import { VersionCursorStore } from "eas-update-core/version-cursor";
+import { parseFileAsJson } from "eas-update-core/utils";
 
 type Manifest = {
   id: string;
@@ -94,19 +87,29 @@ export async function GET(
     );
   }
 
-  const prefix = `${runtimeVersion}/${environment}/`;
-  console.log(prefix);
-
   let updateBundlePath: string;
+  let bundleId: string;
   try {
-    // 임시
-    const { allFolders } = await listFoldersWithPagination({
+    const cursorFile = await getFile({
       bucketName: process.env.AWS_BUCKET_NAME!,
-      prefix,
-      pageSize: 1,
+      key: "cursor.json",
     });
 
-    updateBundlePath = allFolders[0];
+    const versionCursorStore = new VersionCursorStore();
+
+    await versionCursorStore.loadFromJSON(cursorFile);
+
+    const [targetBundleId] = versionCursorStore
+      .find({
+        environment,
+        platforms: [platform],
+        runtimeVersion,
+      })
+      .sort({ field: "createdAt", order: "desc" })[0];
+
+    bundleId = targetBundleId;
+
+    updateBundlePath = `${runtimeVersion}/${environment}/${bundleId}/`;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -124,17 +127,24 @@ export async function GET(
   // const updateType = await getTypeOfUpdateAsync(updateBundlePath);
   const updateType = UpdateType.NORMAL_UPDATE;
 
-  console.log(`${updateBundlePath}metadata.json`);
-
   try {
     try {
       if (updateType === UpdateType.NORMAL_UPDATE) {
         const currentUpdateId = request.headers.get("expo-current-update-id");
+
+        // if (currentUpdateId === bundleId) {
+        //   return new Response(JSON.stringify({ error: { bundleId } }), {
+        //     status: 404,
+        //     headers: { "Content-Type": "application/json" },
+        //   });
+        // }
+
         const metadata = await getFile({
           bucketName: process.env.AWS_BUCKET_NAME!,
           mimeType: "application/json",
           key: `${updateBundlePath}metadata.json`,
         });
+
         const metadataJson = await parseFileAsJson<ExpoMetadata>(metadata);
 
         const expoConfig = await getFile({
@@ -143,9 +153,10 @@ export async function GET(
           key: `${updateBundlePath}expoConfig.json`,
         });
 
-        const expoConfigJson = await parseFileAsJson<ExpoMetadata>(expoConfig);
+        const expoConfigJson = await parseFileAsJson<any>(expoConfig);
 
-        const id = await createHash(metadata, "sha256", "hex");
+        console.log("expoConfigJson", expoConfigJson);
+
         const createdAt = new Date(metadata.lastModified).toISOString();
         const platformMetadata = metadataJson.fileMetadata[platform];
 
@@ -197,8 +208,10 @@ export async function GET(
           ),
         };
 
+        console.log("bundleId", bundleId);
+
         const manifest: Manifest = {
-          id: convertSHA256HashToUUID(id),
+          id: bundleId,
           createdAt,
           runtimeVersion,
           metadata: {},
@@ -238,6 +251,7 @@ export async function GET(
           "content-type",
           `multipart/mixed; boundary=${form.getBoundary()}`
         );
+        // headers.set("expo-current-update-id", bundleId);
 
         return new Response(buffer, {
           status: 200,

@@ -55,7 +55,6 @@ export default async function getFile(
 
     return file;
   } catch (error) {
-    console.error("Error downloading file from S3:", error);
     throw error;
   }
 }

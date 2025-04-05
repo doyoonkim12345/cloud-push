@@ -1,31 +1,25 @@
-"use client";
+import s3Queries from "@/features/s3/queries";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
-import { listFoldersWithPagination } from "@/features/api/client";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { Suspense } from "react";
+import HomePageContent from "./_components/HomePageContent";
 
-export default function Home() {
-  const { data } = useInfiniteQuery({
-    queryKey: ["list-bundles"],
-    queryFn: ({ pageParam }: { pageParam?: string }) => {
-      return listFoldersWithPagination({
-        bucketName: "eas-update-bundles",
-        prefix: "2.2.0/",
-        continuationToken: pageParam,
-      });
-    },
-    getNextPageParam: (lastPage) => {
-      return lastPage.nextContinuationToken;
-    },
-    initialPageParam: undefined,
-  });
+export default async function Home() {
+  const queryClient = new QueryClient();
 
-  const flatData = data?.pages.flatMap((e) => e.allFolders);
+  const query = s3Queries.versions();
+
+  await queryClient.prefetchQuery({ ...query });
 
   return (
-    <div className="w-full flex flex-col">
-      {flatData?.map((e) => {
-        return <span key={e}>{e}</span>;
-      })}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense>
+        <HomePageContent />
+      </Suspense>
+    </HydrationBoundary>
   );
 }

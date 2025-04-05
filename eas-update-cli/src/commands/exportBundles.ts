@@ -1,7 +1,7 @@
 import checkPackageAvailable from "@/lib/checkPackageAvailable";
-import { Platform } from "@/types";
 import { execa } from "execa";
 import * as prompts from "@clack/prompts";
+import { Platform } from "eas-update-core";
 
 // Define interfaces for function props
 interface ExportBundlesProps {

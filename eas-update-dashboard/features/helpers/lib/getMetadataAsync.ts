@@ -1,7 +1,7 @@
 import { getFile } from "@/features/api/client";
 import createHash from "../../hash/lib/createHash";
 import { ExpoMetadata } from "@/features/s3/lib/types";
-import { createJsonFile } from "eas-update-core";
+import { parseFileAsJson } from "eas-update-core/utils";
 
 export default async function getMetadataAsync({
   updateBundlePath,

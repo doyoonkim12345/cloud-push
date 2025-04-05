@@ -1,7 +1,7 @@
 import { execa } from "execa";
 import * as prompts from "@clack/prompts";
-import { Environment } from "@/types";
 import { parseEnv } from "./parseEnv";
+import { type Environment } from "eas-update-core";
 
 type S3_KEY =
   | "AWS_BUCKET_NAME"

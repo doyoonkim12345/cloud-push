@@ -39,7 +39,9 @@ import * as __WEBPACK_EXTERNAL_MODULE_node_stream_444d1c2b__ from "node:stream";
 import * as __WEBPACK_EXTERNAL_MODULE_node_buffer_fb286294__ from "node:buffer";
 import * as __WEBPACK_EXTERNAL_MODULE_node_stream_promises_5adae1f2__ from "node:stream/promises";
 import * as __WEBPACK_EXTERNAL_MODULE_uuid__ from "uuid";
-import * as __WEBPACK_EXTERNAL_MODULE_eas_update_core_304082ce__ from "eas-update-core";
+import * as __WEBPACK_EXTERNAL_MODULE_eas_update_core_utils_519d1f77__ from "eas-update-core/utils";
+import * as __WEBPACK_EXTERNAL_MODULE_eas_update_core_s3_fa9da6fa__ from "eas-update-core/s3";
+import * as __WEBPACK_EXTERNAL_MODULE_eas_update_core_version_cursor_dae8c22e__ from "eas-update-core/version-cursor";
 var __webpack_modules__ = {
     "./node_modules/.pnpm/@nodelib+fs.scandir@2.1.5/node_modules/@nodelib/fs.scandir/out/adapters/fs.js": function(__unused_webpack_module, exports, __webpack_require__) {
         Object.defineProperty(exports, "__esModule", {
@@ -18100,22 +18102,23 @@ const loadConfig = async ()=>{
     }
 };
 var external_path_ = __webpack_require__("path");
+var promises_ = __webpack_require__("fs/promises");
 async function selectPlatforms() {
     const platforms = await __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.multiselect({
         message: "Select platforms",
         options: [
             {
                 label: "Android",
-                value: "ANDROID"
+                value: "android"
             },
             {
                 label: "Ios",
-                value: "IOS"
+                value: "ios"
             }
         ],
         initialValues: [
-            "ANDROID",
-            "IOS"
+            "android",
+            "ios"
         ],
         required: true
     });
@@ -24227,7 +24230,6 @@ async function loadEnv(environment, keys) {
         throw new Error("This project does not manage environment variables through EAS. Please upload the environment variables via eas env or expo.dev.");
     }
 }
-var promises_ = __webpack_require__("fs/promises");
 async function exportExpoConfig({ expoConfigPath, environment }) {
     const spinner = __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.spinner();
     spinner.start("Starting Exporting ExpoConfig...");
@@ -24279,7 +24281,7 @@ program.command("deploy").description("Upload bundle").action(async ()=>{
                     "AWS_BUCKET_NAME"
                 ]);
                 const s3Key = `${runtimeVersion}/${environment}/${bundleId}`;
-                const client = (0, __WEBPACK_EXTERNAL_MODULE_eas_update_core_304082ce__["default"])({
+                const client = (0, __WEBPACK_EXTERNAL_MODULE_eas_update_core_s3_fa9da6fa__["default"])({
                     region: env.AWS_REGION,
                     credentials: {
                         accessKeyId: env.AWS_ACCESS_KEY_ID,
@@ -24294,17 +24296,41 @@ program.command("deploy").description("Upload bundle").action(async ()=>{
                         s3Path: s3Key,
                         directoryPath: bundlePath
                     });
-                    const cursorJson = (0, __WEBPACK_EXTERNAL_MODULE_eas_update_core_304082ce__.createJsonFile)({
-                        key: s3Key
-                    }, "cursor.json");
+                    spinner.stop("✅ Uploading completed successfully!");
+                } catch (e) {
+                    spinner.stop(`❌ Uploading failed: ${e.message}`);
+                }
+                const cursorSpinner = __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.spinner();
+                cursorSpinner.start("Version cursor updating...");
+                try {
+                    let file;
+                    try {
+                        file = await client.getFile({
+                            bucketName: env.AWS_BUCKET_NAME,
+                            key: "cursor.json"
+                        });
+                    } catch (e) {
+                        file = null;
+                    }
+                    const versionCursorStore = new __WEBPACK_EXTERNAL_MODULE_eas_update_core_version_cursor_dae8c22e__.VersionCursorStore();
+                    if (file) await versionCursorStore.loadFromJSON(file);
+                    else __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.log.info("The version cursor does not exist, so a version cursor will be created.");
+                    versionCursorStore.addVersion(bundleId, {
+                        createdAt: Date.now(),
+                        environment,
+                        gitHash: "",
+                        platforms,
+                        runtimeVersion
+                    });
+                    const cursorJson = (0, __WEBPACK_EXTERNAL_MODULE_eas_update_core_utils_519d1f77__.createJsonFile)(versionCursorStore.serialize(), "cursor.json");
                     await client.uploadFile({
                         file: cursorJson,
                         bucketName: env.AWS_BUCKET_NAME,
                         key: "cursor.json"
                     });
-                    spinner.stop("✅ Uploading completed successfully!");
+                    cursorSpinner.stop("✅ Updating version cursor completed successfully!");
                 } catch (e) {
-                    spinner.stop(`❌ Uploading failed: ${e.message}`);
+                    cursorSpinner.stop(`❌ Uploading version cursor failed:failed successfully! ${e.message}`);
                 }
                 break;
             default:
@@ -24316,6 +24342,10 @@ program.command("deploy").description("Upload bundle").action(async ()=>{
         __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.outro("Deployment failed");
     } finally{
         try {
+            await (0, promises_.rm)(bundlePath, {
+                recursive: true,
+                force: true
+            });
             __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.log.error("Cleaned up temporary files.");
         } catch (err) {
             __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.log.error(err);

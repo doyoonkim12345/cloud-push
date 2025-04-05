@@ -18,7 +18,7 @@ export async function getFileSignedUrl(
     });
 
     const url = await getSignedUrl(s3Client, command, { expiresIn });
-    console.log("GET Presigned URL:", url);
+
     return url;
   } catch (error) {
     console.error("Error generating GET Presigned URL:", error);
