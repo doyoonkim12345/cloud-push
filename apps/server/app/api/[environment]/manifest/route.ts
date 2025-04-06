@@ -2,7 +2,7 @@ import { getFile, getFileSignedUrl } from "@/features/api/client";
 import createHash from "@/features/hash/lib/createHash";
 import getBase64URLEncoding from "@/features/helpers/lib/getBase64URLEncoding";
 import { NoUpdateAvailableError } from "@/features/helpers/lib/getLatestUpdateBundlePathForRuntimeVersionAsync";
-import { ExpoMetadata } from "@/features/s3/lib/types";
+import { ExpoMetadata } from "@/features/s3/types";
 import putNoUpdateAvailableInResponseAsync from "@/features/updates/lib/putNoUpdateAvailableInResponseAsync";
 import putRollBackInResponseAsync from "@/features/updates/lib/putRollBackInResponseAsync";
 import { UpdateType } from "@/features/updates/types";
@@ -20,6 +20,7 @@ type Manifest = {
   launchAsset: Asset;
   assets: Asset[];
   metadata: { [key: string]: string };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   extra: { [key: string]: any };
 };
 
@@ -130,7 +131,7 @@ export async function GET(
   try {
     try {
       if (updateType === UpdateType.NORMAL_UPDATE) {
-        const currentUpdateId = request.headers.get("expo-current-update-id");
+        // const currentUpdateId = request.headers.get("expo-current-update-id");
 
         // if (currentUpdateId === bundleId) {
         //   return new Response(JSON.stringify({ error: { bundleId } }), {
@@ -153,9 +154,8 @@ export async function GET(
           key: `${updateBundlePath}expoConfig.json`,
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const expoConfigJson = await parseFileAsJson<any>(expoConfig);
-
-        console.log("expoConfigJson", expoConfigJson);
 
         const createdAt = new Date(metadata.lastModified).toISOString();
         const platformMetadata = metadataJson.fileMetadata[platform];

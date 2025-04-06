@@ -1,7 +1,7 @@
 "use client";
 
 import s3Queries from "@/features/s3/queries";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Environment } from "@cloud-push/core";
 import { VersionCursorStore } from "@cloud-push/core/version-cursor";
 import { useSearchParams } from "next/navigation";

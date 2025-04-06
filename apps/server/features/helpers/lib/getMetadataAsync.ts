@@ -1,6 +1,6 @@
 import { getFile } from "@/features/api/client";
 import createHash from "../../hash/lib/createHash";
-import { ExpoMetadata } from "@/features/s3/lib/types";
+import { ExpoMetadata } from "@/features/s3/types";
 import { parseFileAsJson } from "@cloud-push/core/utils";
 
 export default async function getMetadataAsync({
