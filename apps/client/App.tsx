@@ -8,9 +8,14 @@ export default function App() {
       <Button
         title="버튼"
         onPress={async () => {
-          await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync();
-          Alert.alert("업데이트 완료", "업데이트가 완료되었습니다.");
+          try {
+            await Updates.fetchUpdateAsync();
+            await Updates.reloadAsync();
+            Alert.alert("업데이트 완료", "업데이트가 완료되었습니다.");
+          } catch (e) {
+            console.log(e);
+            Alert.alert("업데이트 실패", JSON.stringify(e));
+          }
         }}
       />
       <Text>Open up App.tsx to start working on your app!</Text>

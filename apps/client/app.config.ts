@@ -1,10 +1,14 @@
 import { ExpoConfig, ConfigContext } from "expo/config";
+import version from "./version";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "client",
   slug: "client",
-  version: "1.0.0",
+  version: version.runtimeVersion,
+  runtimeVersion: {
+    policy: "appVersion",
+  },
   orientation: "portrait",
   icon: "./assets/icon.png",
   userInterfaceStyle: "light",
@@ -18,8 +22,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: true,
   },
   updates: {
-    url: `https://192.168.0.36/api/${process.env.APP_VARIANT}/manifest`,
-    enabled: false,
+    url: `https://192.168.0.36:3000/api/${process.env.APP_VARIANT}/manifest`,
+    enabled: true,
   },
   android: {
     adaptiveIcon: {
