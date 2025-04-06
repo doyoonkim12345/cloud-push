@@ -22,7 +22,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: true,
   },
   updates: {
-    url: `http://192.168.0.36:3000/api/${process.env.APP_VARIANT}/manifest`,
+    url: `https://deas-update.vercel.app/api/${process.env.APP_VARIANT}/manifest`,
     enabled: true,
   },
   android: {

@@ -1,23 +1,23 @@
 import { StatusBar } from "expo-status-bar";
-import { Alert, Button, StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text, View } from "react-native";
 import * as Updates from "expo-updates";
 
 export default function App() {
+  async function onFetchUpdateAsync() {
+    try {
+      const update = await Updates.checkForUpdateAsync();
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+      }
+    } catch (error) {
+      alert(`Error fetching update: ${error}`);
+    }
+  }
+
   return (
     <View style={styles.container}>
-      <Button
-        title="버튼"
-        onPress={async () => {
-          try {
-            await Updates.fetchUpdateAsync();
-            await Updates.reloadAsync();
-            Alert.alert("업데이트 완료", "업데이트가 완료되었습니다.");
-          } catch (e) {
-            console.log(e);
-            Alert.alert("업데이트 실패", JSON.stringify(e));
-          }
-        }}
-      />
+      <Button title="버튼" onPress={onFetchUpdateAsync} />
       <Text>Open up App.tsx to start working on your app!</Text>
       <StatusBar style="auto" />
     </View>
