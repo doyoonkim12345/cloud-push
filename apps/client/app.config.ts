@@ -22,8 +22,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: true,
   },
   updates: {
-    url: `https://deas-update.vercel.app/api/${process.env.APP_VARIANT}/manifest`,
+    url: `https://deas-update.vercel.app/api/manifest`,
     enabled: true,
+    requestHeaders: {
+      "cloud-push-environment": process.env.APP_VARIANT,
+    },
   },
   android: {
     adaptiveIcon: {

@@ -32,11 +32,20 @@ type Asset = {
   url: string;
 };
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ environment: Environment }> }
-) {
-  const { environment } = await params;
+export async function GET(request: NextRequest) {
+  const environmentFromHeader = request.headers.get("cloud-push-environment");
+  const environment = environmentFromHeader as Environment;
+  if (environment === null) {
+    return new Response(
+      JSON.stringify({
+        error: "No cloud-push-environment provided.",
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 
   const protocolVersionHeader = request.headers.get("expo-protocol-version");
   const protocolVersion = parseInt(protocolVersionHeader ?? "0", 10);
