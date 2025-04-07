@@ -36,15 +36,7 @@ export async function GET(request: NextRequest) {
   const environmentFromHeader = request.headers.get("cloud-push-environment");
   const environment = environmentFromHeader as Environment;
   if (environment === null) {
-    return new Response(
-      JSON.stringify({
-        error: "No cloud-push-environment provided.",
-      }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    throw NoUpdateAvailableError;
   }
 
   const protocolVersionHeader = request.headers.get("expo-protocol-version");
