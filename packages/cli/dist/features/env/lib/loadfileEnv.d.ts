@@ -1,6 +1,3 @@
-import { Environment } from "@cloud-push/core";
-import { ENV_KEY } from "../types";
-export declare function loadFileEnv<T extends ENV_KEY>(environment: Environment, keys: T[]): Promise<{
-    [key in T]: string;
-}>;
+import type { Environment } from "@cloud-push/core";
+export declare function loadFileEnv(environment: Environment): Promise<void>;
 //# sourceMappingURL=loadFileEnv.d.ts.map

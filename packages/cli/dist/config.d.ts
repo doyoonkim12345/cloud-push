@@ -1,9 +1,8 @@
-import { Storage } from "./types";
-import { ENV_SOURCE } from "./features/env/types";
+import type { DbClient, StorageClient } from "@cloud-push/cloud";
 export type Config = {
-    storage: Storage;
     runtimeVersion?: string;
-    envSource: ENV_SOURCE;
+    storage: StorageClient;
+    db: DbClient;
 };
-export declare const defineConfig: (config: Config) => Promise<Config>;
+export declare const defineConfig: (config: () => Promise<Config> | Config) => Promise<Config>;
 //# sourceMappingURL=config.d.ts.map

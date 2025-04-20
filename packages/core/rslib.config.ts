@@ -7,9 +7,7 @@ export default defineConfig({
       dts: true,
       source: {
         entry: {
-          s3: "./src/features/s3/index.ts",
-          utils: "./src/features/utils/index.ts",
-          versionCursor: "./src/features/versionCursor/index.ts",
+          utils: "./src/utils/index.ts",
         },
       },
     },
@@ -18,9 +16,7 @@ export default defineConfig({
       dts: true,
       source: {
         entry: {
-          s3: "./src/features/s3/index.ts",
-          utils: "./src/features/utils/index.ts",
-          versionCursor: "./src/features/versionCursor/index.ts",
+          utils: "./src/utils/index.ts",
         },
       },
     },

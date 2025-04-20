@@ -1,10 +1,19 @@
 import { defineConfig } from "@cloud-push/cli";
-import version from "./version";
+import { FirebaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
 
-const config = defineConfig({
-  storage: "AWS_S3",
-  runtimeVersion: version.runtimeVersion,
-  envSource: "file",
+const storageClient = new FirebaseStorageClient({
+    credential: process.env.FIREBASE_CREDENTIAL!,
+    bucketName: process.env.FIREBASE_BUCKET_NAME!,
 });
+            
 
-export default config;
+const dbClient = new SupabaseDbClient({
+    tableName: process.env.SUPABASE_TABLE_NAME!,
+    supabaseUrl: process.env.SUPABASE_URL!,
+    supabaseKey: process.env.SUPABASE_KEY!,
+});
+            
+export default defineConfig(() => ({
+	storage: storageClient,
+	db: dbClient,
+}));

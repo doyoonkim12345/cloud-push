@@ -1,2 +1,2 @@
-export declare const parseStdout: <T extends any>(stdout: string) => T;
+export declare const parseStdout: <T extends {}>(stdout: string) => T;
 //# sourceMappingURL=parseStdout.d.ts.map

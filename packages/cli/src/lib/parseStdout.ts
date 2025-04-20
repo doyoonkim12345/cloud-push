@@ -1,10 +1,11 @@
-export const parseStdout = <T extends any>(stdout: string): T => {
+export const parseStdout = <T extends {}>(stdout: string): T => {
   const env = stdout
     .split("\n")
-    .filter((line) => line.startsWith("[stdout]"))
-    .map((e) => e.replaceAll("[stdout]", ""))
-    .join("");
+    .filter((line) => line.includes("="))
+    .map((e) => e.split("="))
+    .reduce((acc, [key, value]) => {
+      return { ...acc, [key]: value };
+    }, {} as T);
 
-  const parsedEnv = eval("(" + env + ")");
-  return parsedEnv;
+  return env;
 };

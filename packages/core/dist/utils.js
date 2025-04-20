@@ -12,18 +12,26 @@ function createJsonFile(data, filename) {
     });
     return file;
 }
-async function parseFileAsJson(file) {
+function parseFileAsJson(buffer) {
     try {
-        const text = await file.text();
+        const text = buffer.toString("utf-8");
         return JSON.parse(text);
     } catch (error) {
         console.error("JSON 파싱 중 오류 발생:", error);
         throw new Error(`JSON 파싱 실패: ${error.message}`);
     }
 }
-function getFileUrl({ bucketName, region, key }) {
-    const url = `https://${bucketName}.s3.${region}.amazonaws.com/${key.replace(/\\/g, "/")}`;
-    console.log(url);
-    return url;
+function generateBrowserClient(obj) {
+    return async (key, ...args)=>{
+        const value = obj[key];
+        if ("function" == typeof value) return await value(...args);
+        return Promise.resolve(value);
+    };
 }
-export { createJsonFile, getFileUrl, parseFileAsJson };
+const groupBy = (array, key)=>array.reduce((acc, item)=>{
+        const groupKey = String(item[key]);
+        acc[groupKey] ??= [];
+        acc[groupKey].push(item);
+        return acc;
+    }, {});
+export { createJsonFile, generateBrowserClient, groupBy, parseFileAsJson };

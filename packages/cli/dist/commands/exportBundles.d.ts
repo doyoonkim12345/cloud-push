@@ -1,4 +1,4 @@
-import { Platform } from "@cloud-push/core";
+import type { Platform } from "@cloud-push/core";
 interface ExportBundlesProps {
     platforms: Platform[];
     bundlePath: string;

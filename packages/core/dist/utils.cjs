@@ -24,9 +24,10 @@ var __webpack_require__ = {};
 var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 __webpack_require__.d(__webpack_exports__, {
-    getFileUrl: ()=>getFileUrl,
+    createJsonFile: ()=>createJsonFile,
     parseFileAsJson: ()=>parseFileAsJson,
-    createJsonFile: ()=>createJsonFile
+    groupBy: ()=>groupBy,
+    generateBrowserClient: ()=>generateBrowserClient
 });
 function createJsonFile(data, filename) {
     const jsonString = JSON.stringify(data, null, 2);
@@ -42,20 +43,28 @@ function createJsonFile(data, filename) {
     });
     return file;
 }
-async function parseFileAsJson(file) {
+function parseFileAsJson(buffer) {
     try {
-        const text = await file.text();
+        const text = buffer.toString("utf-8");
         return JSON.parse(text);
     } catch (error) {
         console.error("JSON 파싱 중 오류 발생:", error);
         throw new Error(`JSON 파싱 실패: ${error.message}`);
     }
 }
-function getFileUrl({ bucketName, region, key }) {
-    const url = `https://${bucketName}.s3.${region}.amazonaws.com/${key.replace(/\\/g, "/")}`;
-    console.log(url);
-    return url;
+function generateBrowserClient(obj) {
+    return async (key, ...args)=>{
+        const value = obj[key];
+        if ("function" == typeof value) return await value(...args);
+        return Promise.resolve(value);
+    };
 }
+const groupBy = (array, key)=>array.reduce((acc, item)=>{
+        const groupKey = String(item[key]);
+        acc[groupKey] ??= [];
+        acc[groupKey].push(item);
+        return acc;
+    }, {});
 var __webpack_export_target__ = exports;
 for(var __webpack_i__ in __webpack_exports__)__webpack_export_target__[__webpack_i__] = __webpack_exports__[__webpack_i__];
 if (__webpack_exports__.__esModule) Object.defineProperty(__webpack_export_target__, '__esModule', {

@@ -9,7 +9,7 @@ export default async function createRollBackDirectiveAsync(
     return {
       type: "rollBackToEmbedded",
       parameters: {
-        commitTime: new Date(rollbackFileStat.birthtime).toISOString(),
+        commitTime: new Date(Date.now()).toString(),
       },
     };
   } catch (error) {

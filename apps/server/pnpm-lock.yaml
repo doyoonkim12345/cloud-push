@@ -5,6 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  '@cloud-push/cloud': link:../../packages/cloud
   '@cloud-push/core': link:../../packages/core
 
 importers:
@@ -14,6 +15,9 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.775.0
         version: 3.782.0
+      '@cloud-push/cloud':
+        specifier: link:../../packages/cloud
+        version: link:../../packages/cloud
       '@cloud-push/core':
         specifier: link:../../packages/core
         version: link:../../packages/core
@@ -48,6 +52,9 @@ importers:
       '@eslint/eslintrc':
         specifier: ^3
         version: 3.3.1
+      '@expo/config-types':
+        specifier: ^52.0.5
+        version: 52.0.5
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.3
@@ -286,6 +293,9 @@ packages:
   '@eslint/plugin-kit@0.2.8':
     resolution: {integrity: sha512-ZAoA40rNMPwSm+AeHpCq8STiNAwzWLJuP8Xv4CHIc9wv/PSuExjMrmjfYNj682vW0OOiZ1HKxzvjQr9XZIisQA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@expo/config-types@52.0.5':
+    resolution: {integrity: sha512-AMDeuDLHXXqd8W+0zSjIt7f37vUd/BP8p43k68NHpyAvQO+z8mbQZm3cNQVAMySeayK2XoPigAFB1JF2NFajaA==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -2671,6 +2681,8 @@ snapshots:
     dependencies:
       '@eslint/core': 0.13.0
       levn: 0.4.1
+
+  '@expo/config-types@52.0.5': {}
 
   '@humanfs/core@0.19.1': {}
 

@@ -1,26 +1,47 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Button,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import * as Updates from "expo-updates";
+import { useState } from "react";
 
 export default function App() {
+  const [text, setText] = useState("");
+  const [text1, setText1] = useState("");
+
   async function onFetchUpdateAsync() {
     try {
       const update = await Updates.checkForUpdateAsync();
-      if (update.isAvailable) {
-        await Updates.fetchUpdateAsync();
-        await Updates.reloadAsync();
-      }
+      const shouldForceUpdate = !!(update.manifest as any)?.extra
+        .shouldForceUpdate;
+
+      // await
+      // if (shouldForceUpdate) {
+      //   setText("forceUpdate");
+
+      // } else {
+      //   Updates.fetchUpdateAsync();
+      //   setText("not -forceUpdate");
+      // }
+      await Updates.fetchUpdateAsync();
+      await Updates.reloadAsync();
     } catch (error) {
       alert(`Error fetching update: ${error}`);
     }
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
+      <Text>{Updates.updateId}</Text>
       <Button title="버튼" onPress={onFetchUpdateAsync} />
-      <Text>Open up App.tsx to start working on your app!</Text>
+      <Text>{text}</Text>
       <StatusBar style="auto" />
-    </View>
+    </ScrollView>
   );
 }
 

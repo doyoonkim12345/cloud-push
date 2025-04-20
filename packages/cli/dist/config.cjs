@@ -26,7 +26,10 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.d(__webpack_exports__, {
     defineConfig: ()=>defineConfig
 });
-const defineConfig = async (config)=>config;
+const defineConfig = async (config)=>{
+    const definedConfig = await config();
+    return definedConfig;
+};
 var __webpack_export_target__ = exports;
 for(var __webpack_i__ in __webpack_exports__)__webpack_export_target__[__webpack_i__] = __webpack_exports__[__webpack_i__];
 if (__webpack_exports__.__esModule) Object.defineProperty(__webpack_export_target__, '__esModule', {

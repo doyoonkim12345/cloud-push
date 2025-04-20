@@ -10,5 +10,15 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.6.1"
+  "packageManager": "pnpm@10.6.1",
+  "pnpm": {
+    "overrides": {
+      "@cloud-push/core": "workspace:*",
+      "@cloud-push/cli": "workspace:*",
+      "@cloud-push/cloud": "workspace:*"
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4"
+  }
 }

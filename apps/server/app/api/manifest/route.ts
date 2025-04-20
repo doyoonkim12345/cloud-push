@@ -1,284 +1,250 @@
-import { getFile, getFileSignedUrl } from "@/features/api/client";
-import createHash from "@/features/hash/lib/createHash";
+import { createHash } from "@/features/hash/lib/createHash";
 import getBase64URLEncoding from "@/features/helpers/lib/getBase64URLEncoding";
 import { NoUpdateAvailableError } from "@/features/helpers/lib/getLatestUpdateBundlePathForRuntimeVersionAsync";
-import { ExpoMetadata } from "@/features/s3/types";
+import type { ExpoMetadata } from "@/features/versions/types";
 import putNoUpdateAvailableInResponseAsync from "@/features/updates/lib/putNoUpdateAvailableInResponseAsync";
-import putRollBackInResponseAsync from "@/features/updates/lib/putRollBackInResponseAsync";
-import { UpdateType } from "@/features/updates/types";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import mime from "mime";
 import FormData from "form-data";
-import { Environment } from "@cloud-push/core";
-import { VersionCursorStore } from "@cloud-push/core/version-cursor";
+import { dbNodeClient, storageNodeClient } from "@/features/api/nodeClient";
 import { parseFileAsJson } from "@cloud-push/core/utils";
+import type { Environment, Platform } from "@cloud-push/core";
+import type { ExpoConfig } from "@expo/config-types";
+import type { Bundle } from "@cloud-push/cloud";
+import { findRollbackTargetBundle } from "@/features/versions/utils/findRollbackTargetBundle";
+import { findUpdateTargetBundle } from "@/features/versions/utils/findUpdateTargetBundle";
 
 type Manifest = {
-  id: string;
-  createdAt: string;
-  runtimeVersion: string;
-  launchAsset: Asset;
-  assets: Asset[];
-  metadata: { [key: string]: string };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  extra: { [key: string]: any };
+	id: string;
+	createdAt: string;
+	runtimeVersion: string;
+	launchAsset: Asset;
+	assets: Asset[];
+	metadata: { [key: string]: string };
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	extra: { [key: string]: any };
 };
 
 type Asset = {
-  hash?: string;
-  key: string;
-  contentType: string;
-  fileExtension?: string;
-  url: string;
+	hash?: string;
+	key: string;
+	contentType: string;
+	fileExtension?: string;
+	url: string;
 };
 
 export async function GET(request: NextRequest) {
-  const environmentFromHeader = request.headers.get("cloud-push-environment");
-  const environment = environmentFromHeader as Environment;
-  if (environment === null) {
-    throw NoUpdateAvailableError;
-  }
+	// runtimeVersion
+	const runtimeVersionFromHeader = request.headers.get("expo-runtime-version");
+	const runtimeVersionFromQuery =
+		request.nextUrl.searchParams.get("runtime-version");
+	const runtimeVersion = runtimeVersionFromHeader ?? runtimeVersionFromQuery;
 
-  const protocolVersionHeader = request.headers.get("expo-protocol-version");
-  const protocolVersion = parseInt(protocolVersionHeader ?? "0", 10);
+	// platform
+	const platformFromHeader = request.headers.get("expo-platform");
+	const platformFromQuery = request.nextUrl.searchParams.get("platform");
+	const platform = (platformFromHeader ?? platformFromQuery) as Platform | null;
 
-  if (protocolVersion !== 1) {
-    return new Response(
-      JSON.stringify({
-        error: "Unsupported expo-protocol-version. Expected 1.",
-      }),
-      {
-        status: 406,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
+	// protocolVersion
+	const protocolVersionHeader = request.headers.get("expo-protocol-version");
+	const protocolVersion = parseInt(protocolVersionHeader ?? "0", 10);
 
-  // platform을 헤더 또는 쿼리 파라미터에서 가져옴
-  const platformFromHeader = request.headers.get("expo-platform");
-  const searchParams = request.nextUrl.searchParams;
+	// environment
+	const environment = request.headers.get(
+		"cloud-push-environment",
+	) as Environment | null;
+	const embeddedUpdateId = request.headers.get("expo-embedded-update-id");
+	const currentUpdateId = request.headers.get("expo-current-update-id");
 
-  const platformFromQuery = searchParams.get("platform");
-  const platform = platformFromHeader ?? platformFromQuery;
+	if (
+		!runtimeVersion ||
+		!platform ||
+		!protocolVersion ||
+		!embeddedUpdateId ||
+		!currentUpdateId ||
+		!environment
+	) {
+		return new Response(
+			JSON.stringify({
+				error: "Not Enough Params",
+			}),
+			{
+				status: 404,
+				headers: { "Content-Type": "application/json" },
+			},
+		);
+	}
 
-  if (platform !== "ios" && platform !== "android") {
-    return new Response(
-      JSON.stringify({
-        error: "Unsupported platform. Expected either ios or android.",
-      }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
+	try {
+		const currentBundle = await dbNodeClient.find({
+			conditions: { bundleId: currentUpdateId },
+		});
+		let nextBundle: Bundle | null;
 
-  const runtimeVersionFromHeader = request.headers.get("expo-runtime-version");
-  const runtimeVersionFromQuery = searchParams.get("runtime-version");
-  const runtimeVersion = runtimeVersionFromHeader ?? runtimeVersionFromQuery;
+		const isEmbedded = !currentBundle;
 
-  if (!runtimeVersion) {
-    return new Response(
-      JSON.stringify({
-        error: "No runtimeVersion provided.",
-      }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
+		await dbNodeClient.init();
 
-  let updateBundlePath: string;
-  let bundleId: string;
-  try {
-    const cursorFile = await getFile({
-      bucketName: process.env.AWS_BUCKET_NAME!,
-      key: "cursor.json",
-    });
+		const bundles = await dbNodeClient.findAll({
+			conditions: {
+				runtimeVersion,
+				environment,
+				supportAndroid: platform === "android" ? true : undefined,
+				supportIos: platform === "ios" ? true : undefined,
+			},
+			sortOptions: [{ direction: "desc", field: "createdAt" }],
+		});
 
-    const versionCursorStore = new VersionCursorStore();
+		if (isEmbedded) {
+			// latest
+			nextBundle = bundles[0] ?? null;
+		} else {
+			switch (currentBundle?.updatePolicy) {
+				case "FORCE_UPDATE":
+				case "NORMAL_UPDATE":
+					nextBundle = findUpdateTargetBundle(bundles, currentUpdateId) ?? null;
+					break;
+				case "ROLLBACK":
+					nextBundle =
+						findRollbackTargetBundle(bundles, currentUpdateId) ?? null;
+					break;
+				default:
+					nextBundle = null;
+					break;
+			}
+		}
 
-    await versionCursorStore.loadFromJSON(cursorFile);
+		if (!nextBundle) {
+			throw new NoUpdateAvailableError();
+		}
 
-    const [targetBundleId] = versionCursorStore
-      .find({
-        environment,
-        platforms: [platform],
-        runtimeVersion,
-      })
-      .sort({ field: "createdAt", order: "desc" })[0];
+		if (nextBundle.bundleId === currentBundle?.bundleId) {
+			throw new Error("latest Version");
+		}
 
-    bundleId = targetBundleId;
+		const updateBundlePath = `${runtimeVersion}/${environment}/${nextBundle.bundleId}/`;
 
-    updateBundlePath = `${runtimeVersion}/${environment}/${bundleId}/`;
+		try {
+			const metadata = await storageNodeClient.getFile({
+				key: `${updateBundlePath}metadata.json`,
+			});
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return new Response(
-      JSON.stringify({
-        error: error.message,
-      }),
-      {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
+			const metadataJson = await parseFileAsJson<ExpoMetadata>(metadata);
 
-  // const updateType = await getTypeOfUpdateAsync(updateBundlePath);
-  const updateType = UpdateType.NORMAL_UPDATE;
+			const expoConfig = await storageNodeClient.getFile({
+				key: `${updateBundlePath}expoConfig.json`,
+			});
 
-  try {
-    try {
-      if (updateType === UpdateType.NORMAL_UPDATE) {
-        // const currentUpdateId = request.headers.get("expo-current-update-id");
+			const expoConfigJson = await parseFileAsJson<ExpoConfig>(expoConfig);
 
-        // if (currentUpdateId === bundleId) {
-        //   return new Response(JSON.stringify({ error: { bundleId } }), {
-        //     status: 404,
-        //     headers: { "Content-Type": "application/json" },
-        //   });
-        // }
+			const platformMetadata = metadataJson.fileMetadata[platform];
 
-        const metadata = await getFile({
-          bucketName: process.env.AWS_BUCKET_NAME!,
-          mimeType: "application/json",
-          key: `${updateBundlePath}metadata.json`,
-        });
+			const assets = await Promise.all(
+				platformMetadata.assets.map((asset) => {
+					const generateAsset = async (): Promise<Asset> => {
+						const file = await storageNodeClient.getFile({
+							key: `${updateBundlePath}${asset.path}`.replace(/\\/g, "/"),
+						});
+						return {
+							contentType: mime.getType(asset.ext)!,
+							url: await storageNodeClient.getFileSignedUrl({
+								key: `${updateBundlePath}${asset.path.replace(/\\/g, "/")}`,
+							}),
+							fileExtension: `.${asset.ext}`,
+							key: await createHash(file, "md5", "hex"),
+							hash: getBase64URLEncoding(
+								await createHash(file, "sha256", "base64"),
+							),
+						};
+					};
+					return generateAsset();
+				}),
+			);
 
-        const metadataJson = await parseFileAsJson<ExpoMetadata>(metadata);
+			const launchAssetFile = await storageNodeClient.getFile({
+				key: `${updateBundlePath}${platformMetadata.bundle}`.replace(
+					/\\/g,
+					"/",
+				),
+			});
 
-        const expoConfig = await getFile({
-          bucketName: process.env.AWS_BUCKET_NAME!,
-          mimeType: "application/json",
-          key: `${updateBundlePath}expoConfig.json`,
-        });
+			const launchAsset: Asset = {
+				contentType: "application/javascript",
+				fileExtension: ".bundle",
+				url: await storageNodeClient.getFileSignedUrl({
+					key: `${updateBundlePath}${platformMetadata.bundle.replace(
+						/\\/g,
+						"/",
+					)}`,
+				}),
+				key: await createHash(launchAssetFile, "md5", "hex"),
+				hash: getBase64URLEncoding(
+					await createHash(launchAssetFile, "sha256", "base64"),
+				),
+			};
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const expoConfigJson = await parseFileAsJson<any>(expoConfig);
+			const manifest: Manifest = {
+				id: nextBundle.bundleId,
+				createdAt: new Date(Date.now()).toString(),
+				runtimeVersion,
+				metadata: {},
+				assets,
+				launchAsset,
+				extra: {
+					expoClient: expoConfigJson,
+					// 현재 번들이 강제 업데이트를 필요로 하는 업데이트인지
+					shouldForceUpdate: currentBundle?.updatePolicy === "FORCE_UPDATE",
+				},
+			};
+			console.log(manifest);
+			const assetRequestHeaders: { [key: string]: object } = {};
+			for (const asset of [...manifest.assets, manifest.launchAsset]) {
+				assetRequestHeaders[asset.key] = {
+					"test-header": "test-header-value",
+				};
+			}
 
-        const createdAt = new Date(metadata.lastModified).toISOString();
-        const platformMetadata = metadataJson.fileMetadata[platform];
+			const form = new FormData();
+			form.append("manifest", JSON.stringify(manifest), {
+				contentType: "application/json",
+				header: {
+					"content-type": "application/json; charset=utf-8",
+				},
+			});
 
-        const assets = await Promise.all(
-          platformMetadata.assets.map((asset) => {
-            const generateAsset = async (): Promise<Asset> => {
-              const file = await getFile({
-                bucketName: process.env.AWS_BUCKET_NAME!,
-                key: `${updateBundlePath}${asset.path}`.replace(/\\/g, "/"),
-              });
-              return {
-                contentType: mime.getType(asset.ext)!,
-                url: await getFileSignedUrl({
-                  bucketName: process.env.AWS_BUCKET_NAME!,
-                  key: `${updateBundlePath}${asset.path.replace(/\\/g, "/")}`,
-                }),
-                fileExtension: `.${asset.ext}`,
-                key: await createHash(file, "md5", "hex"),
-                hash: getBase64URLEncoding(
-                  await createHash(file, "sha256", "base64")
-                ),
-              };
-            };
-            return generateAsset();
-          })
-        );
+			form.append("extensions", JSON.stringify({ assetRequestHeaders }), {
+				contentType: "application/json",
+			});
 
-        const launchAssetFile = await getFile({
-          bucketName: process.env.AWS_BUCKET_NAME!,
-          key: `${updateBundlePath}${platformMetadata.bundle}`.replace(
-            /\\/g,
-            "/"
-          ),
-        });
+			const buffer = form.getBuffer();
 
-        const launchAsset: Asset = {
-          contentType: "application/javascript",
-          fileExtension: ".bundle",
-          url: await getFileSignedUrl({
-            bucketName: process.env.AWS_BUCKET_NAME!,
-            key: `${updateBundlePath}${platformMetadata.bundle.replace(
-              /\\/g,
-              "/"
-            )}`,
-          }),
-          key: await createHash(launchAssetFile, "md5", "hex"),
-          hash: getBase64URLEncoding(
-            await createHash(launchAssetFile, "sha256", "base64")
-          ),
-        };
+			const headers = {
+				"expo-protocol-version": protocolVersion.toString(),
+				"expo-sfv-version": "0",
+				"cache-control": "private, max-age=0",
+				"content-type": `multipart/mixed; boundary=${form.getBoundary()}`,
+				"expo-current-update-id": nextBundle.bundleId,
+				...form.getHeaders(), // 중요: form 자체가 필요한 헤더들 추가
+			};
 
-        console.log("bundleId", bundleId);
-
-        const manifest: Manifest = {
-          id: bundleId,
-          createdAt,
-          runtimeVersion,
-          metadata: {},
-          assets,
-          launchAsset,
-          extra: {
-            expoClient: expoConfigJson,
-          },
-        };
-
-        const assetRequestHeaders: { [key: string]: object } = {};
-        [...manifest.assets, manifest.launchAsset].forEach((asset) => {
-          assetRequestHeaders[asset.key] = {
-            "test-header": "test-header-value",
-          };
-        });
-
-        const form = new FormData();
-        form.append("manifest", JSON.stringify(manifest), {
-          contentType: "application/json",
-          header: {
-            "content-type": "application/json; charset=utf-8",
-          },
-        });
-
-        form.append("extensions", JSON.stringify({ assetRequestHeaders }), {
-          contentType: "application/json",
-        });
-
-        const buffer = form.getBuffer();
-
-        const headers = new Headers();
-        headers.set("expo-protocol-version", protocolVersion.toString());
-        headers.set("expo-sfv-version", "0");
-        headers.set("cache-control", "private, max-age=0");
-        headers.set(
-          "content-type",
-          `multipart/mixed; boundary=${form.getBoundary()}`
-        );
-        // headers.set("expo-current-update-id", bundleId);
-
-        return new Response(buffer, {
-          status: 200,
-          headers,
-        });
-      } else if (updateType === UpdateType.ROLLBACK) {
-        return await putRollBackInResponseAsync(
-          request,
-          updateBundlePath,
-          protocolVersion
-        );
-      }
-    } catch (maybeNoUpdateAvailableError) {
-      if (maybeNoUpdateAvailableError instanceof NoUpdateAvailableError) {
-        return await putNoUpdateAvailableInResponseAsync(
-          request,
-          protocolVersion
-        );
-      }
-      throw maybeNoUpdateAvailableError;
-    }
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error }), {
-      status: 404,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+			return new Response(buffer, {
+				status: 200,
+				headers,
+			});
+		} catch (maybeNoUpdateAvailableError) {
+			if (maybeNoUpdateAvailableError instanceof NoUpdateAvailableError) {
+				return await putNoUpdateAvailableInResponseAsync(
+					request,
+					protocolVersion,
+				);
+			}
+			throw maybeNoUpdateAvailableError;
+		}
+	} catch (error) {
+		console.error(error);
+		return new Response(JSON.stringify({ error }), {
+			status: 404,
+			headers: { "Content-Type": "application/json" },
+		});
+	}
 }

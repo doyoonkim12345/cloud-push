@@ -8387,235 +8387,6 @@ var __webpack_modules__ = {
         }
         module.exports = resolveCommand;
     },
-    "../node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/lib/main.js": function(module, __unused_webpack_exports, __webpack_require__) {
-        const fs = __webpack_require__("fs");
-        const path = __webpack_require__("path");
-        const os = __webpack_require__("os");
-        const crypto = __webpack_require__("crypto");
-        const packageJson = __webpack_require__("../node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/package.json");
-        const version = packageJson.version;
-        const LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
-        function parse(src) {
-            const obj = {};
-            let lines = src.toString();
-            lines = lines.replace(/\r\n?/mg, '\n');
-            let match;
-            while(null != (match = LINE.exec(lines))){
-                const key = match[1];
-                let value1 = match[2] || '';
-                value1 = value1.trim();
-                const maybeQuote = value1[0];
-                value1 = value1.replace(/^(['"`])([\s\S]*)\1$/mg, '$2');
-                if ('"' === maybeQuote) {
-                    value1 = value1.replace(/\\n/g, '\n');
-                    value1 = value1.replace(/\\r/g, '\r');
-                }
-                obj[key] = value1;
-            }
-            return obj;
-        }
-        function _parseVault(options) {
-            const vaultPath = _vaultPath(options);
-            const result = DotenvModule.configDotenv({
-                path: vaultPath
-            });
-            if (!result.parsed) {
-                const err = new Error(`MISSING_DATA: Cannot parse ${vaultPath} for an unknown reason`);
-                err.code = 'MISSING_DATA';
-                throw err;
-            }
-            const keys = _dotenvKey(options).split(',');
-            const length = keys.length;
-            let decrypted;
-            for(let i = 0; i < length; i++)try {
-                const key = keys[i].trim();
-                const attrs = _instructions(result, key);
-                decrypted = DotenvModule.decrypt(attrs.ciphertext, attrs.key);
-                break;
-            } catch (error) {
-                if (i + 1 >= length) throw error;
-            }
-            return DotenvModule.parse(decrypted);
-        }
-        function _log(message) {
-            console.log(`[dotenv@${version}][INFO] ${message}`);
-        }
-        function _warn(message) {
-            console.log(`[dotenv@${version}][WARN] ${message}`);
-        }
-        function _debug(message) {
-            console.log(`[dotenv@${version}][DEBUG] ${message}`);
-        }
-        function _dotenvKey(options) {
-            if (options && options.DOTENV_KEY && options.DOTENV_KEY.length > 0) return options.DOTENV_KEY;
-            if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) return process.env.DOTENV_KEY;
-            return '';
-        }
-        function _instructions(result, dotenvKey) {
-            let uri;
-            try {
-                uri = new URL(dotenvKey);
-            } catch (error) {
-                if ('ERR_INVALID_URL' === error.code) {
-                    const err = new Error('INVALID_DOTENV_KEY: Wrong format. Must be in valid uri format like dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=development');
-                    err.code = 'INVALID_DOTENV_KEY';
-                    throw err;
-                }
-                throw error;
-            }
-            const key = uri.password;
-            if (!key) {
-                const err = new Error('INVALID_DOTENV_KEY: Missing key part');
-                err.code = 'INVALID_DOTENV_KEY';
-                throw err;
-            }
-            const environment = uri.searchParams.get('environment');
-            if (!environment) {
-                const err = new Error('INVALID_DOTENV_KEY: Missing environment part');
-                err.code = 'INVALID_DOTENV_KEY';
-                throw err;
-            }
-            const environmentKey = `DOTENV_VAULT_${environment.toUpperCase()}`;
-            const ciphertext = result.parsed[environmentKey];
-            if (!ciphertext) {
-                const err = new Error(`NOT_FOUND_DOTENV_ENVIRONMENT: Cannot locate environment ${environmentKey} in your .env.vault file.`);
-                err.code = 'NOT_FOUND_DOTENV_ENVIRONMENT';
-                throw err;
-            }
-            return {
-                ciphertext,
-                key
-            };
-        }
-        function _vaultPath(options) {
-            let possibleVaultPath = null;
-            if (options && options.path && options.path.length > 0) {
-                if (Array.isArray(options.path)) {
-                    for (const filepath of options.path)if (fs.existsSync(filepath)) possibleVaultPath = filepath.endsWith('.vault') ? filepath : `${filepath}.vault`;
-                } else possibleVaultPath = options.path.endsWith('.vault') ? options.path : `${options.path}.vault`;
-            } else possibleVaultPath = path.resolve(process.cwd(), '.env.vault');
-            if (fs.existsSync(possibleVaultPath)) return possibleVaultPath;
-            return null;
-        }
-        function _resolveHome(envPath) {
-            return '~' === envPath[0] ? path.join(os.homedir(), envPath.slice(1)) : envPath;
-        }
-        function _configVault(options) {
-            _log('Loading env from encrypted .env.vault');
-            const parsed = DotenvModule._parseVault(options);
-            let processEnv = process.env;
-            if (options && null != options.processEnv) processEnv = options.processEnv;
-            DotenvModule.populate(processEnv, parsed, options);
-            return {
-                parsed
-            };
-        }
-        function configDotenv(options) {
-            const dotenvPath = path.resolve(process.cwd(), '.env');
-            let encoding = 'utf8';
-            const debug = Boolean(options && options.debug);
-            if (options && options.encoding) encoding = options.encoding;
-            else if (debug) _debug('No encoding is specified. UTF-8 is used by default');
-            let optionPaths = [
-                dotenvPath
-            ];
-            if (options && options.path) {
-                if (Array.isArray(options.path)) {
-                    optionPaths = [];
-                    for (const filepath of options.path)optionPaths.push(_resolveHome(filepath));
-                } else optionPaths = [
-                    _resolveHome(options.path)
-                ];
-            }
-            let lastError;
-            const parsedAll = {};
-            for (const path of optionPaths)try {
-                const parsed = DotenvModule.parse(fs.readFileSync(path, {
-                    encoding
-                }));
-                DotenvModule.populate(parsedAll, parsed, options);
-            } catch (e) {
-                if (debug) _debug(`Failed to load ${path} ${e.message}`);
-                lastError = e;
-            }
-            let processEnv = process.env;
-            if (options && null != options.processEnv) processEnv = options.processEnv;
-            DotenvModule.populate(processEnv, parsedAll, options);
-            if (lastError) return {
-                parsed: parsedAll,
-                error: lastError
-            };
-            return {
-                parsed: parsedAll
-            };
-        }
-        function config(options) {
-            if (0 === _dotenvKey(options).length) return DotenvModule.configDotenv(options);
-            const vaultPath = _vaultPath(options);
-            if (!vaultPath) {
-                _warn(`You set DOTENV_KEY but you are missing a .env.vault file at ${vaultPath}. Did you forget to build it?`);
-                return DotenvModule.configDotenv(options);
-            }
-            return DotenvModule._configVault(options);
-        }
-        function decrypt(encrypted, keyStr) {
-            const key = Buffer.from(keyStr.slice(-64), 'hex');
-            let ciphertext = Buffer.from(encrypted, 'base64');
-            const nonce = ciphertext.subarray(0, 12);
-            const authTag = ciphertext.subarray(-16);
-            ciphertext = ciphertext.subarray(12, -16);
-            try {
-                const aesgcm = crypto.createDecipheriv('aes-256-gcm', key, nonce);
-                aesgcm.setAuthTag(authTag);
-                return `${aesgcm.update(ciphertext)}${aesgcm.final()}`;
-            } catch (error) {
-                const isRange = error instanceof RangeError;
-                const invalidKeyLength = 'Invalid key length' === error.message;
-                const decryptionFailed = 'Unsupported state or unable to authenticate data' === error.message;
-                if (isRange || invalidKeyLength) {
-                    const err = new Error('INVALID_DOTENV_KEY: It must be 64 characters long (or more)');
-                    err.code = 'INVALID_DOTENV_KEY';
-                    throw err;
-                }
-                if (decryptionFailed) {
-                    const err = new Error('DECRYPTION_FAILED: Please check your DOTENV_KEY');
-                    err.code = 'DECRYPTION_FAILED';
-                    throw err;
-                }
-                throw error;
-            }
-        }
-        function populate(processEnv, parsed, options = {}) {
-            const debug = Boolean(options && options.debug);
-            const override = Boolean(options && options.override);
-            if ('object' != typeof parsed) {
-                const err = new Error('OBJECT_REQUIRED: Please check the processEnv argument being passed to populate');
-                err.code = 'OBJECT_REQUIRED';
-                throw err;
-            }
-            for (const key of Object.keys(parsed))if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
-                if (true === override) processEnv[key] = parsed[key];
-                if (debug) true === override ? _debug(`"${key}" is already defined and WAS overwritten`) : _debug(`"${key}" is already defined and was NOT overwritten`);
-            } else processEnv[key] = parsed[key];
-        }
-        const DotenvModule = {
-            configDotenv,
-            _configVault,
-            _parseVault,
-            config,
-            decrypt,
-            parse,
-            populate
-        };
-        module.exports.configDotenv = DotenvModule.configDotenv;
-        module.exports._configVault = DotenvModule._configVault;
-        module.exports._parseVault = DotenvModule._parseVault;
-        module.exports.config = DotenvModule.config;
-        module.exports.decrypt = DotenvModule.decrypt;
-        module.exports.parse = DotenvModule.parse;
-        module.exports.populate = DotenvModule.populate;
-        module.exports = DotenvModule;
-    },
     "../node_modules/.pnpm/fast-glob@3.3.3/node_modules/fast-glob/out/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
         "use strict";
         const taskManager = __webpack_require__("../node_modules/.pnpm/fast-glob@3.3.3/node_modules/fast-glob/out/managers/tasks.js");
@@ -8670,7 +8441,6 @@ var __webpack_modules__ = {
                 return utils.path.convertPathToPattern(source);
             }
             FastGlob.convertPathToPattern = convertPathToPattern;
-            let posix;
             (function(posix) {
                 function escapePath(source) {
                     assertPatternsInput(source);
@@ -8682,8 +8452,7 @@ var __webpack_modules__ = {
                     return utils.path.convertPosixPathToPattern(source);
                 }
                 posix.convertPathToPattern = convertPathToPattern;
-            })(posix = FastGlob.posix || (FastGlob.posix = {}));
-            let win32;
+            })(FastGlob.posix || (FastGlob.posix = {}));
             (function(win32) {
                 function escapePath(source) {
                     assertPatternsInput(source);
@@ -8695,7 +8464,7 @@ var __webpack_modules__ = {
                     return utils.path.convertWindowsPathToPattern(source);
                 }
                 win32.convertPathToPattern = convertPathToPattern;
-            })(win32 = FastGlob.win32 || (FastGlob.win32 = {}));
+            })(FastGlob.win32 || (FastGlob.win32 = {}));
         })(FastGlob || (FastGlob = {}));
         function getWorks(source, _Provider, options) {
             const patterns = [].concat(source);
@@ -18340,17 +18109,6 @@ var __webpack_modules__ = {
         }
         exports1.listOfWorkspacePackageNames = listOfWorkspacePackageNames;
     },
-    "./src/lib/parseStdout.ts": function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        __webpack_require__.d(__webpack_exports__, {
-            x: ()=>parseStdout
-        });
-        const parseStdout = (stdout)=>{
-            const env = stdout.split("\n").filter((line)=>line.startsWith("[stdout]")).map((e)=>e.replaceAll("[stdout]", "")).join("");
-            const parsedEnv = eval("(" + env + ")");
-            return parsedEnv;
-        };
-    },
     assert: function(module) {
         "use strict";
         module.exports = require("assert");
@@ -18398,10 +18156,6 @@ var __webpack_modules__ = {
     util: function(module) {
         "use strict";
         module.exports = require("util");
-    },
-    "../node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/package.json": function(module) {
-        "use strict";
-        module.exports = JSON.parse('{"name":"dotenv","version":"16.4.7","description":"Loads environment variables from .env file","main":"lib/main.js","types":"lib/main.d.ts","exports":{".":{"types":"./lib/main.d.ts","require":"./lib/main.js","default":"./lib/main.js"},"./config":"./config.js","./config.js":"./config.js","./lib/env-options":"./lib/env-options.js","./lib/env-options.js":"./lib/env-options.js","./lib/cli-options":"./lib/cli-options.js","./lib/cli-options.js":"./lib/cli-options.js","./package.json":"./package.json"},"scripts":{"dts-check":"tsc --project tests/types/tsconfig.json","lint":"standard","pretest":"npm run lint && npm run dts-check","test":"tap run --allow-empty-coverage --disable-coverage --timeout=60000","test:coverage":"tap run --show-full-coverage --timeout=60000 --coverage-report=lcov","prerelease":"npm test","release":"standard-version"},"repository":{"type":"git","url":"git://github.com/motdotla/dotenv.git"},"funding":"https://dotenvx.com","keywords":["dotenv","env",".env","environment","variables","config","settings"],"readmeFilename":"README.md","license":"BSD-2-Clause","devDependencies":{"@types/node":"^18.11.3","decache":"^4.6.2","sinon":"^14.0.1","standard":"^17.0.0","standard-version":"^9.5.0","tap":"^19.2.0","typescript":"^4.8.4"},"engines":{"node":">=12"},"browser":{"fs":false}}');
     }
 };
 var __webpack_module_cache__ = {};
@@ -18449,40 +18203,10 @@ var __webpack_exports__ = {};
         borderColor: "green",
         textAlignment: "center"
     });
+    const prompts_namespaceObject = require("@clack/prompts");
+    const external_node_path_namespaceObject = require("node:path");
     var lib = __webpack_require__("../node_modules/.pnpm/workspace-tools@0.38.2/node_modules/workspace-tools/lib/index.js");
     const getCwd = ()=>(0, lib.findPackageRoot)(process.cwd());
-    const external_cosmiconfig_namespaceObject = require("cosmiconfig");
-    const external_cosmiconfig_typescript_loader_namespaceObject = require("cosmiconfig-typescript-loader");
-    const MODULE_NAME = "cloud-push";
-    const loadConfig = async ()=>{
-        try {
-            const result = await (0, external_cosmiconfig_namespaceObject.cosmiconfig)(MODULE_NAME, {
-                stopDir: getCwd(),
-                searchPlaces: [
-                    "package.json",
-                    `${MODULE_NAME}.config.js`,
-                    `${MODULE_NAME}.config.cjs`,
-                    `${MODULE_NAME}.config.mjs`,
-                    `${MODULE_NAME}.config.ts`
-                ],
-                ignoreEmptySearchPlaces: false,
-                loaders: {
-                    ".ts": (0, external_cosmiconfig_typescript_loader_namespaceObject.TypeScriptLoader)(),
-                    ".mts": (0, external_cosmiconfig_typescript_loader_namespaceObject.TypeScriptLoader)(),
-                    ".cts": (0, external_cosmiconfig_typescript_loader_namespaceObject.TypeScriptLoader)()
-                }
-            }).search();
-            if (!result?.config) throw new Error("Failed to find config");
-            if ("function" == typeof result.config) return await result.config();
-            return result.config;
-        } catch (e) {
-            throw new Error(e);
-        }
-    };
-    var external_path_ = __webpack_require__("path");
-    var promises_ = __webpack_require__("fs/promises");
-    var promises_default = /*#__PURE__*/ __webpack_require__.n(promises_);
-    const prompts_namespaceObject = require("@clack/prompts");
     async function selectPlatforms() {
         const platforms = await prompts_namespaceObject.multiselect({
             message: "Select platforms",
@@ -18527,33 +18251,22 @@ var __webpack_exports__ = {};
         if (!environment) throw new Error("No environment selected. Exiting...");
         return environment;
     }
-    const external_semver_namespaceObject = require("semver");
-    var external_semver_default = /*#__PURE__*/ __webpack_require__.n(external_semver_namespaceObject);
-    async function getRuntimeVersion(configRuntimeVersion) {
-        let runtimeVersion = configRuntimeVersion;
-        if (runtimeVersion && external_semver_default().valid(runtimeVersion)) prompts_namespaceObject.log.success(`runtimeVersion: ${runtimeVersion}`);
-        else {
-            runtimeVersion = await prompts_namespaceObject.text({
-                message: "What runtimeVersion would you like to set?",
-                placeholder: "1.0.0",
-                validate: (value1)=>{
-                    if (!external_semver_default().valid(value1)) return new Error("Please enter a valid semantic version (e.g., 1.0.0)");
+    async function selectEnvSource() {
+        const envSource = await prompts_namespaceObject.select({
+            message: "Select environment",
+            options: [
+                {
+                    value: "eas",
+                    label: "EAS"
+                },
+                {
+                    value: "file",
+                    label: ".env"
                 }
-            });
-            if ("string" != typeof runtimeVersion) throw new Error("No runtimeVersion provided. Exiting...");
-        }
-        return runtimeVersion;
-    }
-    const external_read_package_up_namespaceObject = require("read-package-up");
-    const { packageJson } = (0, external_read_package_up_namespaceObject.readPackageUpSync)({
-        cwd: process.cwd()
-    }) ?? {};
-    function checkPackageAvailable(packageName, satisfiesVersion) {
-        const packageVersion = packageJson?.dependencies?.[packageName]?.replace(/[\^~]/g, "");
-        const isPackageInstalled = !!packageVersion;
-        if (!isPackageInstalled) throw new Error(`${packageName} is not installed`);
-        const isSatisfiedVersion = void 0 !== packageVersion && external_semver_namespaceObject.satisfies(packageVersion, satisfiesVersion);
-        if (!isSatisfiedVersion) throw new Error(`This package requires version ${satisfiesVersion}`);
+            ]
+        });
+        if (!envSource) throw new Error("No environment selected. Exiting...");
+        return envSource;
     }
     function isPlainObject(value1) {
         if ('object' != typeof value1 || null === value1) return false;
@@ -19340,7 +19053,6 @@ Please set the "stdio" option to ensure that file descriptor exists.`);
             verboseInfo
         };
     };
-    const external_node_path_namespaceObject = require("node:path");
     var cross_spawn = __webpack_require__("../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/index.js");
     function pathKey(options = {}) {
         const { env = process.env, platform = process.platform } = options;
@@ -19396,7 +19108,7 @@ Please set the "stdio" option to ensure that file descriptor exists.`);
         env[pathName] = npmRunPath(options);
         return env;
     };
-    const external_node_timers_promises_namespaceObject = require("node:timers/promises");
+    const promises_namespaceObject = require("node:timers/promises");
     const getFinalError = (originalError, message, isSync)=>{
         const ErrorClass = isSync ? ExecaSyncError : ExecaError;
         const options = originalError instanceof DiscardedError ? {} : {
@@ -19868,7 +19580,7 @@ Available signal numbers: ${getAvailableSignalIntegers()}.`;
     const killOnTimeout = async ({ kill, forceKillAfterDelay, context, controllerSignal })=>{
         if (false === forceKillAfterDelay) return;
         try {
-            await (0, external_node_timers_promises_namespaceObject.setTimeout)(forceKillAfterDelay, void 0, {
+            await (0, promises_namespaceObject.setTimeout)(forceKillAfterDelay, void 0, {
                 signal: controllerSignal
             });
             if (kill('SIGKILL')) context.isForcefullyTerminated ??= true;
@@ -20077,7 +19789,7 @@ Please set this option with "pipe" instead.`;
         if (incomingMessages.length > 1) return;
         while(incomingMessages.length > 0){
             await waitForOutgoingMessages(anyProcess, ipcEmitter, wrappedMessage);
-            await external_node_timers_promises_namespaceObject.scheduler["yield"]();
+            await promises_namespaceObject.scheduler["yield"]();
             const message = await handleStrictRequest({
                 wrappedMessage: incomingMessages[0],
                 anyProcess,
@@ -20346,7 +20058,7 @@ Please set this option with "pipe" instead.`;
             return;
         }
         getIpcEmitter(anyProcess, channel, isSubprocess);
-        await external_node_timers_promises_namespaceObject.scheduler["yield"]();
+        await promises_namespaceObject.scheduler["yield"]();
     };
     let cancelListening = false;
     const handleAbort = (wrappedMessage)=>{
@@ -20405,7 +20117,7 @@ Please set this option with "pipe" instead.`;
             killAfterTimeout(subprocess, timeout, context, controller)
         ];
     const killAfterTimeout = async (subprocess, timeout, context, { signal })=>{
-        await (0, external_node_timers_promises_namespaceObject.setTimeout)(timeout, void 0, {
+        await (0, promises_namespaceObject.setTimeout)(timeout, void 0, {
             signal
         });
         context.terminationReason ??= 'timeout';
@@ -23693,7 +23405,7 @@ Instead, \`yield\` should either be called with a value, or not be called at all
         await logLines(linesIterable, stream, fdNumber, verboseInfo);
     };
     const resumeStream = async (stream)=>{
-        await (0, external_node_timers_promises_namespaceObject.setImmediate)();
+        await (0, promises_namespaceObject.setImmediate)();
         if (null === stream.readableFlowing) stream.resume();
     };
     const contents_getStreamContents = async ({ stream, stream: { readableObjectMode }, iterable, fdNumber, encoding, maxBuffer, lines })=>{
@@ -24584,6 +24296,120 @@ Instead, \`yield\` should either be called with a value, or not be called at all
     createExeca(mapNode);
     createExeca(mapScriptAsync, {}, deepScriptOptions, setScriptSync);
     const { sendMessage: execa_sendMessage, getOneMessage: execa_getOneMessage, getEachMessage: execa_getEachMessage, getCancelSignal: execa_getCancelSignal } = getIpcExport();
+    const parseStdout = (stdout)=>{
+        const env = stdout.split("\n").filter((line)=>line.includes("=")).map((e)=>e.split("=")).reduce((acc, [key, value1])=>({
+                ...acc,
+                [key]: value1
+            }), {});
+        return env;
+    };
+    const external_dotenv_namespaceObject = require("dotenv");
+    async function loadEASEnv(environment) {
+        const { stdout } = await execa("eas", [
+            "env:list",
+            environment
+        ], {
+            stdio: "pipe"
+        });
+        const parsedEnv = parseStdout(stdout);
+        external_dotenv_namespaceObject.populate(process.env, parsedEnv, {
+            override: true
+        });
+    }
+    async function loadFileEnv(environment) {
+        const envFiles = [
+            `.env.${environment}.local`,
+            ".env.local",
+            `.env.${environment}`,
+            ".env"
+        ];
+        for (const file of envFiles){
+            const filePath = external_node_path_namespaceObject.resolve(getCwd(), file);
+            try {
+                await external_node_fs_namespaceObject.promises.access(filePath);
+                external_dotenv_namespaceObject.config({
+                    path: filePath,
+                    override: true
+                });
+            } catch (error) {}
+        }
+    }
+    async function loadEnv(envSource, environment) {
+        const spinner = prompts_namespaceObject.spinner();
+        spinner.start("Loading env from Expo server ...");
+        try {
+            switch(envSource){
+                case "eas":
+                    await loadEASEnv(environment);
+                    break;
+                case "file":
+                    await loadFileEnv(environment);
+                    break;
+                default:
+                    throw new Error("Invalid env source");
+            }
+            spinner.stop("✅ Loading env completed successfully!");
+        } catch (e) {
+            spinner.stop(`❌ Loading env failed: ${e.message}`);
+            throw new Error("This project does not manage environment variables through EAS. Please upload the environment variables via eas env or expo.dev.");
+        }
+    }
+    const external_cosmiconfig_namespaceObject = require("cosmiconfig");
+    const external_cosmiconfig_typescript_loader_namespaceObject = require("cosmiconfig-typescript-loader");
+    const MODULE_NAME = "cloud-push";
+    const loadConfig = async ()=>{
+        try {
+            const result = await (0, external_cosmiconfig_namespaceObject.cosmiconfig)(MODULE_NAME, {
+                stopDir: getCwd(),
+                searchPlaces: [
+                    "package.json",
+                    `${MODULE_NAME}.config.js`,
+                    `${MODULE_NAME}.config.cjs`,
+                    `${MODULE_NAME}.config.mjs`,
+                    `${MODULE_NAME}.config.ts`
+                ],
+                ignoreEmptySearchPlaces: false,
+                loaders: {
+                    ".ts": (0, external_cosmiconfig_typescript_loader_namespaceObject.TypeScriptLoader)(),
+                    ".mts": (0, external_cosmiconfig_typescript_loader_namespaceObject.TypeScriptLoader)(),
+                    ".cts": (0, external_cosmiconfig_typescript_loader_namespaceObject.TypeScriptLoader)()
+                }
+            }).search();
+            if (!result?.config) throw new Error("Failed to find config");
+            if ("function" == typeof result.config) return await result.config();
+            return result.config;
+        } catch (e) {
+            throw new Error(e);
+        }
+    };
+    const external_semver_namespaceObject = require("semver");
+    var external_semver_default = /*#__PURE__*/ __webpack_require__.n(external_semver_namespaceObject);
+    async function getRuntimeVersion(configRuntimeVersion) {
+        let runtimeVersion = configRuntimeVersion;
+        if (runtimeVersion && external_semver_default().valid(runtimeVersion)) prompts_namespaceObject.log.success(`runtimeVersion: ${runtimeVersion}`);
+        else {
+            runtimeVersion = await prompts_namespaceObject.text({
+                message: "What runtimeVersion would you like to set?",
+                placeholder: "1.0.0",
+                validate: (value1)=>{
+                    if (!external_semver_default().valid(value1)) return new Error("Please enter a valid semantic version (e.g., 1.0.0)");
+                }
+            });
+            if ("string" != typeof runtimeVersion) throw new Error("No runtimeVersion provided. Exiting...");
+        }
+        return runtimeVersion;
+    }
+    const external_read_package_up_namespaceObject = require("read-package-up");
+    const { packageJson } = (0, external_read_package_up_namespaceObject.readPackageUpSync)({
+        cwd: process.cwd()
+    }) ?? {};
+    function checkPackageAvailable(packageName, satisfiesVersion) {
+        const packageVersion = packageJson?.dependencies?.[packageName]?.replace(/[\^~]/g, "");
+        const isPackageInstalled = !!packageVersion;
+        if (!isPackageInstalled) throw new Error(`${packageName} is not installed`);
+        const isSatisfiedVersion = void 0 !== packageVersion && external_semver_namespaceObject.satisfies(packageVersion, satisfiesVersion);
+        if (!isSatisfiedVersion) throw new Error(`This package requires version ${satisfiesVersion}`);
+    }
     async function exportBundles({ platforms, bundlePath }) {
         const title = `Exporting ${platforms.join(", ").toLocaleLowerCase()} bundles`;
         const spinner = prompts_namespaceObject.spinner();
@@ -24605,11 +24431,8 @@ Instead, \`yield\` should either be called with a value, or not be called at all
             throw error;
         }
     }
-    const external_uuid_namespaceObject = require("uuid");
-    const core_utils_namespaceObject = require("@cloud-push/core/utils");
-    const s3_namespaceObject = require("@cloud-push/core/s3");
-    var s3_default = /*#__PURE__*/ __webpack_require__.n(s3_namespaceObject);
-    async function exportExpoConfig({ expoConfigPath, env }) {
+    const external_node_fs_promises_namespaceObject = require("node:fs/promises");
+    async function exportExpoConfig({ expoConfigPath }) {
         const spinner = prompts_namespaceObject.spinner();
         spinner.start("Starting Exporting ExpoConfig...");
         try {
@@ -24619,78 +24442,212 @@ Instead, \`yield\` should either be called with a value, or not be called at all
                 "public",
                 "--json"
             ], {
-                env
+                env: process.env
             });
-            await promises_default().writeFile(external_path_.join(expoConfigPath, "expoConfig.json"), stdout);
-            spinner.stop(`✅ Exporting ExpoConfig completed successfully!`);
+            await external_node_fs_promises_namespaceObject.writeFile(external_node_path_namespaceObject.join(expoConfigPath, "expoConfig.json"), stdout);
+            spinner.stop("✅ Exporting ExpoConfig completed successfully!");
         } catch (e) {
             spinner.stop(`❌ Exporting ExpoConfig failed: ${e.message}`);
             throw e;
         }
     }
-    const version_cursor_namespaceObject = require("@cloud-push/core/version-cursor");
-    var parseStdout = __webpack_require__("./src/lib/parseStdout.ts");
-    async function loadEASEnv(environment, keys) {
-        const { stdout } = await execa("eas", [
-            "env:exec",
-            environment,
-            `node -e "console.log({${keys.map((key)=>[
-                    key,
-                    `process.env.${key}`
-                ].join(":")).join(",")}})"`
-        ], {
-            stdio: "pipe"
+    const external_uuid_namespaceObject = require("uuid");
+    async function setupDeployment(bundlePath) {
+        const platforms = await selectPlatforms();
+        const environment = await selectEnvironment();
+        const envSource = await selectEnvSource();
+        await loadEnv(envSource, environment);
+        const config = await loadConfig();
+        const runtimeVersion = await getRuntimeVersion(config.runtimeVersion);
+        await exportBundles({
+            platforms,
+            bundlePath
         });
-        const parsedEnv = (0, parseStdout.x)(stdout);
-        return parsedEnv;
+        await exportExpoConfig({
+            expoConfigPath: bundlePath
+        });
+        const bundleId = (0, external_uuid_namespaceObject.v4)();
+        const cloudPath = `${runtimeVersion}/development/${bundleId}`;
+        return {
+            bundleId,
+            cloudPath,
+            platforms,
+            environment,
+            runtimeVersion,
+            config,
+            envSource
+        };
     }
-    var main = __webpack_require__("../node_modules/.pnpm/dotenv@16.4.7/node_modules/dotenv/lib/main.js");
-    var external_fs_ = __webpack_require__("fs");
-    async function loadFileEnv(environment, keys) {
-        const envFiles = [
-            `.env.${environment}.local`,
-            ".env.local",
-            `.env.${environment}`,
-            ".env"
-        ];
-        for (const file of envFiles){
-            const filePath = external_path_.resolve(getCwd(), file);
-            try {
-                await external_fs_.promises.access(filePath);
-                main.config({
-                    path: filePath
-                });
-            } catch (error) {}
-        }
-        const env = keys.reduce((acc, key)=>{
-            const value1 = process.env[key];
-            if (value1) acc[key] = value1;
-            return acc;
-        }, {});
-        return env;
-    }
-    async function loadEnv(envSource, environment, keys) {
+    async function uploadBundle(deploymentConfig, bundlePath) {
+        const { cloudPath, config } = deploymentConfig;
         const spinner = prompts_namespaceObject.spinner();
-        spinner.start("Loading env from Expo server ...");
+        spinner.start("Preparing file upload...");
         try {
-            let env;
-            switch(envSource){
-                case "eas":
-                    env = await loadEASEnv(environment, keys);
-                    break;
-                case "file":
-                    env = await loadFileEnv(environment, keys);
-                    break;
-                default:
-                    throw new Error("Invalid env source");
-            }
-            spinner.stop(`✅ Loading env completed successfully!`);
-            return env;
+            const storageClient = config.storage;
+            await storageClient.uploadDirectory({
+                cloudPath,
+                directoryPath: bundlePath
+            });
+            spinner.stop("✅ Uploading completed successfully!");
         } catch (e) {
-            spinner.stop(`❌ Loading env failed: ${e.message}`);
-            throw new Error("This project does not manage environment variables through EAS. Please upload the environment variables via eas env or expo.dev.");
+            spinner.stop(`❌ Uploading failed: ${e.message}`);
+            throw e;
         }
     }
+    async function updateVersionCursor(deploymentConfig) {
+        const { bundleId, environment, platforms, runtimeVersion, config } = deploymentConfig;
+        const cursorSpinner = prompts_namespaceObject.spinner();
+        cursorSpinner.start("Version cursor updating...");
+        const dbClient = await config.db;
+        await dbClient.init?.();
+        try {
+            await dbClient.create({
+                bundle: {
+                    bundleId,
+                    createdAt: Date.now(),
+                    environment,
+                    gitHash: "",
+                    supportAndroid: platforms.includes("android"),
+                    supportIos: platforms.includes("ios"),
+                    runtimeVersion,
+                    updatePolicy: "NORMAL_UPDATE"
+                }
+            });
+            await dbClient.sync?.();
+            cursorSpinner.stop("✅ Updating version cursor completed successfully!");
+        } catch (e) {
+            cursorSpinner.stop(`❌ Uploading version cursor failed: ${e.message}`);
+            throw e;
+        }
+    }
+    var promises_ = __webpack_require__("fs/promises");
+    async function cleanup_cleanup(bundlePath) {
+        try {
+            await (0, promises_.rm)(bundlePath, {
+                recursive: true,
+                force: true
+            });
+            prompts_namespaceObject.log.error("Cleaned up temporary files.");
+        } catch (err) {
+            prompts_namespaceObject.log.error(err);
+        }
+    }
+    async function deploy() {
+        const cwd = getCwd();
+        const bundlePath = external_node_path_namespaceObject.resolve(cwd, "./dist");
+        try {
+            const deploymentConfig = await setupDeployment(bundlePath);
+            await uploadBundle(deploymentConfig, bundlePath);
+            await updateVersionCursor(deploymentConfig);
+            prompts_namespaceObject.outro("🚀 Deployment Successful");
+            prompts_namespaceObject.note(JSON.stringify({
+                bundleId: deploymentConfig.bundleId,
+                runtimeVersion: deploymentConfig.runtimeVersion,
+                platforms: deploymentConfig.platforms,
+                cloudPath: deploymentConfig.cloudPath,
+                environment: deploymentConfig.environment,
+                envSource: deploymentConfig.envSource
+            }, null, 2));
+        } catch (e) {
+            console.error(e);
+            prompts_namespaceObject.outro("Deployment failed");
+        } finally{
+            await cleanup_cleanup(bundlePath);
+        }
+    }
+    const createTemplate = ({ db, storage })=>{
+        const importMethods = [];
+        let storageClientInstance = "";
+        let dbClientInstance = "";
+        switch(storage){
+            case "aws":
+                importMethods.push("AWSS3StorageClient");
+                storageClientInstance = `
+const storageClient = new AWSS3StorageClient({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    bucketName: process.env.AWS_BUCKET_NAME!,
+    region: process.env.AWS_REGION!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+});
+            `;
+                break;
+            case "firebase":
+                importMethods.push("FirebaseStorageClient");
+                storageClientInstance = `
+const storageClient = new FirebaseStorageClient({
+    credential: process.env.FIREBASE_CREDENTIAL!,
+    bucketName: process.env.FIREBASE_BUCKET_NAME!,
+});
+            `;
+                break;
+            case "supabase":
+                importMethods.push("SupabaseStorageClient");
+                storageClientInstance = `
+const storageClient = new SupabaseStorageClient({
+    bucketName: process.env.SUPABASE_BUCKET_NAME,
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseKey: process.env.SUPABASE_KEY,
+});
+            `;
+                break;
+            default:
+                break;
+        }
+        switch(db){
+            case "firebase":
+                importMethods.push("FirebaseDbClient");
+                dbClientInstance = `
+const dbClient = new FirebaseDbClient({
+    credential: process.env.FIREBASE_CREDENTIAL!,
+    databaseId: process.env.FIREBASE_DATABASE_ID!,
+});
+            `;
+                break;
+            case "lowDb":
+                importMethods.push("LowDbClient");
+                dbClientInstance = `
+const dbClient = new LowDbClient({
+    downloadJSONFile: () => storageClient.getFile({ key: "cursor.json" }),
+    uploadJSONFile: (file: Buffer) =>
+    storageClient.uploadFile({ key: "cursor.json", file }),
+});
+            `;
+                break;
+            case "supabase":
+                importMethods.push("SupabaseDbClient");
+                dbClientInstance = `
+const dbClient = new SupabaseDbClient({
+    tableName: process.env.SUPABASE_TABLE_NAME!,
+    supabaseUrl: process.env.SUPABASE_URL!,
+    supabaseKey: process.env.SUPABASE_KEY!,
+});
+            `;
+                break;
+            default:
+                break;
+        }
+        return `
+import { defineConfig } from "@cloud-push/cli";
+import { ${[
+            importMethods.join(", ")
+        ]} } from "@cloud-push/cloud";
+${storageClientInstance}
+${dbClientInstance}
+export default defineConfig(() => ({
+	storage: storageClient,
+	db: dbClient,
+}));
+`;
+    };
+    const init_init = async ()=>{
+        const template = createTemplate({
+            db: "supabase",
+            storage: "firebase"
+        });
+        const cwd = getCwd();
+        const filePath = external_node_path_namespaceObject.resolve(cwd, "cloud-push.config.ts");
+        external_node_fs_namespaceObject.writeFileSync(filePath, template.trimStart(), "utf8");
+    };
     const program = new external_commander_namespaceObject.Command();
     let isExiting = false;
     process.on("SIGINT", async ()=>{
@@ -24700,103 +24657,8 @@ Instead, \`yield\` should either be called with a value, or not be called at all
         process.exit(1);
     });
     program.name("cloud-push").description(banner).version("1.0.0");
-    program.command("deploy").description("Upload bundle").action(async ()=>{
-        const cwd = getCwd();
-        const bundlePath = external_path_.resolve(cwd, "./dist");
-        try {
-            const platforms = await selectPlatforms();
-            const environment = await selectEnvironment();
-            const config = await loadConfig();
-            const runtimeVersion = await getRuntimeVersion(config.runtimeVersion);
-            await exportBundles({
-                platforms,
-                bundlePath
-            });
-            const env = await loadEnv(config.envSource, environment, [
-                "AWS_ACCESS_KEY_ID",
-                "AWS_SECRET_ACCESS_KEY",
-                "AWS_REGION",
-                "AWS_BUCKET_NAME"
-            ]);
-            await exportExpoConfig({
-                env,
-                expoConfigPath: bundlePath
-            });
-            const bundleId = (0, external_uuid_namespaceObject.v4)();
-            switch(config.storage){
-                case "AWS_S3":
-                    const s3Key = `${runtimeVersion}/${environment}/${bundleId}`;
-                    const client = s3_default()({
-                        region: env.AWS_REGION,
-                        credentials: {
-                            accessKeyId: env.AWS_ACCESS_KEY_ID,
-                            secretAccessKey: env.AWS_SECRET_ACCESS_KEY
-                        }
-                    });
-                    const spinner = prompts_namespaceObject.spinner();
-                    spinner.start("Preparing file upload...");
-                    try {
-                        await client.uploadDirectory({
-                            bucketName: env.AWS_BUCKET_NAME,
-                            s3Path: s3Key,
-                            directoryPath: bundlePath
-                        });
-                        spinner.stop("✅ Uploading completed successfully!");
-                    } catch (e) {
-                        spinner.stop(`❌ Uploading failed: ${e.message}`);
-                    }
-                    const cursorSpinner = prompts_namespaceObject.spinner();
-                    cursorSpinner.start("Version cursor updating...");
-                    try {
-                        let file;
-                        try {
-                            file = await client.getFile({
-                                bucketName: env.AWS_BUCKET_NAME,
-                                key: "cursor.json"
-                            });
-                        } catch (e) {
-                            file = null;
-                        }
-                        const versionCursorStore = new version_cursor_namespaceObject.VersionCursorStore();
-                        if (file) await versionCursorStore.loadFromJSON(file);
-                        else prompts_namespaceObject.log.info("The version cursor does not exist, so a version cursor will be created.");
-                        versionCursorStore.addVersion(bundleId, {
-                            createdAt: Date.now(),
-                            environment,
-                            gitHash: "",
-                            platforms,
-                            runtimeVersion
-                        });
-                        const cursorJson = (0, core_utils_namespaceObject.createJsonFile)(versionCursorStore.serialize(), "cursor.json");
-                        await client.uploadFile({
-                            file: cursorJson,
-                            bucketName: env.AWS_BUCKET_NAME,
-                            key: "cursor.json"
-                        });
-                        cursorSpinner.stop("✅ Updating version cursor completed successfully!");
-                    } catch (e) {
-                        cursorSpinner.stop(`❌ Uploading version cursor failed:failed successfully! ${e.message}`);
-                    }
-                    break;
-                default:
-                    break;
-            }
-            prompts_namespaceObject.outro("🚀 Deployment Successful");
-        } catch (e) {
-            console.error(e);
-            prompts_namespaceObject.outro("Deployment failed");
-        } finally{
-            try {
-                await (0, promises_.rm)(bundlePath, {
-                    recursive: true,
-                    force: true
-                });
-                prompts_namespaceObject.log.error("Cleaned up temporary files.");
-            } catch (err) {
-                prompts_namespaceObject.log.error(err);
-            }
-        }
-    });
+    program.command("deploy").description("Upload bundle").action(deploy);
+    program.command("init").action(init_init);
     program.parse(process.argv);
     if (!process.argv.slice(2).length) program.outputHelp();
 })();

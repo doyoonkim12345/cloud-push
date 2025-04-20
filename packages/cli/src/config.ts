@@ -1,12 +1,12 @@
-import { Storage } from "@/types";
-import { ENV_SOURCE } from "./features/env/types";
+import type { DbClient, StorageClient } from "@cloud-push/cloud";
 
 export type Config = {
-  storage: Storage;
-  runtimeVersion?: string;
-  envSource: ENV_SOURCE;
+	runtimeVersion?: string;
+	storage: StorageClient;
+	db: DbClient;
 };
 
-export const defineConfig = async (config: Config) => {
-  return config;
+export const defineConfig = async (config: () => Promise<Config> | Config) => {
+	const definedConfig = await config();
+	return definedConfig;
 };
