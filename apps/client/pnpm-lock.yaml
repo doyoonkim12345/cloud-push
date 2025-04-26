@@ -5,19 +5,19 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@cloud-push/cli': link:../../packages/cli
+  '@cloud-push/react-native': link:../../packages/react-native
   '@cloud-push/cloud': link:../../packages/cloud
 
 importers:
 
   .:
     dependencies:
-      '@cloud-push/cli':
-        specifier: link:../../packages/cli
-        version: link:../../packages/cli
       '@cloud-push/cloud':
         specifier: link:../../packages/cloud
         version: link:../../packages/cloud
+      '@cloud-push/react-native':
+        specifier: link:../../packages/react-native
+        version: link:../../packages/react-native
       expo:
         specifier: ~52.0.43
         version: 52.0.44(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react-native@0.76.9(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.20)(react@18.3.1))(react@18.3.1)

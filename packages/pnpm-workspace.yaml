@@ -1,4 +1,5 @@
 packages:
-  - "cli"
+  - "react-native"
+  - "next"
   - "core"
   - "cloud"

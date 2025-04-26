@@ -113,7 +113,7 @@ type Config = {
 ### Supabase 사용 예시
 
 ```ts
-import { defineConfig } from "@cloud-push/cli";
+import { defineConfig } from "@cloud-push/react-native";
 import { SupabaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
 import version from "./version";
 
@@ -137,7 +137,7 @@ export default defineConfig(() => ({
 ```
 ### AWS S3 & lowdb 사용 예시
 ```ts
-import { defineConfig } from "@cloud-push/cli";
+import { defineConfig } from "@cloud-push/react-native";
 import { AWSS3StorageClient, LowDbClient } from "@cloud-push/cloud";
 import version from "./version";
 
@@ -162,7 +162,7 @@ export default defineConfig(() => ({
 ```
 ### Firebase 사용 예시
 ```ts
-import { defineConfig } from "@cloud-push/cli";
+import { defineConfig } from "@cloud-push/react-native";
 import { FirebaseStorageClient, FirebaseDbClient } from "@cloud-push/cloud";
 import version from "./version";
 

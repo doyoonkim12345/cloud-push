@@ -80,7 +80,7 @@ const dbClient = new SupabaseDbClient({
 	}
 
 	return `
-import { defineConfig } from "@cloud-push/cli";
+import { defineConfig } from "@cloud-push/react-native";
 import { ${[importMethods.join(", ")]} } from "@cloud-push/cloud";
 ${storageClientInstance}
 ${dbClientInstance}
