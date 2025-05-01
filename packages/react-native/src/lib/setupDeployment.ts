@@ -42,7 +42,7 @@ export async function setupDeployment(
 	const bundleId: string = uuidv4();
 
 	// 10. S3 키 생성
-	const cloudPath: string = `${runtimeVersion}/${"development"}/${bundleId}`;
+	const cloudPath: string = `${runtimeVersion}/${environment}/${bundleId}`;
 
 	return {
 		bundleId,

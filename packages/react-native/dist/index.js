@@ -38,7 +38,6 @@ import * as __WEBPACK_EXTERNAL_MODULE_dotenv__ from "dotenv";
 import * as __WEBPACK_EXTERNAL_MODULE_cosmiconfig__ from "cosmiconfig";
 import * as __WEBPACK_EXTERNAL_MODULE_cosmiconfig_typescript_loader_05c5f2fe__ from "cosmiconfig-typescript-loader";
 import * as __WEBPACK_EXTERNAL_MODULE_semver__ from "semver";
-import * as __WEBPACK_EXTERNAL_MODULE_read_package_up_b3f2e823__ from "read-package-up";
 import * as __WEBPACK_EXTERNAL_MODULE_node_fs_promises_153e37e0__ from "node:fs/promises";
 import * as __WEBPACK_EXTERNAL_MODULE_uuid__ from "uuid";
 var __webpack_modules__ = {
@@ -24225,22 +24224,11 @@ async function getRuntimeVersion(configRuntimeVersion) {
     }
     return runtimeVersion;
 }
-const { packageJson } = (0, __WEBPACK_EXTERNAL_MODULE_read_package_up_b3f2e823__.readPackageUpSync)({
-    cwd: process.cwd()
-}) ?? {};
-function checkPackageAvailable(packageName, satisfiesVersion) {
-    const packageVersion = packageJson?.dependencies?.[packageName]?.replace(/[\^~]/g, "");
-    const isPackageInstalled = !!packageVersion;
-    if (!isPackageInstalled) throw new Error(`${packageName} is not installed`);
-    const isSatisfiedVersion = void 0 !== packageVersion && __WEBPACK_EXTERNAL_MODULE_semver__.satisfies(packageVersion, satisfiesVersion);
-    if (!isSatisfiedVersion) throw new Error(`This package requires version ${satisfiesVersion}`);
-}
 async function exportBundles({ platforms, bundlePath }) {
     const title = `Exporting ${platforms.join(", ").toLocaleLowerCase()} bundles`;
     const spinner = __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.spinner();
     spinner.start(`Starting ${title}...`);
     try {
-        await checkPackageAvailable("expo", "52.x.x");
         await execa("expo", [
             "export",
             ...platforms.flatMap((platform)=>[
@@ -24290,7 +24278,7 @@ async function setupDeployment(bundlePath) {
         expoConfigPath: bundlePath
     });
     const bundleId = (0, __WEBPACK_EXTERNAL_MODULE_uuid__.v4)();
-    const cloudPath = `${runtimeVersion}/development/${bundleId}`;
+    const cloudPath = `${runtimeVersion}/${environment}/${bundleId}`;
     return {
         bundleId,
         cloudPath,

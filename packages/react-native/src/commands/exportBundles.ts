@@ -19,7 +19,6 @@ export async function exportBundles({
 	spinner.start(`Starting ${title}...`);
 
 	try {
-		await checkPackageAvailable("expo", "52.x.x");
 		await execa("expo", [
 			"export",
 			...platforms.flatMap((platform) => [

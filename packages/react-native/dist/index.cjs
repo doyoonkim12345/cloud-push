@@ -24399,23 +24399,11 @@ Instead, \`yield\` should either be called with a value, or not be called at all
         }
         return runtimeVersion;
     }
-    const external_read_package_up_namespaceObject = require("read-package-up");
-    const { packageJson } = (0, external_read_package_up_namespaceObject.readPackageUpSync)({
-        cwd: process.cwd()
-    }) ?? {};
-    function checkPackageAvailable(packageName, satisfiesVersion) {
-        const packageVersion = packageJson?.dependencies?.[packageName]?.replace(/[\^~]/g, "");
-        const isPackageInstalled = !!packageVersion;
-        if (!isPackageInstalled) throw new Error(`${packageName} is not installed`);
-        const isSatisfiedVersion = void 0 !== packageVersion && external_semver_namespaceObject.satisfies(packageVersion, satisfiesVersion);
-        if (!isSatisfiedVersion) throw new Error(`This package requires version ${satisfiesVersion}`);
-    }
     async function exportBundles({ platforms, bundlePath }) {
         const title = `Exporting ${platforms.join(", ").toLocaleLowerCase()} bundles`;
         const spinner = prompts_namespaceObject.spinner();
         spinner.start(`Starting ${title}...`);
         try {
-            await checkPackageAvailable("expo", "52.x.x");
             await execa("expo", [
                 "export",
                 ...platforms.flatMap((platform)=>[
@@ -24467,7 +24455,7 @@ Instead, \`yield\` should either be called with a value, or not be called at all
             expoConfigPath: bundlePath
         });
         const bundleId = (0, external_uuid_namespaceObject.v4)();
-        const cloudPath = `${runtimeVersion}/development/${bundleId}`;
+        const cloudPath = `${runtimeVersion}/${environment}/${bundleId}`;
         return {
             bundleId,
             cloudPath,
