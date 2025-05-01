@@ -1,10 +1,10 @@
 import * as prompts from "@clack/prompts";
 import * as path from "node:path";
-import { getCwd } from "@/lib/getCwd";
-import { setupDeployment } from "../lib/setupDeployment";
+import { setupDeployment } from "@/lib/setupDeployment";
 import { type DeploymentConfig, uploadBundle } from "./uploadBundle";
 import { updateVersionCursor } from "./updateCursor";
 import { cleanup } from "@/lib/cleanup";
+import { getCwd } from "@cloud-push/core";
 
 export async function deploy(): Promise<void> {
 	const cwd = getCwd();

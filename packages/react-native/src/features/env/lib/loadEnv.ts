@@ -1,8 +1,8 @@
 import * as prompts from "@clack/prompts";
-import type { Environment } from "@cloud-push/core";
-import type { ENV_SOURCE } from "../types";
+import { type Environment, loadFileEnv } from "@cloud-push/core";
 import { loadEASEnv } from "./loadEASEnv";
-import { loadFileEnv } from "./loadFileEnv";
+import type { ENV_SOURCE } from "../types";
+import {} from "@cloud-push/core";
 
 export async function loadEnv(envSource: ENV_SOURCE, environment: Environment) {
 	const spinner = prompts.spinner();

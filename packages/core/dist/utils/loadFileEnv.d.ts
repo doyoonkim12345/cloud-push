@@ -1,3 +1,3 @@
-import type { Environment } from "@cloud-push/core";
+import type { Environment } from "../types";
 export declare function loadFileEnv(environment: Environment): Promise<void>;
 //# sourceMappingURL=loadFileEnv.d.ts.map

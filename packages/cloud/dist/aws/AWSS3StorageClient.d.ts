@@ -31,4 +31,4 @@ export declare class AWSS3StorageClient extends StorageClient {
     }) => Promise<void>;
 }
 export {};
-//# sourceMappingURL=AWSS3StorageClient.d.ts.map
+//# sourceMappingURL=AWSS3StorageClient.d.ts.mapp

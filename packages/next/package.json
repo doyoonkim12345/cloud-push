@@ -1,14 +1,14 @@
 {
 	"name": "next",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"type": "module",
-	"main": "./dist/config.cjs",
-	"module": "./dist/config.js",
-	"types": "./dist/config.d.ts",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"import": "./dist/config.js",
-			"types": "./dist/config.d.ts"
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
 		}
 	},
 	"bin": {
@@ -23,8 +23,15 @@
 	"license": "ISC",
 	"packageManager": "pnpm@10.6.1",
 	"devDependencies": {
+		"@cloud-push/cloud": "1.0.1",
+		"@cloud-push/core": "1.0.1",
 		"@rslib/core": "^0.5.5",
-		"typescript": "^5.8.2",
-		"@cloud-push/cloud": "1.0.0"
-	}
+		"typescript": "^5.8.2"
+	},
+	"dependencies": {
+		"commander": "^13.1.0",
+		"cosmiconfig": "^9.0.0",
+		"cosmiconfig-typescript-loader": "^6.1.0"
+	},
+	"files": ["dist"]
 }

@@ -1,8 +1,7 @@
 import { cosmiconfig } from "cosmiconfig";
 import { TypeScriptLoader } from "cosmiconfig-typescript-loader";
-
-import { getCwd } from "@/lib/getCwd";
 import type { Config } from "@/config";
+import { getCwd } from "@cloud-push/core";
 
 const MODULE_NAME = "cloud-push";
 

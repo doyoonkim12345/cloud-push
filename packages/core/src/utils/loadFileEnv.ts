@@ -1,8 +1,8 @@
-import type { Environment } from "@cloud-push/core";
 import * as dotenv from "dotenv";
-import { getCwd } from "@/lib/getCwd";
+import { getCwd } from "./getCwd";
 import * as path from "node:path";
 import { promises as fs } from "node:fs";
+import type { Environment } from "@/types";
 
 export async function loadFileEnv(environment: Environment) {
 	// 환경별 파일 설정

@@ -1,4 +1,5 @@
 export type Platform = "android" | "ios";
 export type Environment = "production" | "development" | "preview";
-export type Storage = "AWS_S3";
+export type Storage = "AWS_S3" | "FIREBASE" | "SUPABASE" | "CUSTOM";
+export type Db = "LOWDB" | "FIREBASE" | "SUPABASE" | "CUSTOM";
 //# sourceMappingURL=types.d.ts.map

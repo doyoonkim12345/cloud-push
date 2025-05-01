@@ -27,6 +27,9 @@ export default function App() {
 	return (
 		<ScrollView style={styles.container}>
 			<Text>{Updates.updateId}</Text>
+			<Text>{process.env.EXPO_PUBLIC_VARIANT}</Text>{" "}
+			<Text>{process.env.EXPO_PUBLIC_VARIANT}</Text>{" "}
+			<Text>{process.env.EXPO_PUBLIC_VARIANT}</Text>
 			<Button title="버튼" onPress={onFetchUpdateAsync} />
 			<StatusBar style="auto" />
 		</ScrollView>

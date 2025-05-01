@@ -268,7 +268,7 @@ class FirebaseStorageClient extends StorageClient {
     };
 }
 const external_lowdb_namespaceObject = require("lowdb");
-const utils_namespaceObject = require("@cloud-push/core/utils");
+const core_namespaceObject = require("@cloud-push/core");
 const node_namespaceObject = require("lowdb/node");
 const LowDbLoader = {
     loadLowDb: async (value)=>{
@@ -278,7 +278,7 @@ const LowDbLoader = {
         return db;
     },
     loadLowDbFromFile: async (file, defaultValue)=>{
-        const db = await LowDbLoader.loadLowDb(await (0, utils_namespaceObject.parseFileAsJson)(file));
+        const db = await LowDbLoader.loadLowDb(await (0, core_namespaceObject.parseFileAsJson)(file));
         return db;
     },
     loadLowDbFromPath: async (filePath, defaultValue)=>{

@@ -1,4 +1,3 @@
-import checkPackageAvailable from "@/lib/checkPackageAvailable";
 import { execa } from "execa";
 import * as prompts from "@clack/prompts";
 import type { Platform } from "@cloud-push/core";
@@ -19,14 +18,18 @@ export async function exportBundles({
 	spinner.start(`Starting ${title}...`);
 
 	try {
-		await execa("expo", [
-			"export",
-			...platforms.flatMap((platform) => [
-				"--platform",
-				platform.toLocaleLowerCase(),
-			]),
-			...["--output-dir", bundlePath],
-		]);
+		await execa(
+			"expo",
+			[
+				"export",
+				...platforms.flatMap((platform) => [
+					"--platform",
+					platform.toLocaleLowerCase(),
+				]),
+				...["--output-dir", bundlePath],
+			],
+			{ env: process.env },
+		);
 		spinner.stop(`✅ ${title} completed successfully!`);
 	} catch (error) {
 		spinner.stop(`❌ ${title} failed: ${(error as Error).message}`);

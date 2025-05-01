@@ -1,17 +1,18 @@
-import { getCwd } from "@/lib/getCwd";
-import * as path from "node:path";
-import * as fs from "node:fs";
-type Db = "lowDb" | "firebase" | "supabase";
-type Storage = "aws" | "firebase" | "supabase";
+import type { Db, Storage } from "@/types";
+export type TemplateFrom = "next" | "react-native";
 
-const createTemplate = ({ db, storage }: { db: Db; storage: Storage }) => {
+export const createConfigTemplate = ({
+	db,
+	storage,
+	where,
+}: { db: Db; storage: Storage; where: TemplateFrom }) => {
 	const importMethods: string[] = [];
 
 	let storageClientInstance = "";
 	let dbClientInstance = "";
 
 	switch (storage) {
-		case "aws":
+		case "AWS_S3":
 			importMethods.push("AWSS3StorageClient");
 			storageClientInstance = `
 const storageClient = new AWSS3StorageClient({
@@ -22,7 +23,7 @@ const storageClient = new AWSS3StorageClient({
 });
             `;
 			break;
-		case "firebase":
+		case "FIREBASE":
 			importMethods.push("FirebaseStorageClient");
 			storageClientInstance = `
 const storageClient = new FirebaseStorageClient({
@@ -31,7 +32,7 @@ const storageClient = new FirebaseStorageClient({
 });
             `;
 			break;
-		case "supabase":
+		case "SUPABASE":
 			importMethods.push("SupabaseStorageClient");
 			storageClientInstance = `
 const storageClient = new SupabaseStorageClient({
@@ -41,12 +42,27 @@ const storageClient = new SupabaseStorageClient({
 });
             `;
 			break;
+		case "CUSTOM":
+			importMethods.push("StorageClient");
+			storageClientInstance = `
+const generateStorageClient = (): StorageClient => {
+	return {
+		getFile: () => {},
+		getFileSignedUrl: () => {},
+		uploadDirectory: () => {},
+		uploadFile: () => {},
+		uploadLocalFile: () => {},
+	};
+};
+const storageClient = generateStorageClient();
+`;
+			break;
 		default:
 			break;
 	}
 
 	switch (db) {
-		case "firebase":
+		case "FIREBASE":
 			importMethods.push("FirebaseDbClient");
 			dbClientInstance = `
 const dbClient = new FirebaseDbClient({
@@ -55,7 +71,7 @@ const dbClient = new FirebaseDbClient({
 });
             `;
 			break;
-		case "lowDb":
+		case "LOWDB":
 			importMethods.push("LowDbClient");
 			dbClientInstance = `
 const dbClient = new LowDbClient({
@@ -65,7 +81,7 @@ const dbClient = new LowDbClient({
 });
             `;
 			break;
-		case "supabase":
+		case "SUPABASE":
 			importMethods.push("SupabaseDbClient");
 			dbClientInstance = `
 const dbClient = new SupabaseDbClient({
@@ -75,12 +91,29 @@ const dbClient = new SupabaseDbClient({
 });
             `;
 			break;
+		case "CUSTOM":
+			importMethods.push("DbClient");
+			dbClientInstance = `
+const generateDbClient = (): DbClient => {
+	return {
+		create: () => {},
+		delete: () => {},
+		find: () => {},
+		findAll: () => {},
+		readAll: () => {},
+		toBuffer: () => {},
+		update: () => {},
+	};
+};
+const dbClient = generateDbClient();
+`;
+			break;
 		default:
 			break;
 	}
 
 	return `
-import { defineConfig } from "@cloud-push/react-native";
+import { defineConfig } from "@cloud-push/${where}";
 import { ${[importMethods.join(", ")]} } from "@cloud-push/cloud";
 ${storageClientInstance}
 ${dbClientInstance}
@@ -89,13 +122,4 @@ export default defineConfig(() => ({
 	db: dbClient,
 }));
 `;
-};
-
-export const init = async () => {
-	const template = createTemplate({ db: "supabase", storage: "firebase" });
-
-	const cwd = getCwd();
-
-	const filePath = path.resolve(cwd, "cloud-push.config.ts");
-	fs.writeFileSync(filePath, template.trimStart(), "utf8");
 };

@@ -7,7 +7,7 @@ export default defineConfig({
 			dts: true,
 			source: {
 				entry: {
-					config: "./src/config.ts",
+					index: "./src/index.ts",
 				},
 			},
 		},
@@ -16,7 +16,7 @@ export default defineConfig({
 			dts: true,
 			source: {
 				entry: {
-					config: "./src/config.ts",
+					index: "./src/index.ts",
 				},
 			},
 		},

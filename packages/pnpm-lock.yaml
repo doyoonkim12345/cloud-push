@@ -68,12 +68,21 @@ importers:
 
   core:
     dependencies:
+      '@clack/prompts':
+        specifier: ^0.10.0
+        version: 0.10.0
       '@types/git-rev-sync':
         specifier: ^2.0.2
         version: 2.0.2
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
       git-rev-sync:
         specifier: ^3.0.2
         version: 3.0.2
+      workspace-tools:
+        specifier: ^0.38.1
+        version: 0.38.2
     devDependencies:
       '@rslib/core':
         specifier: ^0.5.5
@@ -86,10 +95,23 @@ importers:
         version: 5.8.3
 
   next:
+    dependencies:
+      commander:
+        specifier: ^13.1.0
+        version: 13.1.0
+      cosmiconfig:
+        specifier: ^9.0.0
+        version: 9.0.0(typescript@5.8.3)
+      cosmiconfig-typescript-loader:
+        specifier: ^6.1.0
+        version: 6.1.0(@types/node@22.14.0)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.8.3)
     devDependencies:
       '@cloud-push/cloud':
         specifier: workspace:*
         version: link:../cloud
+      '@cloud-push/core':
+        specifier: workspace:*
+        version: link:../core
       '@rslib/core':
         specifier: ^0.5.5
         version: 0.5.5(typescript@5.8.3)
@@ -4483,6 +4505,13 @@ snapshots:
   cosmiconfig-typescript-loader@6.1.0(@types/node@20.17.30)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.8.3):
     dependencies:
       '@types/node': 20.17.30
+      cosmiconfig: 9.0.0(typescript@5.8.3)
+      jiti: 2.4.2
+      typescript: 5.8.3
+
+  cosmiconfig-typescript-loader@6.1.0(@types/node@22.14.0)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.8.3):
+    dependencies:
+      '@types/node': 22.14.0
       cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 2.4.2
       typescript: 5.8.3

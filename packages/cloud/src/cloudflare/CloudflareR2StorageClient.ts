@@ -81,7 +81,8 @@ export class CloudflareR2StorageClient extends StorageClient {
 			}
 
 			const data = await response.json();
-			return data?.result.url;
+			return "";
+			// return data?.result as any.url;
 		} catch (error) {
 			console.error("Error generating signed URL:", error);
 			throw error;

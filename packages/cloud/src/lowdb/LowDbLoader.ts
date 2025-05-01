@@ -1,4 +1,4 @@
-import { parseFileAsJson } from "@cloud-push/core/utils";
+import { parseFileAsJson } from "@cloud-push/core";
 import { Low, Memory } from "lowdb";
 import { JSONFile } from "lowdb/node";
 

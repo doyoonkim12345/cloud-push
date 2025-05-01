@@ -7,7 +7,7 @@ import * as __WEBPACK_EXTERNAL_MODULE_firebase_admin_firestore_2f95b9f5__ from "
 import * as __WEBPACK_EXTERNAL_MODULE_firebase_admin_app_ed968776__ from "firebase-admin/app";
 import * as __WEBPACK_EXTERNAL_MODULE_firebase_admin_storage_98442e86__ from "firebase-admin/storage";
 import * as __WEBPACK_EXTERNAL_MODULE_lowdb__ from "lowdb";
-import * as __WEBPACK_EXTERNAL_MODULE__cloud_push_core_utils_234ff290__ from "@cloud-push/core/utils";
+import * as __WEBPACK_EXTERNAL_MODULE__cloud_push_core_e7d83c23__ from "@cloud-push/core";
 import * as __WEBPACK_EXTERNAL_MODULE_lowdb_node_f1890fe7__ from "lowdb/node";
 import * as __WEBPACK_EXTERNAL_MODULE__supabase_supabase_js_06b6e9fe__ from "@supabase/supabase-js";
 class StorageClient {
@@ -243,7 +243,7 @@ const LowDbLoader = {
         return db;
     },
     loadLowDbFromFile: async (file, defaultValue)=>{
-        const db = await LowDbLoader.loadLowDb(await (0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_utils_234ff290__.parseFileAsJson)(file));
+        const db = await LowDbLoader.loadLowDb(await (0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_e7d83c23__.parseFileAsJson)(file));
         return db;
     },
     loadLowDbFromPath: async (filePath, defaultValue)=>{
