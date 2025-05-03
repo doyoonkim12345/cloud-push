@@ -6656,6 +6656,7 @@ Instead, \`yield\` should either be called with a value, or not be called at all
                 default:
                     throw new Error("Invalid env source");
             }
+            console.log(process.env.App_VARIANT, process.env.EXPO_PUBLIC_APP_VARIANT);
             spinner.stop("✅ Loading env completed successfully!");
         } catch (e) {
             spinner.stop(`❌ Loading env failed: ${e.message}`);
@@ -6707,22 +6708,27 @@ Instead, \`yield\` should either be called with a value, or not be called at all
         }
         return runtimeVersion;
     }
-    async function exportBundles({ platforms, bundlePath }) {
+    async function exportBundles({ platforms, bundlePath, environment }) {
         const title = `Exporting ${platforms.join(", ").toLocaleLowerCase()} bundles`;
         const spinner = prompts_namespaceObject.spinner();
         spinner.start(`Starting ${title}...`);
         try {
-            await execa("expo", [
+            const { stdout } = await execa("expo", [
                 "export",
                 ...platforms.flatMap((platform)=>[
                         "--platform",
                         platform.toLocaleLowerCase()
                     ]),
                 "--output-dir",
-                bundlePath
+                bundlePath,
+                "--clear"
             ], {
-                env: process.env
+                env: {
+                    ...process.env,
+                    NODE_ENV: environment
+                }
             });
+            console.log(stdout);
             spinner.stop(`✅ ${title} completed successfully!`);
         } catch (error) {
             spinner.stop(`❌ ${title} failed: ${error.message}`);
@@ -6759,7 +6765,8 @@ Instead, \`yield\` should either be called with a value, or not be called at all
         const runtimeVersion = await getRuntimeVersion(config.runtimeVersion);
         await exportBundles({
             platforms,
-            bundlePath
+            bundlePath,
+            environment
         });
         await exportExpoConfig({
             expoConfigPath: bundlePath

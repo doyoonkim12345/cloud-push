@@ -33,7 +33,7 @@ export async function setupDeployment(
 	const runtimeVersion: string = await getRuntimeVersion(config.runtimeVersion);
 
 	// 7. 번들 내보내기
-	await exportBundles({ platforms, bundlePath });
+	await exportBundles({ platforms, bundlePath, environment });
 
 	// 8. Expo 설정 내보내기
 	await exportExpoConfig({ expoConfigPath: bundlePath });

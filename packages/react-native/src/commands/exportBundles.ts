@@ -1,24 +1,26 @@
 import { execa } from "execa";
 import * as prompts from "@clack/prompts";
-import type { Platform } from "@cloud-push/core";
+import type { Environment, Platform } from "@cloud-push/core";
 
 // Define interfaces for function props
 interface ExportBundlesProps {
 	platforms: Platform[];
 	bundlePath: string;
+	environment: Environment;
 }
 
 // Function to export bundles
 export async function exportBundles({
 	platforms,
 	bundlePath,
+	environment,
 }: ExportBundlesProps): Promise<void> {
 	const title = `Exporting ${platforms.join(", ").toLocaleLowerCase()} bundles`;
 	const spinner = prompts.spinner();
 	spinner.start(`Starting ${title}...`);
 
 	try {
-		await execa(
+		const { stdout } = await execa(
 			"expo",
 			[
 				"export",
@@ -27,9 +29,13 @@ export async function exportBundles({
 					platform.toLocaleLowerCase(),
 				]),
 				...["--output-dir", bundlePath],
+				"--clear",
 			],
-			{ env: process.env },
+			{ env: { ...process.env, NODE_ENV: environment } },
 		);
+
+		console.log(stdout);
+
 		spinner.stop(`✅ ${title} completed successfully!`);
 	} catch (error) {
 		spinner.stop(`❌ ${title} failed: ${(error as Error).message}`);

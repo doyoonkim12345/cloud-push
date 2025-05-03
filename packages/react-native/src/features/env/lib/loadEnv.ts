@@ -19,6 +19,8 @@ export async function loadEnv(envSource: ENV_SOURCE, environment: Environment) {
 				throw new Error("Invalid env source");
 		}
 
+		console.log(process.env.App_VARIANT, process.env.EXPO_PUBLIC_APP_VARIANT);
+
 		spinner.stop("✅ Loading env completed successfully!");
 	} catch (e) {
 		spinner.stop(`❌ Loading env failed: ${(e as Error).message}`);

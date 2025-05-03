@@ -6631,6 +6631,7 @@ async function loadEnv(envSource, environment) {
             default:
                 throw new Error("Invalid env source");
         }
+        console.log(process.env.App_VARIANT, process.env.EXPO_PUBLIC_APP_VARIANT);
         spinner.stop("✅ Loading env completed successfully!");
     } catch (e) {
         spinner.stop(`❌ Loading env failed: ${e.message}`);
@@ -6678,22 +6679,27 @@ async function getRuntimeVersion(configRuntimeVersion) {
     }
     return runtimeVersion;
 }
-async function exportBundles({ platforms, bundlePath }) {
+async function exportBundles({ platforms, bundlePath, environment }) {
     const title = `Exporting ${platforms.join(", ").toLocaleLowerCase()} bundles`;
     const spinner = __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.spinner();
     spinner.start(`Starting ${title}...`);
     try {
-        await execa("expo", [
+        const { stdout } = await execa("expo", [
             "export",
             ...platforms.flatMap((platform)=>[
                     "--platform",
                     platform.toLocaleLowerCase()
                 ]),
             "--output-dir",
-            bundlePath
+            bundlePath,
+            "--clear"
         ], {
-            env: process.env
+            env: {
+                ...process.env,
+                NODE_ENV: environment
+            }
         });
+        console.log(stdout);
         spinner.stop(`✅ ${title} completed successfully!`);
     } catch (error) {
         spinner.stop(`❌ ${title} failed: ${error.message}`);
@@ -6728,7 +6734,8 @@ async function setupDeployment(bundlePath) {
     const runtimeVersion = await getRuntimeVersion(config.runtimeVersion);
     await exportBundles({
         platforms,
-        bundlePath
+        bundlePath,
+        environment
     });
     await exportExpoConfig({
         expoConfigPath: bundlePath

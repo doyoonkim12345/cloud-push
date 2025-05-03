@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "@cloud-push/react-native",
-	"version": "1.0.3",
+	"version": "1.0.7",
 	"description": "",
 	"main": "./dist/config.cjs",
 	"module": "./dist/config.js",
