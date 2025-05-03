@@ -22,7 +22,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		supportsTablet: true,
 	},
 	updates: {
-		url: "http://192.168.0.36:3000/api/manifest",
+		url: "http://192.168.0.190:3000/api/manifest",
 		enabled: true,
 		requestHeaders: {
 			"cloud-push-environment": process.env.APP_VARIANT,
