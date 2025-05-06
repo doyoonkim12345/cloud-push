@@ -9,8 +9,8 @@
 		"web": "expo start --web"
 	},
 	"dependencies": {
-		"@cloud-push/cloud": "1.0.0",
-		"@cloud-push/react-native": "1.0.0",
+		"@cloud-push/cloud": "1.0.2",
+		"@cloud-push/react-native": "1.0.8",
 		"expo": "~52.0.43",
 		"expo-build-properties": "~0.13.2",
 		"expo-status-bar": "~2.0.1",
