@@ -2,10 +2,10 @@
   <img src="./logo.png" alt="Logo" width="300" />
 </p>
 
-[![@cloud-push/cloud](https://img.shields.io/badge/@cloud--push/cloud-v1.0.1-blue)](https://www.npmjs.com/package/@cloud-push/cloud)  
-[![@cloud-push/react-native](https://img.shields.io/badge/@cloud--push/react--native-v1.0.7-blue)](https://www.npmjs.com/package/@cloud-push/react-native)  
+[![@cloud-push/cloud](https://img.shields.io/badge/@cloud--push/cloud-v1.0.2-blue)](https://www.npmjs.com/package/@cloud-push/cloud)  
+[![@cloud-push/react-native](https://img.shields.io/badge/@cloud--push/react--native-v1.0.8-blue)](https://www.npmjs.com/package/@cloud-push/react-native)  
 [![@cloud-push/next](https://img.shields.io/badge/@cloud--push/next-v1.0.0-blue)](https://www.npmjs.com/package/@cloud-push/next)  
-[![@cloud-push/core](https://img.shields.io/badge/@cloud--push/core-v1.0.1-blue)](https://www.npmjs.com/package/@cloud-push/core)  
+[![@cloud-push/core](https://img.shields.io/badge/@cloud--push/core-v1.0.2-blue)](https://www.npmjs.com/package/@cloud-push/core)  
 
 **OTA Update solution compatible with Expo Updates**  
 → Self-hosted update distribution system
