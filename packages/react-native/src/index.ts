@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { banner } from "@/components/banner";
 import * as prompts from "@clack/prompts";
 import { deploy } from "./commands/deploy";
-import { init } from "@cloud-push/core";
+import { init } from "./commands/init";
 
 const program = new Command();
 
@@ -21,11 +20,8 @@ process.on("SIGINT", async () => {
 	process.exit(1);
 });
 
-// CLI 버전 및 설명 설정
-program.name("cloud-push").description(banner).version("1.0.0");
-
 program.command("deploy").description("Upload bundle").action(deploy);
-program.command("init").action(() => init("react-native"));
+program.command("init").action(init);
 
 // 프로그램 실행
 program.parse(process.argv);

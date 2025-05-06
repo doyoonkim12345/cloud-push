@@ -1,6 +1,6 @@
 {
-	"name": "next",
-	"version": "1.0.1",
+	"name": "@cloud-push/next",
+	"version": "1.0.0",
 	"type": "module",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
@@ -8,11 +8,12 @@
 	"exports": {
 		".": {
 			"import": "./dist/index.js",
-			"types": "./dist/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"node": "./dist/index.cjs"
 		}
 	},
 	"bin": {
-		"cloud-push": "./dist/index.js"
+		"cloud-push": "./dist/cli.js"
 	},
 	"scripts": {
 		"dev": "rslib build --watch",
@@ -26,12 +27,15 @@
 		"@cloud-push/cloud": "1.0.1",
 		"@cloud-push/core": "1.0.1",
 		"@rslib/core": "^0.5.5",
+		"@types/node": "^20",
 		"typescript": "^5.8.2"
 	},
 	"dependencies": {
+		"@clack/prompts": "^0.10.0",
 		"commander": "^13.1.0",
 		"cosmiconfig": "^9.0.0",
-		"cosmiconfig-typescript-loader": "^6.1.0"
+		"cosmiconfig-typescript-loader": "^6.1.0",
+		"workspace-tools": "^0.38.1"
 	},
 	"files": ["dist"]
 }

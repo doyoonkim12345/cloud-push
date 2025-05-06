@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "@cloud-push/react-native",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "",
 	"main": "./dist/config.cjs",
 	"module": "./dist/config.js",
@@ -11,7 +11,9 @@
 	},
 	"exports": {
 		".": {
+			"node": "./dist/config.cjs",
 			"import": "./dist/config.js",
+			"require": "./dist/config.cjs",
 			"types": "./dist/config.d.ts"
 		}
 	},
@@ -22,7 +24,32 @@
 		"lint": "tsc"
 	},
 	"files": ["dist"],
-	"keywords": [],
+	"keywords": [
+		"expo",
+		"expo-updates",
+		"react-native",
+		"expo-managed",
+		"expo-build",
+		"expo-dev-client",
+		"expo-router",
+		"eas",
+		"eas-update",
+		"eas-cli",
+		"eas-build",
+		"ota",
+		"over-the-air",
+		"live-update",
+		"app-update",
+		"background-updates",
+		"codepush",
+		"cloud-update",
+		"expo-publish",
+		"versioning",
+		"runtimeVersion",
+		"mobile",
+		"updates",
+		"react-native-updates"
+	],
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {

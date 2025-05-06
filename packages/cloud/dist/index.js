@@ -322,7 +322,6 @@ class LowDbClient extends DbClient {
         return Buffer.from(jsonString, "utf-8");
     };
     init = async ()=>{
-        console.log("initialize db client");
         try {
             const file = await this.downloadJSONFile();
             const db = await LowDbLoader.loadLowDbFromFile(file);

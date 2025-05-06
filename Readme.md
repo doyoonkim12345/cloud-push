@@ -2,80 +2,107 @@
   <img src="./logo.png" alt="Logo" width="300" />
 </p>
 
-**Expo Updates 호환 OTA Update 솔루션**  
-→ Self-host 기반의 업데이트 배포 시스템  
- 
+[![@cloud-push/cloud](https://img.shields.io/badge/@cloud--push/cloud-v1.0.1-blue)](https://www.npmjs.com/package/@cloud-push/cloud)  
+[![@cloud-push/react-native](https://img.shields.io/badge/@cloud--push/react--native-v1.0.7-blue)](https://www.npmjs.com/package/@cloud-push/react-native)  
+[![@cloud-push/next](https://img.shields.io/badge/@cloud--push/next-v1.0.0-blue)](https://www.npmjs.com/package/@cloud-push/next)  
+[![@cloud-push/core](https://img.shields.io/badge/@cloud--push/core-v1.0.1-blue)](https://www.npmjs.com/package/@cloud-push/core)  
 
+**OTA Update solution compatible with Expo Updates**  
+→ Self-hosted update distribution system
+
+## 🚀 Motivation
+
+Expo projects are highly customized React Native projects. Because of this, available CodePush solutions are limited.  
+This project, inspired by [`hot-updater`](https://github.com/gronxb/hot-updater), offers an alternative way to manage bundles using storage services like S3, Firebase, Supabase, etc.  
+It follows [Expo Updates technical specs](https://docs.expo.dev/technical-specs/expo-updates-1/) and maintains compatibility with Expo Updates.
+
+
+## 🧪 Compatibility
+
+- ✅ Works with `expo run:android --variant release`
+- ✅ Works with `expo run:ios --configuration Release`
+- ✅ Compatible with **Expo Managed Workflow**
 ## ✨ Key Features
 
-- 📡 **Self-host** 가능
-- 📦 **Custom Storage & DB** 지원 (S3, Supabase 등)
-- 🔄 **Expo Updates API와 호환**
-- 💾 **번들 버전 관리 대시보드** 제공 (웹 기반)
-- 🌐 **expo.dev 환경변수 지원** (EAS Secrets 연동)
-- 🪟 **Windows 사용 가능** (`cloud-push`는 Windows 환경에서도 작동)
+- 📡 Self-hosted deployment supported
+- 📦 Flexible storage & DB (S3, Supabase, Firebase, etc.)
+- 🔄 Compatible with Expo Updates APIs
+- 💾 Web-based bundle version dashboard
+- 🌐 Supports expo.dev environment variables (via EAS Secrets)
+- 🪟 Works on Windows
+- 🧪 EAS build supported
 
 
 ## ⚙️ Quick Start
 
-### 1️⃣ CLI 패키지 설치
-
-```bash
-pnpm add @cloud-push/cli
-```
+Start using `cloud-push` in two parts: the **server** and the **expo client**.
 
 ---
 
-### 2️⃣ 초기 설정 파일 생성
+### 📡 Server Setup
+
+1. Use the template: [cloud-push-nexus](https://github.com/doyoonkim12345/cloud-push-nexus)
+2. Deploy it to [Vercel](https://vercel.com)
+
+---
+
+### 📱 Expo Client Setup
+
+#### 1️⃣ Install the package
+
+```bash
+pnpm add @cloud-push/react-native @cloud-push/cloud
+```
+
+#### 2️⃣ Initialize config
 
 ```bash
 pnpm cloud-push init
 ```
 
-- `cloud-push.config.ts` 파일이 생성되며, 아래 항목들을 작성해야 합니다:
-  - `runtimeVersion` (선택)
-  - `storage`: 번들 저장소 클라이언트
-  - `db`: 메타데이터 저장소 클라이언트
+#### 3️⃣ Modify your `app.json` or `app.config.ts`
 
----
-
-### 3️⃣ 환경 변수 입력
-
-`.env` 또는 **EAS Secrets**를 통해 다음과 같은 환경 변수를 설정하세요:
-
+```diff
+  updates: {
+-    url: "https://u.expo.dev/"
++    url: "https://your-server-domain/api/manifest",
++    requestHeaders: {
++      "expo-channel-name": process.env.APP_VARIANT,
++    },
+  },
 ```
+
+#### 4️⃣ Provide environment variables
+
+Set variables in `.env` or use **EAS Secrets**:
+
+```env
 SUPABASE_URL=...
 SUPABASE_KEY=...
 SUPABASE_BUCKET_NAME=...
-...
 ```
 
-> ✅ 사용 환경에 따라 AWS, Supabase, Firebase 등 각 클라이언트에 필요한 값을 입력하세요.
+> ✅ Provide appropriate values for AWS, Supabase, or Firebase depending on your storage backend.
 
----
-
-### 4️⃣ 업데이트 배포 실행
+#### 5️⃣ Deploy the update
 
 ```bash
 pnpm cloud-push deploy
 ```
 
-> 💡 `runtimeVersion`이 설정된 경우, 해당 버전 간에만 업데이트가 적용됩니다.
+> 💡 OTA updates will only apply to builds with the same `runtimeVersion`
 
 
----
+## ⚠️ Android Cleartext Warning
 
-## ⚠️ 로컬 테스트 시 주의사항 (Android)
-
-`HTTP` 요청을 허용하려면 `app.config.ts`에 `usesCleartextTraffic` 옵션을 추가해야 합니다:
+Allow HTTP requests by setting `usesCleartextTraffic`:
 
 ```ts
 export default {
   expo: {
     name: "your-app-name",
     slug: "your-app-slug",
-    plugins : [
-      ...플러그인들
+    plugins: [
       [
         "expo-build-properties",
         {
@@ -85,32 +112,24 @@ export default {
           ios: {},
         },
       ],
-  ]
+    ],
   },
 };
 ```
 
----
-
-## ⚙️ cloud-push.config 타입 정의
+## ⚙️ cloud-push.config type
 
 ```ts
 type Config = {
-  runtimeVersion?: string; // 빌드 간 버전 동기화
-  storage: StorageClient;   // 번들 저장소
-  db: DbClient;             // 버전 메타데이터 저장소
+  runtimeVersion?: string;
+  storage: StorageClient;
+  db: DbClient;
 };
 ```
 
-- `runtimeVersion`: Expo와 동일하게 **같은 runtimeVersion끼리만 업데이트 호환**
-- `storage`: 지원: `AWS S3`, `Cloudflare R2`, `Supabase`, `Custom`
-- `db`: 지원: `lowdb (JSON)`, `Supabase`, `Custom`
+## 🛠 Configuration Examples
 
----
-
-## 🛠 설정 예시
-
-### Supabase 사용 예시
+### Supabase
 
 ```ts
 import { defineConfig } from "@cloud-push/react-native";
@@ -135,7 +154,9 @@ export default defineConfig(() => ({
   db: dbClient,
 }));
 ```
-### AWS S3 & lowdb 사용 예시
+
+### AWS S3 + lowdb
+
 ```ts
 import { defineConfig } from "@cloud-push/react-native";
 import { AWSS3StorageClient, LowDbClient } from "@cloud-push/cloud";
@@ -160,19 +181,22 @@ export default defineConfig(() => ({
   db: dbClient,
 }));
 ```
-### Firebase 사용 예시
+
+### Firebase
+
 ```ts
 import { defineConfig } from "@cloud-push/react-native";
 import { FirebaseStorageClient, FirebaseDbClient } from "@cloud-push/cloud";
 import version from "./version";
 
 const storageClient = new FirebaseStorageClient({
-	credential: process.env.FIREBASE_CREDENTIAL!,
-	bucketName: process.env.FIREBASE_BUCKET_NAME!,
+  credential: process.env.FIREBASE_CREDENTIAL!,
+  bucketName: process.env.FIREBASE_BUCKET_NAME!,
 });
+
 const dbClient = new FirebaseDbClient({
-	credential: process.env.FIREBASE_CREDENTIAL!,
-	databaseId: process.env.FIREBASE_DATABASE_ID!,
+  credential: process.env.FIREBASE_CREDENTIAL!,
+  databaseId: process.env.FIREBASE_DATABASE_ID!,
 });
 
 export default defineConfig(() => ({
@@ -182,47 +206,73 @@ export default defineConfig(() => ({
 }));
 ```
 
----
+### Custom
 
-# 📘 Expo Updates SDK 메서드 지원 현황
+```ts
+import { defineConfig } from "@cloud-push/react-native";
+import { StorageClient, DbClient } from "@cloud-push/cloud";
+import version from "./version";
 
-## 🧱 Constants
+const storageClient: StorageClient = {
+  getFile: () => {},
+  getFileSignedUrl: () => {},
+  uploadDirectory: () => {},
+  uploadFile: () => {},
+  uploadLocalFile: () => {},
+};
 
-| 상수명                         | 지원 여부 |
-|--------------------------------|-----------|
-| `Updates.channel`              | ❌ 미지원 |
-| `Updates.checkAutomatically`   | ✅ 지원   |
-| `Updates.createdAt`            | ✅ 지원   |
-| `Updates.emergencyLaunchReason`| ⏳ 확인 중 |
-| `Updates.isEmbeddedLaunch`     | ✅ 지원   |
-| `Updates.isEmergencyLaunch`    | ⏳ 확인 중 |
-| `Updates.isEnabled`            | ✅ 지원   |
-| `Updates.latestContext`        | ✅ 지원   |
-| `Updates.launchDuration`       | ✅ 지원   |
-| `Updates.manifest`             | ✅ 지원   |
-| `Updates.runtimeVersion`       | ✅ 지원   |
-| `Updates.updateId`             | ✅ 지원   |
+const dbClient: DbClient = {
+  create: () => {},
+  delete: () => {},
+  find: () => {},
+  findAll: () => {},
+  readAll: () => {},
+  toBuffer: () => {},
+  update: () => {},
+};
 
----
-
-## 🧩 Hooks
-
-| 훅             | 지원 여부 |
-|----------------|-----------|
-| `useUpdates()` | ⏳ 확인 중 |
-
----
-
-## 🛠 Methods
-
-| 메서드명                      | 지원 여부 |
-|-------------------------------|-----------|
-| `checkForUpdateAsync()`       | ✅ 지원   |
-| `clearLogEntriesAsync()`      | ✅ 지원   |
-| `fetchUpdateAsync()`          | ✅ 지원   |
-| `getExtraParamsAsync()`       | ❌ 미지원 |
-| `readLogEntriesAsync()`       | ✅ 지원   |
-| `reloadAsync()`               | ✅ 지원   |
-| `setExtraParamAsync()`        | ❌ 미지원 |
+export default defineConfig(() => ({
+  runtimeVersion: version.runtimeVersion,
+  storage: storageClient,
+  db: dbClient,
+}));
 ```
 
+## 📘 Expo Updates SDK Compatibility
+
+### 🧱 Constants
+
+| Constant                      | Supported |
+|------------------------------|-----------|
+| `Updates.channel`            | ✅        |
+| `Updates.checkAutomatically` | ✅        |
+| `Updates.createdAt`          | ✅        |
+| `Updates.emergencyLaunchReason` | ⏳    |
+| `Updates.isEmbeddedLaunch`   | ✅        |
+| `Updates.isEmergencyLaunch`  | ⏳        |
+| `Updates.isEnabled`          | ✅        |
+| `Updates.latestContext`      | ✅        |
+| `Updates.launchDuration`     | ✅        |
+| `Updates.manifest`           | ✅        |
+| `Updates.runtimeVersion`     | ✅        |
+| `Updates.updateId`           | ✅        |
+
+### 🧩 Hooks
+
+| Hook           | Supported |
+|----------------|-----------|
+| `useUpdates()` | ⏳        |
+
+### 🛠 Methods
+
+| Method                  | Supported |
+|-------------------------|-----------|
+| `checkForUpdateAsync()` | ✅        |
+| `clearLogEntriesAsync()`| ✅        |
+| `fetchUpdateAsync()`    | ✅        |
+| `getExtraParamsAsync()` | ❌        |
+| `readLogEntriesAsync()` | ✅        |
+| `reloadAsync()`         | ✅        |
+| `setExtraParamAsync()`  | ❌        |
+
+---

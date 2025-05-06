@@ -96,6 +96,9 @@ importers:
 
   next:
     dependencies:
+      '@clack/prompts':
+        specifier: ^0.10.0
+        version: 0.10.0
       commander:
         specifier: ^13.1.0
         version: 13.1.0
@@ -104,7 +107,10 @@ importers:
         version: 9.0.0(typescript@5.8.3)
       cosmiconfig-typescript-loader:
         specifier: ^6.1.0
-        version: 6.1.0(@types/node@22.14.0)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.8.3)
+        version: 6.1.0(@types/node@20.17.30)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.8.3)
+      workspace-tools:
+        specifier: ^0.38.1
+        version: 0.38.2
     devDependencies:
       '@cloud-push/cloud':
         specifier: workspace:*
@@ -115,6 +121,9 @@ importers:
       '@rslib/core':
         specifier: ^0.5.5
         version: 0.5.5(typescript@5.8.3)
+      '@types/node':
+        specifier: ^20
+        version: 20.17.30
       typescript:
         specifier: ^5.8.2
         version: 5.8.3
@@ -4505,13 +4514,6 @@ snapshots:
   cosmiconfig-typescript-loader@6.1.0(@types/node@20.17.30)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.8.3):
     dependencies:
       '@types/node': 20.17.30
-      cosmiconfig: 9.0.0(typescript@5.8.3)
-      jiti: 2.4.2
-      typescript: 5.8.3
-
-  cosmiconfig-typescript-loader@6.1.0(@types/node@22.14.0)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.8.3):
-    dependencies:
-      '@types/node': 22.14.0
       cosmiconfig: 9.0.0(typescript@5.8.3)
       jiti: 2.4.2
       typescript: 5.8.3

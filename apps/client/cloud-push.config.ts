@@ -1,18 +1,17 @@
 import { defineConfig } from "@cloud-push/react-native";
-import { AWSS3StorageClient, LowDbClient } from "@cloud-push/cloud";
+import { SupabaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
 
-const storageClient = new AWSS3StorageClient({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    bucketName: process.env.AWS_BUCKET_NAME!,
-    region: process.env.AWS_REGION!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+const storageClient = new SupabaseStorageClient({
+    bucketName: process.env.SUPABASE_BUCKET_NAME,
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseKey: process.env.SUPABASE_KEY,
 });
             
 
-const dbClient = new LowDbClient({
-    downloadJSONFile: () => storageClient.getFile({ key: "cursor.json" }),
-    uploadJSONFile: (file: Buffer) =>
-    storageClient.uploadFile({ key: "cursor.json", file }),
+const dbClient = new SupabaseDbClient({
+    tableName: process.env.SUPABASE_TABLE_NAME!,
+    supabaseUrl: process.env.SUPABASE_URL!,
+    supabaseKey: process.env.SUPABASE_KEY!,
 });
             
 export default defineConfig(() => ({

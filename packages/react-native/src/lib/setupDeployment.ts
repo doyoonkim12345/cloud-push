@@ -1,15 +1,15 @@
 import { selectPlatforms } from "../commands/selectPlatforms";
 import { selectEnvironment } from "../commands/selectEnvironment";
 import { selectEnvSource } from "../commands/selectEnvSource";
-import { loadEnv } from "../features/env/lib/loadEnv";
 import { loadConfig } from "@/lib/loadConfig";
 import { getRuntimeVersion } from "../commands/getRuntimeVersion";
 import { exportBundles } from "../commands/exportBundles";
 import { exportExpoConfig } from "../commands/exportExpoConfig";
 import { v4 as uuidv4 } from "uuid";
 import type { DeploymentConfig } from "@/commands/uploadBundle";
-import type { Environment, Platform } from "@cloud-push/core";
 import type { Config } from "@/config";
+import { loadEnv } from "@/commands/loadEnv";
+import type { Environment, Platform } from "@cloud-push/core";
 
 export async function setupDeployment(
 	bundlePath: string,

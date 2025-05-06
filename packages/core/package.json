@@ -1,13 +1,20 @@
 {
 	"type": "module",
 	"name": "@cloud-push/core",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "",
 	"exports": {
 		".": {
 			"import": "./dist/index.js",
 			"require": "./dist/index.cjs",
-			"types": "./dist/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"node": "./dist/index.cjs"
+		},
+		"./node": {
+			"import": "./dist/node.js",
+			"require": "./dist/node.cjs",
+			"types": "./dist/node.d.ts",
+			"node": "./dist/node.cjs"
 		}
 	},
 	"scripts": {
@@ -15,7 +22,32 @@
 		"dev": "rslib build --watch",
 		"build": "rslib build"
 	},
-	"keywords": [],
+	"keywords": [
+		"expo",
+		"expo-updates",
+		"react-native",
+		"expo-managed",
+		"expo-build",
+		"expo-dev-client",
+		"expo-router",
+		"eas",
+		"eas-update",
+		"eas-cli",
+		"eas-build",
+		"ota",
+		"over-the-air",
+		"live-update",
+		"app-update",
+		"background-updates",
+		"codepush",
+		"cloud-update",
+		"expo-publish",
+		"versioning",
+		"runtimeVersion",
+		"mobile",
+		"updates",
+		"react-native-updates"
+	],
 	"author": "",
 	"license": "ISC",
 	"files": ["dist"],

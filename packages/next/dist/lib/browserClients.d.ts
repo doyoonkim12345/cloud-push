@@ -1,3 +1,0 @@
-export declare const storageBrowserClient: <K extends never>(key: K, ...args: {}[K] extends (...args: infer P) => unknown ? P : []) => Promise<{}[K] extends infer T ? T extends {}[K] ? T extends (...args: any[]) => infer R ? R extends Promise<infer P_1> ? Promise<P_1> : Promise<R> : Promise<T> : never : never>;
-export declare const dbBrowserClient: <K extends never>(key: K, ...args: {}[K] extends (...args: infer P) => unknown ? P : []) => Promise<{}[K] extends infer T ? T extends {}[K] ? T extends (...args: any[]) => infer R ? R extends Promise<infer P_1> ? Promise<P_1> : Promise<R> : Promise<T> : never : never>;
-//# sourceMappingURL=browserClients.d.ts.map

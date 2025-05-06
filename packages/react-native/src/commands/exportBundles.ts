@@ -20,7 +20,7 @@ export async function exportBundles({
 	spinner.start(`Starting ${title}...`);
 
 	try {
-		const { stdout } = await execa(
+		await execa(
 			"expo",
 			[
 				"export",
@@ -33,8 +33,6 @@ export async function exportBundles({
 			],
 			{ env: { ...process.env, NODE_ENV: environment } },
 		);
-
-		console.log(stdout);
 
 		spinner.stop(`✅ ${title} completed successfully!`);
 	} catch (error) {

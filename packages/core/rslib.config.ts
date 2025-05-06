@@ -8,6 +8,7 @@ export default defineConfig({
 			source: {
 				entry: {
 					index: "./src/index.ts",
+					node: "./src/node.ts",
 				},
 			},
 		},
@@ -17,6 +18,7 @@ export default defineConfig({
 			source: {
 				entry: {
 					index: "./src/index.ts",
+					node: "./src/node.ts",
 				},
 			},
 		},

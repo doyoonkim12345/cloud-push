@@ -5,10 +5,12 @@ import * as __WEBPACK_EXTERNAL_MODULE_child_process__ from "child_process";
 import * as __WEBPACK_EXTERNAL_MODULE_fs__ from "fs";
 import * as __WEBPACK_EXTERNAL_MODULE_path__ from "path";
 import * as __WEBPACK_EXTERNAL_MODULE_commander__ from "commander";
-import * as __WEBPACK_EXTERNAL_MODULE_boxen__ from "boxen";
 import * as __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__ from "@clack/prompts";
 import * as __WEBPACK_EXTERNAL_MODULE_node_path_c5b9b54f__ from "node:path";
-import * as __WEBPACK_EXTERNAL_MODULE__cloud_push_core_e7d83c23__ from "@cloud-push/core";
+import * as __WEBPACK_EXTERNAL_MODULE_cosmiconfig__ from "cosmiconfig";
+import * as __WEBPACK_EXTERNAL_MODULE_cosmiconfig_typescript_loader_05c5f2fe__ from "cosmiconfig-typescript-loader";
+import * as __WEBPACK_EXTERNAL_MODULE__cloud_push_core_node_01f3076f__ from "@cloud-push/core/node";
+import * as __WEBPACK_EXTERNAL_MODULE_semver__ from "semver";
 import * as __WEBPACK_EXTERNAL_MODULE_node_url_e96de089__ from "node:url";
 import * as __WEBPACK_EXTERNAL_MODULE_node_child_process_27f17141__ from "node:child_process";
 import * as __WEBPACK_EXTERNAL_MODULE_node_string_decoder_28f74b45__ from "node:string_decoder";
@@ -23,13 +25,9 @@ import * as __WEBPACK_EXTERNAL_MODULE_node_fs_5ea92f0c__ from "node:fs";
 import * as __WEBPACK_EXTERNAL_MODULE_node_stream_444d1c2b__ from "node:stream";
 import * as __WEBPACK_EXTERNAL_MODULE_node_buffer_fb286294__ from "node:buffer";
 import * as __WEBPACK_EXTERNAL_MODULE_node_stream_promises_5adae1f2__ from "node:stream/promises";
-import * as __WEBPACK_EXTERNAL_MODULE_dotenv__ from "dotenv";
-import * as __WEBPACK_EXTERNAL_MODULE_cosmiconfig__ from "cosmiconfig";
-import * as __WEBPACK_EXTERNAL_MODULE_cosmiconfig_typescript_loader_05c5f2fe__ from "cosmiconfig-typescript-loader";
-import * as __WEBPACK_EXTERNAL_MODULE_semver__ from "semver";
 import * as __WEBPACK_EXTERNAL_MODULE_node_fs_promises_153e37e0__ from "node:fs/promises";
 import * as __WEBPACK_EXTERNAL_MODULE_uuid__ from "uuid";
-import * as __WEBPACK_EXTERNAL_MODULE_fs_promises_400951f8__ from "fs/promises";
+import * as __WEBPACK_EXTERNAL_MODULE_dotenv__ from "dotenv";
 var __webpack_modules__ = {
     "../node_modules/.pnpm/cross-spawn@7.0.6/node_modules/cross-spawn/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
         const cp = __webpack_require__("child_process");
@@ -323,72 +321,6 @@ var __webpack_modules__ = {
         module.exports = pathKey;
         module.exports["default"] = pathKey;
     },
-    "../node_modules/.pnpm/picocolors@1.1.1/node_modules/picocolors/picocolors.js": function(module) {
-        let p = process || {}, argv = p.argv || [], env = p.env || {};
-        let isColorSupported = !(!!env.NO_COLOR || argv.includes("--no-color")) && (!!env.FORCE_COLOR || argv.includes("--color") || "win32" === p.platform || (p.stdout || {}).isTTY && "dumb" !== env.TERM || !!env.CI);
-        let formatter = (open, close, replace = open)=>(input)=>{
-                let string = "" + input, index = string.indexOf(close, open.length);
-                return ~index ? open + replaceClose(string, close, replace, index) + close : open + string + close;
-            };
-        let replaceClose = (string, close, replace, index)=>{
-            let result = "", cursor = 0;
-            do {
-                result += string.substring(cursor, index) + replace;
-                cursor = index + close.length;
-                index = string.indexOf(close, cursor);
-            }while (~index);
-            return result + string.substring(cursor);
-        };
-        let createColors = (enabled = isColorSupported)=>{
-            let f = enabled ? formatter : ()=>String;
-            return {
-                isColorSupported: enabled,
-                reset: f("\x1b[0m", "\x1b[0m"),
-                bold: f("\x1b[1m", "\x1b[22m", "\x1b[22m\x1b[1m"),
-                dim: f("\x1b[2m", "\x1b[22m", "\x1b[22m\x1b[2m"),
-                italic: f("\x1b[3m", "\x1b[23m"),
-                underline: f("\x1b[4m", "\x1b[24m"),
-                inverse: f("\x1b[7m", "\x1b[27m"),
-                hidden: f("\x1b[8m", "\x1b[28m"),
-                strikethrough: f("\x1b[9m", "\x1b[29m"),
-                black: f("\x1b[30m", "\x1b[39m"),
-                red: f("\x1b[31m", "\x1b[39m"),
-                green: f("\x1b[32m", "\x1b[39m"),
-                yellow: f("\x1b[33m", "\x1b[39m"),
-                blue: f("\x1b[34m", "\x1b[39m"),
-                magenta: f("\x1b[35m", "\x1b[39m"),
-                cyan: f("\x1b[36m", "\x1b[39m"),
-                white: f("\x1b[37m", "\x1b[39m"),
-                gray: f("\x1b[90m", "\x1b[39m"),
-                bgBlack: f("\x1b[40m", "\x1b[49m"),
-                bgRed: f("\x1b[41m", "\x1b[49m"),
-                bgGreen: f("\x1b[42m", "\x1b[49m"),
-                bgYellow: f("\x1b[43m", "\x1b[49m"),
-                bgBlue: f("\x1b[44m", "\x1b[49m"),
-                bgMagenta: f("\x1b[45m", "\x1b[49m"),
-                bgCyan: f("\x1b[46m", "\x1b[49m"),
-                bgWhite: f("\x1b[47m", "\x1b[49m"),
-                blackBright: f("\x1b[90m", "\x1b[39m"),
-                redBright: f("\x1b[91m", "\x1b[39m"),
-                greenBright: f("\x1b[92m", "\x1b[39m"),
-                yellowBright: f("\x1b[93m", "\x1b[39m"),
-                blueBright: f("\x1b[94m", "\x1b[39m"),
-                magentaBright: f("\x1b[95m", "\x1b[39m"),
-                cyanBright: f("\x1b[96m", "\x1b[39m"),
-                whiteBright: f("\x1b[97m", "\x1b[39m"),
-                bgBlackBright: f("\x1b[100m", "\x1b[49m"),
-                bgRedBright: f("\x1b[101m", "\x1b[49m"),
-                bgGreenBright: f("\x1b[102m", "\x1b[49m"),
-                bgYellowBright: f("\x1b[103m", "\x1b[49m"),
-                bgBlueBright: f("\x1b[104m", "\x1b[49m"),
-                bgMagentaBright: f("\x1b[105m", "\x1b[49m"),
-                bgCyanBright: f("\x1b[106m", "\x1b[49m"),
-                bgWhiteBright: f("\x1b[107m", "\x1b[49m")
-            };
-        };
-        module.exports = createColors();
-        module.exports.createColors = createColors;
-    },
     "../node_modules/.pnpm/shebang-command@2.0.0/node_modules/shebang-command/index.js": function(module, __unused_webpack_exports, __webpack_require__) {
         const shebangRegex = __webpack_require__("../node_modules/.pnpm/shebang-regex@3.0.0/node_modules/shebang-regex/index.js");
         module.exports = (string = '')=>{
@@ -514,15 +446,6 @@ function __webpack_require__(moduleId) {
     __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
     return module.exports;
 }
-var picocolors_picocolors = __webpack_require__("../node_modules/.pnpm/picocolors@1.1.1/node_modules/picocolors/picocolors.js");
-const banner = (0, __WEBPACK_EXTERNAL_MODULE_boxen__["default"])([
-    `${picocolors_picocolors.bold("cloud-push")}`
-].join("\n"), {
-    padding: 1,
-    borderStyle: "round",
-    borderColor: "green",
-    textAlignment: "center"
-});
 async function selectPlatforms() {
     const platforms = await __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.multiselect({
         message: "Select platforms",
@@ -569,7 +492,7 @@ async function selectEnvironment() {
 }
 async function selectEnvSource() {
     const envSource = await __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.select({
-        message: "Select environment",
+        message: "Select where to load environment variables from",
         options: [
             {
                 value: "eas",
@@ -583,6 +506,47 @@ async function selectEnvSource() {
     });
     if (!envSource) throw new Error("No environment selected. Exiting...");
     return envSource;
+}
+const MODULE_NAME = "cloud-push";
+const loadConfig = async ()=>{
+    try {
+        const result = await (0, __WEBPACK_EXTERNAL_MODULE_cosmiconfig__.cosmiconfig)(MODULE_NAME, {
+            stopDir: (0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_node_01f3076f__.getCwd)(),
+            searchPlaces: [
+                "package.json",
+                `${MODULE_NAME}.config.js`,
+                `${MODULE_NAME}.config.cjs`,
+                `${MODULE_NAME}.config.mjs`,
+                `${MODULE_NAME}.config.ts`
+            ],
+            ignoreEmptySearchPlaces: false,
+            loaders: {
+                ".ts": (0, __WEBPACK_EXTERNAL_MODULE_cosmiconfig_typescript_loader_05c5f2fe__.TypeScriptLoader)(),
+                ".mts": (0, __WEBPACK_EXTERNAL_MODULE_cosmiconfig_typescript_loader_05c5f2fe__.TypeScriptLoader)(),
+                ".cts": (0, __WEBPACK_EXTERNAL_MODULE_cosmiconfig_typescript_loader_05c5f2fe__.TypeScriptLoader)()
+            }
+        }).search();
+        if (!result?.config) throw new Error("Failed to find config");
+        if ("function" == typeof result.config) return await result.config();
+        return result.config;
+    } catch (e) {
+        throw new Error(e);
+    }
+};
+async function getRuntimeVersion(configRuntimeVersion) {
+    let runtimeVersion = configRuntimeVersion;
+    if (runtimeVersion && __WEBPACK_EXTERNAL_MODULE_semver__["default"].valid(runtimeVersion)) __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.log.success(`runtimeVersion: ${runtimeVersion}`);
+    else {
+        runtimeVersion = await __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.text({
+            message: "What runtimeVersion would you like to set?",
+            placeholder: "1.0.0",
+            validate: (value)=>{
+                if (!__WEBPACK_EXTERNAL_MODULE_semver__["default"].valid(value)) return new Error("Please enter a valid semantic version (e.g., 1.0.0)");
+            }
+        });
+        if ("string" != typeof runtimeVersion) throw new Error("No runtimeVersion provided. Exiting...");
+    }
+    return runtimeVersion;
 }
 function isPlainObject(value) {
     if ('object' != typeof value || null === value) return false;
@@ -6598,93 +6562,12 @@ createExeca(mapCommandSync);
 createExeca(mapNode);
 createExeca(mapScriptAsync, {}, deepScriptOptions, setScriptSync);
 const { sendMessage: execa_sendMessage, getOneMessage: execa_getOneMessage, getEachMessage: execa_getEachMessage, getCancelSignal: execa_getCancelSignal } = getIpcExport();
-const parseStdout = (stdout)=>{
-    const env = stdout.split("\n").filter((line)=>line.includes("=")).map((e)=>e.split("=")).reduce((acc, [key, value])=>({
-            ...acc,
-            [key]: value
-        }), {});
-    return env;
-};
-async function loadEASEnv(environment) {
-    const { stdout } = await execa("eas", [
-        "env:list",
-        environment
-    ], {
-        stdio: "pipe"
-    });
-    const parsedEnv = parseStdout(stdout);
-    __WEBPACK_EXTERNAL_MODULE_dotenv__.populate(process.env, parsedEnv, {
-        override: true
-    });
-}
-async function loadEnv(envSource, environment) {
-    const spinner = __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.spinner();
-    spinner.start("Loading env from Expo server ...");
-    try {
-        switch(envSource){
-            case "eas":
-                await loadEASEnv(environment);
-                break;
-            case "file":
-                await (0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_e7d83c23__.loadFileEnv)(environment);
-                break;
-            default:
-                throw new Error("Invalid env source");
-        }
-        console.log(process.env.App_VARIANT, process.env.EXPO_PUBLIC_APP_VARIANT);
-        spinner.stop("✅ Loading env completed successfully!");
-    } catch (e) {
-        spinner.stop(`❌ Loading env failed: ${e.message}`);
-        throw new Error("This project does not manage environment variables through EAS. Please upload the environment variables via eas env or expo.dev.");
-    }
-}
-const MODULE_NAME = "cloud-push";
-const loadConfig = async ()=>{
-    try {
-        const result = await (0, __WEBPACK_EXTERNAL_MODULE_cosmiconfig__.cosmiconfig)(MODULE_NAME, {
-            stopDir: (0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_e7d83c23__.getCwd)(),
-            searchPlaces: [
-                "package.json",
-                `${MODULE_NAME}.config.js`,
-                `${MODULE_NAME}.config.cjs`,
-                `${MODULE_NAME}.config.mjs`,
-                `${MODULE_NAME}.config.ts`
-            ],
-            ignoreEmptySearchPlaces: false,
-            loaders: {
-                ".ts": (0, __WEBPACK_EXTERNAL_MODULE_cosmiconfig_typescript_loader_05c5f2fe__.TypeScriptLoader)(),
-                ".mts": (0, __WEBPACK_EXTERNAL_MODULE_cosmiconfig_typescript_loader_05c5f2fe__.TypeScriptLoader)(),
-                ".cts": (0, __WEBPACK_EXTERNAL_MODULE_cosmiconfig_typescript_loader_05c5f2fe__.TypeScriptLoader)()
-            }
-        }).search();
-        if (!result?.config) throw new Error("Failed to find config");
-        if ("function" == typeof result.config) return await result.config();
-        return result.config;
-    } catch (e) {
-        throw new Error(e);
-    }
-};
-async function getRuntimeVersion(configRuntimeVersion) {
-    let runtimeVersion = configRuntimeVersion;
-    if (runtimeVersion && __WEBPACK_EXTERNAL_MODULE_semver__["default"].valid(runtimeVersion)) __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.log.success(`runtimeVersion: ${runtimeVersion}`);
-    else {
-        runtimeVersion = await __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.text({
-            message: "What runtimeVersion would you like to set?",
-            placeholder: "1.0.0",
-            validate: (value)=>{
-                if (!__WEBPACK_EXTERNAL_MODULE_semver__["default"].valid(value)) return new Error("Please enter a valid semantic version (e.g., 1.0.0)");
-            }
-        });
-        if ("string" != typeof runtimeVersion) throw new Error("No runtimeVersion provided. Exiting...");
-    }
-    return runtimeVersion;
-}
 async function exportBundles({ platforms, bundlePath, environment }) {
     const title = `Exporting ${platforms.join(", ").toLocaleLowerCase()} bundles`;
     const spinner = __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.spinner();
     spinner.start(`Starting ${title}...`);
     try {
-        const { stdout } = await execa("expo", [
+        await execa("expo", [
             "export",
             ...platforms.flatMap((platform)=>[
                     "--platform",
@@ -6699,7 +6582,6 @@ async function exportBundles({ platforms, bundlePath, environment }) {
                 NODE_ENV: environment
             }
         });
-        console.log(stdout);
         spinner.stop(`✅ ${title} completed successfully!`);
     } catch (error) {
         spinner.stop(`❌ ${title} failed: ${error.message}`);
@@ -6723,6 +6605,63 @@ async function exportExpoConfig({ expoConfigPath }) {
     } catch (e) {
         spinner.stop(`❌ Exporting ExpoConfig failed: ${e.message}`);
         throw e;
+    }
+}
+const parseStdout = (stdout)=>{
+    const env = stdout.split("\n").filter((line)=>line.includes("=")).map((e)=>e.split("=")).reduce((acc, [key, value])=>({
+            ...acc,
+            [key]: value
+        }), {});
+    return env;
+};
+async function loadEASEnv(environment) {
+    const { stdout } = await execa("eas", [
+        "env:list",
+        environment
+    ], {
+        stdio: "pipe"
+    });
+    const parsedEnv = parseStdout(stdout);
+    __WEBPACK_EXTERNAL_MODULE_dotenv__.populate(process.env, parsedEnv, {
+        override: true
+    });
+}
+async function loadFileEnv(environment) {
+    const envFiles = [
+        `.env.${environment}.local`,
+        ".env.local",
+        `.env.${environment}`,
+        ".env"
+    ];
+    for (const file of envFiles){
+        const filePath = __WEBPACK_EXTERNAL_MODULE_node_path_c5b9b54f__.resolve((0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_node_01f3076f__.getCwd)(), file);
+        try {
+            await __WEBPACK_EXTERNAL_MODULE_node_fs_5ea92f0c__.promises.access(filePath);
+            __WEBPACK_EXTERNAL_MODULE_dotenv__.config({
+                path: filePath,
+                override: true
+            });
+        } catch (error) {}
+    }
+}
+async function loadEnv(envSource, environment) {
+    const spinner = __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.spinner();
+    spinner.start("Loading env from Expo server ...");
+    try {
+        switch(envSource){
+            case "eas":
+                await loadEASEnv(environment);
+                break;
+            case "file":
+                await loadFileEnv(environment);
+                break;
+            default:
+                throw new Error("Invalid env source");
+        }
+        spinner.stop("✅ Loading env completed successfully!");
+    } catch (e) {
+        spinner.stop(`❌ Loading env failed: ${e.message}`);
+        throw new Error("This project does not manage environment variables through EAS. Please upload the environment variables via eas env or expo.dev.");
     }
 }
 async function setupDeployment(bundlePath) {
@@ -6796,7 +6735,7 @@ async function updateVersionCursor(deploymentConfig) {
 }
 async function cleanup_cleanup(bundlePath) {
     try {
-        await (0, __WEBPACK_EXTERNAL_MODULE_fs_promises_400951f8__.rm)(bundlePath, {
+        await (0, __WEBPACK_EXTERNAL_MODULE_node_fs_promises_153e37e0__.rm)(bundlePath, {
             recursive: true,
             force: true
         });
@@ -6806,7 +6745,7 @@ async function cleanup_cleanup(bundlePath) {
     }
 }
 async function deploy() {
-    const cwd = (0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_e7d83c23__.getCwd)();
+    const cwd = (0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_node_01f3076f__.getCwd)();
     const bundlePath = __WEBPACK_EXTERNAL_MODULE_node_path_c5b9b54f__.resolve(cwd, "./dist");
     try {
         const deploymentConfig = await setupDeployment(bundlePath);
@@ -6828,6 +6767,139 @@ async function deploy() {
         await cleanup_cleanup(bundlePath);
     }
 }
+const createConfigTemplate = ({ db, storage })=>{
+    const importMethods = [];
+    let storageClientInstance = "";
+    let dbClientInstance = "";
+    switch(storage){
+        case "AWS_S3":
+            importMethods.push("AWSS3StorageClient");
+            storageClientInstance = `
+const storageClient = new AWSS3StorageClient({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    bucketName: process.env.AWS_BUCKET_NAME!,
+    region: process.env.AWS_REGION!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+});
+            `;
+            break;
+        case "FIREBASE":
+            importMethods.push("FirebaseStorageClient");
+            storageClientInstance = `
+const storageClient = new FirebaseStorageClient({
+    credential: process.env.FIREBASE_CREDENTIAL!,
+    bucketName: process.env.FIREBASE_BUCKET_NAME!,
+});
+            `;
+            break;
+        case "SUPABASE":
+            importMethods.push("SupabaseStorageClient");
+            storageClientInstance = `
+const storageClient = new SupabaseStorageClient({
+    bucketName: process.env.SUPABASE_BUCKET_NAME,
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseKey: process.env.SUPABASE_KEY,
+});
+            `;
+            break;
+        case "CUSTOM":
+            importMethods.push("StorageClient");
+            storageClientInstance = `
+const generateStorageClient = (): StorageClient => {
+	return {
+		getFile: () => {},
+		getFileSignedUrl: () => {},
+		uploadDirectory: () => {},
+		uploadFile: () => {},
+		uploadLocalFile: () => {},
+	};
+};
+const storageClient = generateStorageClient();
+`;
+            break;
+        default:
+            break;
+    }
+    switch(db){
+        case "FIREBASE":
+            importMethods.push("FirebaseDbClient");
+            dbClientInstance = `
+const dbClient = new FirebaseDbClient({
+    credential: process.env.FIREBASE_CREDENTIAL!,
+    databaseId: process.env.FIREBASE_DATABASE_ID!,
+});
+            `;
+            break;
+        case "LOWDB":
+            importMethods.push("LowDbClient");
+            dbClientInstance = `
+const dbClient = new LowDbClient({
+    downloadJSONFile: () => storageClient.getFile({ key: "cursor.json" }),
+    uploadJSONFile: (file: Buffer) =>
+    storageClient.uploadFile({ key: "cursor.json", file }),
+});
+            `;
+            break;
+        case "SUPABASE":
+            importMethods.push("SupabaseDbClient");
+            dbClientInstance = `
+const dbClient = new SupabaseDbClient({
+    tableName: process.env.SUPABASE_TABLE_NAME!,
+    supabaseUrl: process.env.SUPABASE_URL!,
+    supabaseKey: process.env.SUPABASE_KEY!,
+});
+            `;
+            break;
+        case "CUSTOM":
+            importMethods.push("DbClient");
+            dbClientInstance = `
+const generateDbClient = (): DbClient => {
+	return {
+		create: () => {},
+		delete: () => {},
+		find: () => {},
+		findAll: () => {},
+		readAll: () => {},
+		toBuffer: () => {},
+		update: () => {},
+	};
+};
+const dbClient = generateDbClient();
+`;
+            break;
+        default:
+            break;
+    }
+    return `
+import { defineConfig } from "@cloud-push/react-native";
+import { ${[
+        importMethods.join(", ")
+    ]} } from "@cloud-push/cloud";
+${storageClientInstance}
+${dbClientInstance}
+export default defineConfig(() => ({
+	storage: storageClient,
+	db: dbClient,
+}));
+`;
+};
+const init_init = async ()=>{
+    try {
+        const db = await (0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_node_01f3076f__.selectDbClient)();
+        const storage = await (0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_node_01f3076f__.selectStorageClient)();
+        const template = createConfigTemplate({
+            db,
+            storage
+        });
+        const cwd = (0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_node_01f3076f__.getCwd)();
+        const filePath = __WEBPACK_EXTERNAL_MODULE_node_path_c5b9b54f__.resolve(cwd, "cloud-push.config.ts");
+        __WEBPACK_EXTERNAL_MODULE_node_fs_5ea92f0c__.writeFileSync(filePath, template.trimStart(), "utf8");
+        __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.outro("Config Generated Successfully! 🎉");
+    } catch (e) {
+        console.error(e);
+        __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.outro("Config Generation failed");
+    }
+};
 const program = new __WEBPACK_EXTERNAL_MODULE_commander__.Command();
 let isExiting = false;
 process.on("SIGINT", async ()=>{
@@ -6836,8 +6908,7 @@ process.on("SIGINT", async ()=>{
     __WEBPACK_EXTERNAL_MODULE__clack_prompts_3cae1695__.log.error("\n\n🛑 Process interrupted. Cleaning up...");
     process.exit(1);
 });
-program.name("cloud-push").description(banner).version("1.0.0");
 program.command("deploy").description("Upload bundle").action(deploy);
-program.command("init").action(()=>(0, __WEBPACK_EXTERNAL_MODULE__cloud_push_core_e7d83c23__.init)("react-native"));
+program.command("init").action(init_init);
 program.parse(process.argv);
 if (!process.argv.slice(2).length) program.outputHelp();

@@ -1,5 +1,4 @@
 import type { Config } from "../config";
-import type { ENV_SOURCE } from "../features/env/types";
 import type { Environment, Platform } from "@cloud-push/core";
 export interface DeploymentConfig {
     bundleId: string;

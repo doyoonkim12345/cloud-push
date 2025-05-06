@@ -4,7 +4,7 @@ import { setupDeployment } from "@/lib/setupDeployment";
 import { type DeploymentConfig, uploadBundle } from "./uploadBundle";
 import { updateVersionCursor } from "./updateCursor";
 import { cleanup } from "@/lib/cleanup";
-import { getCwd } from "@cloud-push/core";
+import { getCwd } from "@cloud-push/core/node";
 
 export async function deploy(): Promise<void> {
 	const cwd = getCwd();

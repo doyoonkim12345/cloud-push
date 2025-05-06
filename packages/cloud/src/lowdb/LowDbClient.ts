@@ -139,8 +139,6 @@ export class LowDbClient extends DbClient {
 	};
 
 	init = async (): Promise<void> => {
-		console.log("initialize db client");
-
 		try {
 			const file = await this.downloadJSONFile();
 			const db = await LowDbLoader.loadLowDbFromFile<Cursor>(file);
