@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "@cloud-push/react-native",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"description": "",
 	"main": "./dist/config.cjs",
 	"module": "./dist/config.js",
@@ -68,8 +68,8 @@
 	},
 	"dependencies": {
 		"@clack/prompts": "^0.10.0",
-		"@cloud-push/core": "1.0.1",
-		"@cloud-push/cloud": "1.0.1",
+		"@cloud-push/core": "1.0.2",
+		"@cloud-push/cloud": "1.0.3",
 		"@types/semver": "^7.5.8",
 		"boxen": "^8.0.1",
 		"chalk": "^5.4.1",

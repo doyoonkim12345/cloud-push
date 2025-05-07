@@ -1,6 +1,6 @@
 {
 	"name": "@cloud-push/next",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"type": "module",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
@@ -24,8 +24,8 @@
 	"license": "ISC",
 	"packageManager": "pnpm@10.6.1",
 	"devDependencies": {
-		"@cloud-push/cloud": "1.0.1",
-		"@cloud-push/core": "1.0.1",
+		"@cloud-push/cloud": "1.0.3",
+		"@cloud-push/core": "1.0.2",
 		"@rslib/core": "^0.5.5",
 		"@types/node": "^20",
 		"typescript": "^5.8.2"
