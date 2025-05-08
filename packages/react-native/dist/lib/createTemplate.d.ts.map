@@ -1,1 +1,0 @@
-{"version":3,"file":"createTemplate.d.ts","sourceRoot":"","sources":["../../src/lib/createTemplate.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,EAAE,EAAE,OAAO,EAAE,MAAM,kBAAkB,CAAC;AAEpD,MAAM,MAAM,YAAY,GAAG,MAAM,GAAG,cAAc,CAAC;AAEnD,eAAO,MAAM,oBAAoB,GAAI,kBAGlC;IAAE,EAAE,EAAE,EAAE,CAAC;IAAC,OAAO,EAAE,OAAO,CAAA;CAAE,WAqH9B,CAAC"}
