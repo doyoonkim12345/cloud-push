@@ -1,7 +1,7 @@
 import * as prompts from "@clack/prompts";
 import * as path from "node:path";
 import { setupDeployment } from "@/lib/setupDeployment";
-import { type DeploymentConfig, uploadBundle } from "./uploadBundle";
+import { uploadBundle } from "./uploadBundle";
 import { updateVersionCursor } from "./updateCursor";
 import { cleanup } from "@/lib/cleanup";
 import { getCwd } from "@cloud-push/core/node";
@@ -12,25 +12,41 @@ export async function deploy(): Promise<void> {
 
 	try {
 		// 1. 배포 설정 단계
-		const deploymentConfig: DeploymentConfig =
-			await setupDeployment(bundlePath);
+		const {
+			cloudPath,
+			storageClient,
+			bundleId,
+			dbClient,
+			environment,
+			gitHash,
+			platforms,
+			runtimeVersion,
+			envSource,
+		} = await setupDeployment(bundlePath);
 
 		// 2. 번들 업로드 단계
-		await uploadBundle(deploymentConfig, bundlePath);
+		await uploadBundle({ cloudPath, directoryPath: bundlePath, storageClient });
 
 		// 3. 버전 커서 업데이트 단계
-		await updateVersionCursor(deploymentConfig);
+		await updateVersionCursor({
+			bundleId,
+			dbClient,
+			environment,
+			gitHash,
+			platforms,
+			runtimeVersion,
+		});
 
 		prompts.outro("🚀 Deployment Successful");
 		prompts.note(
 			JSON.stringify(
 				{
-					bundleId: deploymentConfig.bundleId,
-					runtimeVersion: deploymentConfig.runtimeVersion,
-					platforms: deploymentConfig.platforms,
-					cloudPath: deploymentConfig.cloudPath,
-					environment: deploymentConfig.environment,
-					envSource: deploymentConfig.envSource,
+					bundleId,
+					runtimeVersion,
+					platforms,
+					cloudPath,
+					environment,
+					envSource,
 				},
 				null,
 				2,

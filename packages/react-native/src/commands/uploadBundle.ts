@@ -1,5 +1,6 @@
 import type { Config } from "@/config";
 import * as prompts from "@clack/prompts";
+import type { StorageClient } from "@cloud-push/cloud";
 import type { Environment, Platform } from "@cloud-push/core";
 
 export interface DeploymentConfig {
@@ -12,20 +13,23 @@ export interface DeploymentConfig {
 	envSource: ENV_SOURCE;
 }
 
-export async function uploadBundle(
-	deploymentConfig: DeploymentConfig,
-	bundlePath: string,
-): Promise<void> {
-	const { cloudPath, config } = deploymentConfig;
+export async function uploadBundle({
+	cloudPath,
+	directoryPath,
+	storageClient,
+}: {
+	storageClient: StorageClient;
+	cloudPath: string;
+	directoryPath: string;
+}): Promise<void> {
 	const spinner = prompts.spinner();
 
 	spinner.start("Preparing file upload...");
 
 	try {
-		const storageClient = config.storage;
 		await storageClient.uploadDirectory({
 			cloudPath,
-			directoryPath: bundlePath,
+			directoryPath,
 		});
 
 		spinner.stop("✅ Uploading completed successfully!");

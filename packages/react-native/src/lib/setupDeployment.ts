@@ -6,14 +6,12 @@ import { getRuntimeVersion } from "../commands/getRuntimeVersion";
 import { exportBundles } from "../commands/exportBundles";
 import { exportExpoConfig } from "../commands/exportExpoConfig";
 import { v4 as uuidv4 } from "uuid";
-import type { DeploymentConfig } from "@/commands/uploadBundle";
 import type { Config } from "@/config";
 import { loadEnv } from "@/commands/loadEnv";
 import type { Environment, Platform } from "@cloud-push/core";
+import { getGitCommitHash } from "@/commands/getGitCommitHash";
 
-export async function setupDeployment(
-	bundlePath: string,
-): Promise<DeploymentConfig> {
+export async function setupDeployment(bundlePath: string) {
 	// 1. 플랫폼 선택
 	const platforms: Platform[] = await selectPlatforms();
 
@@ -44,13 +42,17 @@ export async function setupDeployment(
 	// 10. S3 키 생성
 	const cloudPath: string = `${runtimeVersion}/${environment}/${bundleId}`;
 
+	const gitHash = await getGitCommitHash();
+
 	return {
 		bundleId,
 		cloudPath,
 		platforms,
 		environment,
 		runtimeVersion,
-		config,
+		dbClient: config.db,
+		storageClient: config.storage,
 		envSource,
+		gitHash,
 	};
 }

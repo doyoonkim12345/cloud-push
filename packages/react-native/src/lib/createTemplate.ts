@@ -1,7 +1,5 @@
 import type { Db, Storage } from "@cloud-push/core";
 
-export type TemplateFrom = "next" | "react-native";
-
 export const createConfigTemplate = ({
 	db,
 	storage,

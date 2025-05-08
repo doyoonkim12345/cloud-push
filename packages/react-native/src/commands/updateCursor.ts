@@ -1,15 +1,25 @@
 import * as prompts from "@clack/prompts";
-import type { DeploymentConfig } from "./uploadBundle";
+import type { Environment, Platform } from "@cloud-push/core";
+import type { DbClient } from "@cloud-push/cloud";
 
-export async function updateVersionCursor(
-	deploymentConfig: DeploymentConfig,
-): Promise<void> {
-	const { bundleId, environment, platforms, runtimeVersion, config } =
-		deploymentConfig;
+export async function updateVersionCursor({
+	bundleId,
+	environment,
+	platforms,
+	runtimeVersion,
+	gitHash,
+	dbClient,
+}: {
+	bundleId: string;
+	environment: Environment;
+	platforms: Platform[];
+	runtimeVersion: string;
+	gitHash: string;
+	dbClient: DbClient;
+}): Promise<void> {
 	const cursorSpinner = prompts.spinner();
 
 	cursorSpinner.start("Version cursor updating...");
-	const dbClient = await config.db;
 
 	await dbClient.init?.();
 
@@ -19,7 +29,7 @@ export async function updateVersionCursor(
 				bundleId,
 				createdAt: Date.now(),
 				environment,
-				gitHash: "",
+				gitHash,
 				supportAndroid: platforms.includes("android"),
 				supportIos: platforms.includes("ios"),
 				runtimeVersion,
