@@ -111,12 +111,8 @@ export const dbNodeClient = generateDbClient();
 	}
 
 	return `
-import { generateBrowserClient } from "@cloud-push/next";
 import { ${[importMethods.join(", ")]} } from "@cloud-push/cloud";
 ${storageClientInstance}
 ${dbClientInstance}
-
-export const storageBrowserClient = generateBrowserClient(storageNodeClient);
-export const dbBrowserClient = generateBrowserClient(dbNodeClient);
 `;
 };

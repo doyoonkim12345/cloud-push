@@ -6,6 +6,7 @@ import { updateVersionCursor } from "./updateCursor";
 import { cleanup } from "@/lib/cleanup";
 import { getCwd } from "@cloud-push/core/node";
 import { getCommitUrl } from "@cloud-push/core";
+import { uploadSetting } from "./uploadSetting";
 
 export async function deploy(): Promise<void> {
 	const cwd = getCwd();
@@ -37,6 +38,11 @@ export async function deploy(): Promise<void> {
 			gitHash,
 			platforms,
 			runtimeVersion,
+		});
+
+		await uploadSetting({
+			storageClient,
+			setting: { repositoryUrl: gitRepositoryUrl },
 		});
 
 		prompts.outro("🚀 Deployment Successful");
