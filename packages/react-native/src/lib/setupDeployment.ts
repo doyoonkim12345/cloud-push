@@ -10,6 +10,7 @@ import type { Config } from "@/config";
 import { loadEnv } from "@/commands/loadEnv";
 import type { Environment, Platform } from "@cloud-push/core";
 import { getGitCommitHash } from "@/commands/getGitCommitHash";
+import { getRepositoryUrl } from "@/commands/getRepositoryUrl";
 
 export async function setupDeployment(bundlePath: string) {
 	// 1. 플랫폼 선택
@@ -42,7 +43,11 @@ export async function setupDeployment(bundlePath: string) {
 	// 10. S3 키 생성
 	const cloudPath: string = `${runtimeVersion}/${environment}/${bundleId}`;
 
+	// 11. gitHash 가져오기
 	const gitHash = await getGitCommitHash();
+
+	// 12. git repository url 가져오기
+	const gitRepositoryUrl = await getRepositoryUrl();
 
 	return {
 		bundleId,
@@ -54,5 +59,6 @@ export async function setupDeployment(bundlePath: string) {
 		storageClient: config.storage,
 		envSource,
 		gitHash,
+		gitRepositoryUrl,
 	};
 }

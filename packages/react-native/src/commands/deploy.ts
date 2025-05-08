@@ -5,6 +5,7 @@ import { uploadBundle } from "./uploadBundle";
 import { updateVersionCursor } from "./updateCursor";
 import { cleanup } from "@/lib/cleanup";
 import { getCwd } from "@cloud-push/core/node";
+import { getCommitUrl } from "@cloud-push/core";
 
 export async function deploy(): Promise<void> {
 	const cwd = getCwd();
@@ -19,6 +20,7 @@ export async function deploy(): Promise<void> {
 			dbClient,
 			environment,
 			gitHash,
+			gitRepositoryUrl,
 			platforms,
 			runtimeVersion,
 			envSource,
@@ -47,6 +49,7 @@ export async function deploy(): Promise<void> {
 					cloudPath,
 					environment,
 					envSource,
+					gitCommit: getCommitUrl({ repositoryUrl: gitRepositoryUrl, gitHash }),
 				},
 				null,
 				2,
