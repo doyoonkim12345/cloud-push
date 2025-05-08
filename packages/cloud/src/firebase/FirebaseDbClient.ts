@@ -91,11 +91,11 @@ export class FirebaseDbClient extends DbClient {
 	delete = async ({ bundleId }: { bundleId: string }): Promise<void> => {
 		await this.db.collection(this.collectionName).doc(bundleId).delete();
 	};
-
-	toBuffer = async (): Promise<Buffer> => {
+	toUint8Array = async (): Promise<Uint8Array> => {
 		const bundles = await this.readAll();
 		const jsonString = JSON.stringify({ bundles });
-		return Buffer.from(jsonString, "utf-8");
+		const encoder = new TextEncoder();
+		return encoder.encode(jsonString);
 	};
 
 	init = async (): Promise<void> => {

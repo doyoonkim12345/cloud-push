@@ -36,7 +36,7 @@ export class CloudflareR2StorageClient extends StorageClient {
 		return fetch(url, { ...options, headers });
 	}
 
-	getFile = async ({ key }: { key: string }) => {
+	getFile = async ({ key }: { key: string }): Promise<Uint8Array> => {
 		try {
 			const response = await this.fetchWithAuth(
 				`${this.baseUrl}/${encodeURIComponent(key)}`,
@@ -48,9 +48,7 @@ export class CloudflareR2StorageClient extends StorageClient {
 
 			const blob = await response.blob();
 			const arrayBuffer = await blob.arrayBuffer();
-			const buffer = Buffer.from(arrayBuffer);
-
-			return buffer;
+			return new Uint8Array(arrayBuffer); // ✅ 변경
 		} catch (error) {
 			console.error("Error fetching file from Cloudflare R2:", error);
 			throw error;
@@ -94,7 +92,7 @@ export class CloudflareR2StorageClient extends StorageClient {
 		file,
 	}: {
 		key: string;
-		file: Buffer;
+		file: Uint8Array;
 	}): Promise<void> => {
 		try {
 			const response = await this.fetchWithAuth(
@@ -118,8 +116,8 @@ export class CloudflareR2StorageClient extends StorageClient {
 	};
 
 	// 파일 시스템 접근을 별도 메서드로 분리하여 테스트에서 쉽게 모킹할 수 있게 함
-	protected readLocalFile(filePath: string): Buffer {
-		return fs.readFileSync(filePath);
+	protected readLocalFile(filePath: string): Uint8Array {
+		return new Uint8Array(fs.readFileSync(filePath)); // ✅ 변경
 	}
 
 	protected getFileExtension(filePath: string): string {
@@ -142,14 +140,10 @@ export class CloudflareR2StorageClient extends StorageClient {
 		fileName: string;
 	}): Promise<string | undefined> => {
 		try {
-			// 별도 메서드를 통해 파일 읽기
-			const fileBuffer = this.readLocalFile(filePath);
+			const fileData = this.readLocalFile(filePath); // ✅ Uint8Array
 
-			// 파일 확장자로부터 MIME 타입 추론
 			const extension = this.getFileExtension(filePath);
 			let contentType = "application/octet-stream";
-
-			// 간단한 MIME 타입 매핑
 			const mimeTypes: Record<string, string> = {
 				".jpg": "image/jpeg",
 				".jpeg": "image/jpeg",
@@ -165,8 +159,7 @@ export class CloudflareR2StorageClient extends StorageClient {
 				contentType = mimeTypes[extension];
 			}
 
-			// 파일을 Blob으로 변환하여 업로드
-			const blob = new Blob([fileBuffer], { type: contentType });
+			const blob = new Blob([fileData], { type: contentType }); // ✅ Uint8Array 사용
 
 			const response = await this.fetchWithAuth(
 				`${this.baseUrl}/${encodeURIComponent(fileName)}`,

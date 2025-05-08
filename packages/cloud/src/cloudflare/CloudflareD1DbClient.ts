@@ -98,10 +98,11 @@ export class CloudflareD1DbClient extends DbClient {
 		if (!result.success) throw new Error("Failed to delete bundle");
 	};
 
-	toBuffer = async (): Promise<Buffer> => {
+	toUint8Array = async (): Promise<Uint8Array> => {
 		const bundles = await this.readAll();
 		const jsonString = JSON.stringify({ bundles });
-		return Buffer.from(jsonString, "utf-8");
+		const encoder = new TextEncoder();
+		return encoder.encode(jsonString); // returns Uint8Array
 	};
 
 	init = async (): Promise<void> => {

@@ -6,15 +6,15 @@ import { LowDbLoader } from "./LowDbLoader";
 export class LowDbClient extends DbClient {
 	private db: Low<Cursor> | null;
 
-	private downloadJSONFile: () => Promise<Buffer>;
-	private uploadJSONFile: (file: Buffer) => Promise<void>;
+	private downloadJSONFile: () => Promise<Uint8Array>;
+	private uploadJSONFile: (file: Uint8Array) => Promise<void>;
 
 	constructor({
 		downloadJSONFile,
 		uploadJSONFile,
 	}: {
-		downloadJSONFile: () => Promise<Buffer>;
-		uploadJSONFile: (file: Buffer) => Promise<void>;
+		downloadJSONFile: () => Promise<Uint8Array>;
+		uploadJSONFile: (file: Uint8Array) => Promise<void>;
 	}) {
 		super();
 		this.downloadJSONFile = downloadJSONFile;
@@ -133,9 +133,9 @@ export class LowDbClient extends DbClient {
 		});
 	};
 
-	toBuffer = async (): Promise<Buffer> => {
+	toUint8Array = async (): Promise<Uint8Array> => {
 		const jsonString = JSON.stringify(this.db?.data);
-		return Buffer.from(jsonString, "utf-8");
+		return new TextEncoder().encode(jsonString); // ✅ Uint8Array로 변환
 	};
 
 	init = async (): Promise<void> => {
@@ -151,7 +151,7 @@ export class LowDbClient extends DbClient {
 	};
 
 	sync = async (): Promise<void> => {
-		const file = await this.toBuffer();
+		const file = await this.toUint8Array();
 		await this.uploadJSONFile(file);
 	};
 }

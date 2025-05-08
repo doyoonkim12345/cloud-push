@@ -12,8 +12,9 @@ export const LowDbLoader = {
 		return db;
 	},
 
-	loadLowDbFromFile: async <T>(file: Buffer, defaultValue?: T) => {
-		const db = await LowDbLoader.loadLowDb<T>(await parseFileAsJson<T>(file));
+	loadLowDbFromFile: async <T>(file: Uint8Array, defaultValue?: T) => {
+		const json = await parseFileAsJson<T>(file); // file: Uint8Array로 변경됨
+		const db = await LowDbLoader.loadLowDb<T>(json);
 		return db;
 	},
 

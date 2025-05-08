@@ -1,12 +1,12 @@
 export abstract class StorageClient {
-	abstract getFile: (params: { key: string }) => Promise<Buffer>;
+	abstract getFile: (params: { key: string }) => Promise<Uint8Array>;
 	abstract getFileSignedUrl: (params: {
 		key: string;
 		expiresIn?: number;
 	}) => Promise<string>;
 	abstract uploadFile: (params: {
 		key: string;
-		file: Buffer;
+		file: Uint8Array;
 		contentType?: string;
 	}) => Promise<void>;
 	abstract uploadLocalFile: (params: {

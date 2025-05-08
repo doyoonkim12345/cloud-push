@@ -25,8 +25,10 @@ export class SupabaseStorageClient extends StorageClient {
 		console.log(supabaseUrl, supabaseKey);
 	}
 
-	getFile = async ({ key, mimeType }: { key: string; mimeType?: string }) => {
-		// Supabase Storage에서 파일 다운로드
+	getFile = async ({
+		key,
+		mimeType,
+	}: { key: string; mimeType?: string }): Promise<Uint8Array> => {
 		const { data, error } = await this.client.storage
 			.from(this.bucketName)
 			.download(key);
@@ -39,11 +41,8 @@ export class SupabaseStorageClient extends StorageClient {
 			throw new Error("File content is empty");
 		}
 
-		// Blob을 Buffer로 변환
 		const arrayBuffer = await data.arrayBuffer();
-		const buffer = Buffer.from(arrayBuffer);
-
-		return buffer;
+		return new Uint8Array(arrayBuffer); // ✅ 변경
 	};
 
 	getFileSignedUrl = async ({
@@ -75,12 +74,9 @@ export class SupabaseStorageClient extends StorageClient {
 		contentType = "application/json",
 	}: {
 		key: string;
-		file: Buffer;
+		file: Uint8Array; // ✅ 변경
 		contentType?: string;
 	}) => {
-		// File 객체에서 ArrayBuffer 가져오기
-
-		// Supabase Storage에 파일 업로드
 		const { error } = await this.client.storage
 			.from(this.bucketName)
 			.upload(key, file, {
@@ -99,15 +95,13 @@ export class SupabaseStorageClient extends StorageClient {
 	}: {
 		filePath: string;
 		fileName: string;
-	}) => {
-		// 로컬 파일 읽기
-		const fileBuffer = fs.readFileSync(filePath);
+	}): Promise<string> => {
+		const fileData = new Uint8Array(fs.readFileSync(filePath)); // ✅ 변경
 		const contentType = this.getContentType(filePath);
 
-		// Supabase Storage에 파일 업로드
 		const { error } = await this.client.storage
 			.from(this.bucketName)
-			.upload(fileName, fileBuffer, {
+			.upload(fileName, fileData, {
 				contentType,
 				upsert: true,
 			});
@@ -116,7 +110,6 @@ export class SupabaseStorageClient extends StorageClient {
 			throw new Error(`Error uploading local file: ${error.message}`);
 		}
 
-		// 업로드된 파일의 공개 URL 생성
 		const { data: publicUrlData } = await this.client.storage
 			.from(this.bucketName)
 			.getPublicUrl(fileName);

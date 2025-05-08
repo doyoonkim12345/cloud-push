@@ -119,10 +119,10 @@ export class SupabaseDbClient extends DbClient {
 		}
 	};
 
-	toBuffer = async (): Promise<Buffer> => {
+	toUint8Array = async (): Promise<Uint8Array> => {
 		const bundles = await this.readAll();
 		const jsonString = JSON.stringify({ bundles });
-		return Buffer.from(jsonString, "utf-8");
+		return new TextEncoder().encode(jsonString); // ✅ Uint8Array 반환
 	};
 
 	init = async (): Promise<void> => {

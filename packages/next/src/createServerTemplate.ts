@@ -74,7 +74,7 @@ export const dbNodeClient = new FirebaseDbClient({
 			dbClientInstance = `
 export const dbNodeClient = new LowDbClient({
     downloadJSONFile: () => storageNodeClient.getFile({ key: "cursor.json" }),
-    uploadJSONFile: (file: Buffer) =>
+    uploadJSONFile: (file: Uint8Array) =>
     storageNodeClient.uploadFile({ key: "cursor.json", file }),
 });
             `;

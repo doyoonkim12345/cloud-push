@@ -39,32 +39,43 @@ export class AWSS3StorageClient extends StorageClient {
 		this.bucketName = bucketName;
 	}
 
-	getFile = async ({ key }: { key: string }): Promise<Buffer> => {
-		// GetObject command creation
+	getFile = async ({ key }: { key: string }): Promise<Uint8Array> => {
 		const command = new GetObjectCommand({
 			Bucket: this.bucketName,
 			Key: key,
 		});
 
-		// Fetch the object from S3
 		const response = await this.client.send(command);
 
-		// Verify response body
 		if (!response.Body) {
 			throw new Error("File content is empty");
 		}
 
-		// Convert Node.js Readable stream to a Buffer
 		const stream = response.Body as Readable;
-		const chunks: Buffer[] = [];
+		const chunks: Uint8Array[] = [];
 
 		for await (const chunk of stream) {
-			chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+			if (typeof chunk === "string") {
+				chunks.push(new TextEncoder().encode(chunk));
+			} else if (chunk instanceof Uint8Array) {
+				chunks.push(chunk);
+			} else {
+				throw new Error("Unsupported chunk type in stream");
+			}
 		}
 
-		const buffer = Buffer.concat(chunks);
+		// 전체 길이 계산
+		const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+		const result = new Uint8Array(totalLength);
 
-		return buffer;
+		// 각 chunk를 이어 붙이기
+		let offset = 0;
+		for (const chunk of chunks) {
+			result.set(chunk, offset);
+			offset += chunk.length;
+		}
+
+		return result;
 	};
 
 	getFileSignedUrl = async ({
@@ -90,7 +101,7 @@ export class AWSS3StorageClient extends StorageClient {
 		contentType = "application/json",
 	}: {
 		key: string;
-		file: Buffer;
+		file: Uint8Array;
 		contentType?: string;
 	}) => {
 		// S3 업로드 파라미터 구성

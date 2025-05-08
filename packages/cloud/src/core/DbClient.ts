@@ -12,7 +12,7 @@ export abstract class DbClient {
 	abstract readAll: () => Promise<Bundle[]>;
 	abstract update: (params: { bundle: Bundle }) => Promise<void>;
 	abstract delete: (params: { bundleId: string }) => Promise<void>;
-	abstract toBuffer: () => Promise<Buffer>;
+	abstract toUint8Array: () => Promise<Uint8Array>;
 	abstract init?(): Promise<void>;
 	abstract sync?(): Promise<void>;
 }

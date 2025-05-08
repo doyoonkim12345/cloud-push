@@ -25,17 +25,32 @@ export class FirebaseStorageClient extends StorageClient {
 		this.bucket = getStorage(app).bucket(bucketName);
 	}
 
-	getFile = async ({ key }: { key: string }) => {
+	getFile = async ({ key }: { key: string }): Promise<Uint8Array> => {
 		const file = this.bucket.file(key);
-		const chunks: Buffer[] = [];
+		const chunks: Uint8Array[] = [];
 
 		const stream = file.createReadStream();
 
 		for await (const chunk of stream) {
-			chunks.push(chunk as Buffer);
+			if (typeof chunk === "string") {
+				chunks.push(new TextEncoder().encode(chunk));
+			} else if (chunk instanceof Uint8Array) {
+				chunks.push(chunk);
+			} else {
+				throw new Error("Unsupported chunk type");
+			}
 		}
 
-		return Buffer.concat(chunks);
+		// 수동으로 Uint8Array 병합
+		const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+		const result = new Uint8Array(totalLength);
+		let offset = 0;
+		for (const chunk of chunks) {
+			result.set(chunk, offset);
+			offset += chunk.length;
+		}
+
+		return result;
 	};
 
 	getFileSignedUrl = async ({
@@ -59,7 +74,7 @@ export class FirebaseStorageClient extends StorageClient {
 		contentType = "application/octet-stream",
 	}: {
 		key: string;
-		file: Buffer;
+		file: Uint8Array;
 		contentType?: string;
 	}) => {
 		const fileRef = this.bucket.file(key);
