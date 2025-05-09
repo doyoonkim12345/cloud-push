@@ -38,3 +38,7 @@ yarn-error.*
 *.tsbuildinfo
 
 dist
+
+android
+
+ios

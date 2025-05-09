@@ -24,7 +24,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	updates: {
 		url: "http://192.168.0.36:3000/api/manifest",
 		requestHeaders: {
-			"expo-channel-name": process.env.APP_VARIANT,
+			"expo-channel-name": process.env.CHANNEL,
 		},
 	},
 	android: {

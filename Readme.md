@@ -261,7 +261,7 @@ export default defineConfig(() => ({
 
 | Hook           | Supported |
 |----------------|-----------|
-| `useUpdates()` | ⏳        |
+| `useUpdates()` | ✅        |
 
 ### 🛠 Methods
 
