@@ -13,7 +13,7 @@ export type Bundle = {
 	supportAndroid: boolean;
 	createdAt: number;
 	environment: Environment;
-	// channel: string;
+	channel: string;
 	gitHash: string;
 	updatePolicy: UpdatePolicy;
 };

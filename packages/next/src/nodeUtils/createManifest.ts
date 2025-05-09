@@ -8,11 +8,7 @@ import type {
 	PlatformMetadata,
 } from "@/types";
 import type { StorageClient } from "@cloud-push/cloud";
-import {
-	parseFileAsJson,
-	type Platform,
-	type Environment,
-} from "@cloud-push/core";
+import { parseFileAsJson, type Platform } from "@cloud-push/core";
 import type { ExpoConfig } from "@expo/config-types";
 import mime from "mime";
 
@@ -120,20 +116,20 @@ const getMetadata = async ({
 
 export const createManifest = async ({
 	bundleId,
-	environment,
+	channel,
 	runtimeVersion,
 	platform,
 	storageClient,
 	extra,
 }: {
 	bundleId: string;
-	environment: Environment;
+	channel: string;
 	runtimeVersion: string;
 	platform: Platform;
 	storageClient: StorageClient;
 	extra?: object;
 }): Promise<Manifest> => {
-	const updateBundlePath = `${runtimeVersion}/${environment}/${bundleId}/`;
+	const updateBundlePath = `${runtimeVersion}/${channel}/${bundleId}/`;
 
 	const metadata = await getMetadata({
 		storageClient,

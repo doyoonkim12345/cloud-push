@@ -5,6 +5,7 @@ import type { DbClient } from "@cloud-push/cloud";
 export async function updateVersionCursor({
 	bundleId,
 	environment,
+	channel,
 	platforms,
 	runtimeVersion,
 	gitHash,
@@ -12,6 +13,7 @@ export async function updateVersionCursor({
 }: {
 	bundleId: string;
 	environment: Environment;
+	channel: string;
 	platforms: Platform[];
 	runtimeVersion: string;
 	gitHash: string;
@@ -33,6 +35,7 @@ export async function updateVersionCursor({
 				supportAndroid: platforms.includes("android"),
 				supportIos: platforms.includes("ios"),
 				runtimeVersion,
+				channel,
 				updatePolicy: "NORMAL_UPDATE",
 			},
 		});

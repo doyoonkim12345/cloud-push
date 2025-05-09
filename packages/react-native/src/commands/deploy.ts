@@ -6,7 +6,7 @@ import { updateVersionCursor } from "./updateCursor";
 import { cleanup } from "@/lib/cleanup";
 import { getCwd } from "@cloud-push/core/node";
 import { getCommitUrl } from "@cloud-push/core";
-import { uploadSetting } from "./uploadSetting";
+import { updateSetting } from "./updateSetting";
 
 export async function deploy(): Promise<void> {
 	const cwd = getCwd();
@@ -25,6 +25,7 @@ export async function deploy(): Promise<void> {
 			platforms,
 			runtimeVersion,
 			envSource,
+			channel,
 		} = await setupDeployment(bundlePath);
 
 		// 2. 번들 업로드 단계
@@ -38,11 +39,13 @@ export async function deploy(): Promise<void> {
 			gitHash,
 			platforms,
 			runtimeVersion,
+			channel,
 		});
 
-		await uploadSetting({
+		await updateSetting({
 			storageClient,
-			setting: { repositoryUrl: gitRepositoryUrl },
+			gitRepositoryUrl,
+			channel,
 		});
 
 		prompts.outro("🚀 Deployment Successful");
@@ -54,6 +57,7 @@ export async function deploy(): Promise<void> {
 					platforms,
 					cloudPath,
 					environment,
+					channel,
 					envSource,
 					gitCommit: getCommitUrl({ repositoryUrl: gitRepositoryUrl, gitHash }),
 				},

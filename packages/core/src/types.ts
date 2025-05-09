@@ -7,4 +7,5 @@ export type Db = "LOWDB" | "FIREBASE" | "SUPABASE" | "CUSTOM";
 
 export interface Setting {
 	repositoryUrl: string;
+	channels: string[];
 }

@@ -1,17 +1,5 @@
-import type { Config } from "@/config";
 import * as prompts from "@clack/prompts";
 import type { StorageClient } from "@cloud-push/cloud";
-import type { Environment, Platform } from "@cloud-push/core";
-
-export interface DeploymentConfig {
-	bundleId: string;
-	cloudPath: string;
-	platforms: Platform[];
-	environment: Environment;
-	runtimeVersion: string;
-	config: Config;
-	envSource: ENV_SOURCE;
-}
 
 export async function uploadBundle({
 	cloudPath,
