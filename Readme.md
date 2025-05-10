@@ -171,7 +171,7 @@ const storageClient = new AWSS3StorageClient({
 
 const dbClient = new LowDbClient({
   downloadJSONFile: () => storageClient.getFile({ key: "cursor.json" }),
-  uploadJSONFile: (file: Buffer) =>
+  uploadJSONFile: (file: Uint8Array) =>
     storageClient.uploadFile({ key: "cursor.json", file }),
 });
 
@@ -227,7 +227,7 @@ const dbClient: DbClient = {
   find: () => {},
   findAll: () => {},
   readAll: () => {},
-  toBuffer: () => {},
+  toUint8Array: () => {},
   update: () => {},
 };
 

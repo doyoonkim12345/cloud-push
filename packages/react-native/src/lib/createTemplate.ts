@@ -99,7 +99,7 @@ const generateDbClient = (): DbClient => {
 		find: () => {},
 		findAll: () => {},
 		readAll: () => {},
-		toBuffer: () => {},
+		toUint8Array: () => {},
 		update: () => {},
 	};
 };
