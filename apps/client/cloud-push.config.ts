@@ -1,5 +1,6 @@
 import { defineConfig } from "@cloud-push/react-native";
 import { SupabaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
+import version from "./version";
 
 const storageClient = new SupabaseStorageClient({
 	bucketName: process.env.SUPABASE_BUCKET_NAME,
@@ -16,4 +17,5 @@ const dbClient = new SupabaseDbClient({
 export default defineConfig(() => ({
 	storage: storageClient,
 	db: dbClient,
+	runtimeVersion: version.runtimeVersion,
 }));

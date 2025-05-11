@@ -11,6 +11,7 @@ import { loadEnv } from "@/commands/loadEnv";
 import type { Environment, Platform } from "@cloud-push/core";
 import { getGitCommitHash } from "@/commands/getGitCommitHash";
 import { getRepositoryUrl } from "@/commands/getRepositoryUrl";
+import { getChannel } from "@/commands/getChannel";
 
 export async function setupDeployment(bundlePath: string) {
 	// 1. 플랫폼 선택
@@ -27,6 +28,8 @@ export async function setupDeployment(bundlePath: string) {
 
 	// 5. 설정 로드
 	const config: Config = await loadConfig();
+
+	const channel = await getChannel();
 
 	// 6. 런타임 버전 가져오기
 	const runtimeVersion: string = await getRuntimeVersion(config.runtimeVersion);
@@ -60,5 +63,6 @@ export async function setupDeployment(bundlePath: string) {
 		envSource,
 		gitHash,
 		gitRepositoryUrl,
+		channel,
 	};
 }
