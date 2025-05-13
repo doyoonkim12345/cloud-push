@@ -8,7 +8,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /guide/1.getting-started/introduction
+      link: /guide/1.gettingStarted/1.introduction
     - theme: alt
       text: GitHub
       link: https://github.com/doyoonkim12345/cloud-push

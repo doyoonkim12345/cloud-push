@@ -3,7 +3,7 @@
 </p>
 
 [![@cloud-push/cloud](https://img.shields.io/badge/@cloud--push/cloud-v1.0.3-blue)](https://www.npmjs.com/package/@cloud-push/cloud)  
-[![@cloud-push/react-native](https://img.shields.io/badge/@cloud--push/react--native-v1.0.9-blue)](https://www.npmjs.com/package/@cloud-push/react-native)  
+[![@cloud-push/expo](https://img.shields.io/badge/@cloud--push/react--native-v1.0.9-blue)](https://www.npmjs.com/package/@cloud-push/expo)  
 [![@cloud-push/next](https://img.shields.io/badge/@cloud--push/next-v1.0.1-blue)](https://www.npmjs.com/package/@cloud-push/next)  
 [![@cloud-push/core](https://img.shields.io/badge/@cloud--push/core-v1.0.2-blue)](https://www.npmjs.com/package/@cloud-push/core)  
 
@@ -51,7 +51,7 @@ Start using `cloud-push` in two parts: the **server** and the **expo client**.
 #### 1️⃣ Install the package
 
 ```bash
-pnpm add @cloud-push/react-native @cloud-push/cloud
+pnpm add @cloud-push/expo @cloud-push/cloud
 ```
 
 #### 2️⃣ Initialize config
@@ -132,7 +132,7 @@ type Config = {
 ### Supabase
 
 ```ts
-import { defineConfig } from "@cloud-push/react-native";
+import { defineConfig } from "@cloud-push/expo";
 import { SupabaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
 import version from "./version";
 
@@ -158,7 +158,7 @@ export default defineConfig(() => ({
 ### AWS S3 + lowdb
 
 ```ts
-import { defineConfig } from "@cloud-push/react-native";
+import { defineConfig } from "@cloud-push/expo";
 import { AWSS3StorageClient, LowDbClient } from "@cloud-push/cloud";
 import version from "./version";
 
@@ -185,7 +185,7 @@ export default defineConfig(() => ({
 ### Firebase
 
 ```ts
-import { defineConfig } from "@cloud-push/react-native";
+import { defineConfig } from "@cloud-push/expo";
 import { FirebaseStorageClient, FirebaseDbClient } from "@cloud-push/cloud";
 import version from "./version";
 
@@ -209,7 +209,7 @@ export default defineConfig(() => ({
 ### Custom
 
 ```ts
-import { defineConfig } from "@cloud-push/react-native";
+import { defineConfig } from "@cloud-push/expo";
 import { StorageClient, DbClient } from "@cloud-push/cloud";
 import version from "./version";
 
