@@ -50,11 +50,14 @@
 	],
 	"author": "",
 	"license": "ISC",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"dependencies": {
 		"@clack/prompts": "^0.10.0",
 		"@types/git-rev-sync": "^2.0.2",
 		"dotenv": "^16.4.7",
+		"execa": "^9.5.2",
 		"git-rev-sync": "^3.0.2",
 		"workspace-tools": "^0.38.1"
 	},

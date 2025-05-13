@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"@cloud-push/cloud": "1.0.3",
-		"@cloud-push/react-native": "1.0.9",
+		"@cloud-push/expo": "1.0.9",
 		"expo": "~52.0.43",
 		"expo-build-properties": "~0.13.2",
 		"expo-status-bar": "~2.0.1",
@@ -27,7 +27,7 @@
 	"private": true,
 	"pnpm": {
 		"overrides": {
-			"@cloud-push/react-native": "link:../../packages/react-native",
+			"@cloud-push/expo": "link:../../packages/expo",
 			"@cloud-push/cloud": "link:../../packages/cloud"
 		}
 	}

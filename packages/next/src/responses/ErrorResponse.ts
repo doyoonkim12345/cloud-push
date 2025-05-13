@@ -3,7 +3,7 @@ export const ErrorResponse = (error: Error): Response => {
 		status: 404,
 		headers: {
 			"Content-Type": "application/json",
-			"expo-protocol-version": "0",
+			"expo-protocol-version": "1",
 		},
 	});
 };

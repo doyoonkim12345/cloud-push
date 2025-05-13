@@ -1,6 +1,6 @@
 {
 	"type": "module",
-	"name": "@cloud-push/react-native",
+	"name": "@cloud-push/expo",
 	"version": "1.0.9",
 	"description": "",
 	"main": "./dist/config.cjs",

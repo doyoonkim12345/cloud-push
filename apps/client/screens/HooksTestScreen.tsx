@@ -1,4 +1,5 @@
 import * as Updates from "expo-updates";
+import React from "react";
 import { useEffect } from "react";
 import {
 	Alert,

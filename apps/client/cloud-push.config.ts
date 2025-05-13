@@ -1,4 +1,4 @@
-import { defineConfig } from "@cloud-push/react-native";
+import { defineConfig } from "@cloud-push/expo";
 import { SupabaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
 import version from "./version";
 

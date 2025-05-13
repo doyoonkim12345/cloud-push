@@ -14,7 +14,7 @@
 	"pnpm": {
 		"overrides": {
 			"@cloud-push/core": "workspace:*",
-			"@cloud-push/react-native": "workspace:*",
+			"@cloud-push/expo": "workspace:*",
 			"@cloud-push/cloud": "workspace:*"
 		}
 	},

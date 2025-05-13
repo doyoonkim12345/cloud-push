@@ -8,7 +8,7 @@ export async function selectStorageClient(): Promise<Storage> {
 		options: [
 			{ value: "AWS_S3", label: "AWS_S3" },
 			{ value: "FIREBASE", label: "Firebase storage" },
-			{ value: "SUPABASE", label: "Supabase R2" },
+			{ value: "SUPABASE", label: "Supabase" },
 			{ value: "CUSTOM", label: "Custom" },
 		],
 		initialValue: "AWS_S3",

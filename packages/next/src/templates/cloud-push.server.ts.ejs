@@ -1,0 +1,78 @@
+<%
+  const importClasses = [];
+
+  // StorageClient import
+  if (storage === 'AWS_S3') importClasses.push('AWSS3StorageClient');
+  else if (storage === 'FIREBASE') importClasses.push('FirebaseStorageClient');
+  else if (storage === 'SUPABASE') importClasses.push('SupabaseStorageClient');
+  else if (storage === 'CUSTOM') importClasses.push('StorageClient');
+
+  // DbClient import
+  if (db === 'FIREBASE') importClasses.push('FirebaseDbClient');
+  else if (db === 'LOWDB') importClasses.push('LowDbClient');
+  else if (db === 'SUPABASE') importClasses.push('SupabaseDbClient');
+  else if (db === 'CUSTOM') importClasses.push('DbClient');
+%>
+import { <%= importClasses.join(', ') %> } from "@cloud-push/cloud";
+<% if (storage === 'AWS_S3') { %>
+export const storageNodeClient = new AWSS3StorageClient({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+  bucketName: process.env.AWS_BUCKET_NAME!,
+  region: process.env.AWS_REGION!,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+});
+<% } else if (storage === 'FIREBASE') { %>
+export const storageNodeClient = new FirebaseStorageClient({
+  credential: process.env.FIREBASE_CREDENTIAL!,
+  bucketName: process.env.FIREBASE_BUCKET_NAME!,
+});
+<% } else if (storage === 'SUPABASE') { %>
+export const storageNodeClient = new SupabaseStorageClient({
+  bucketName: process.env.SUPABASE_BUCKET_NAME,
+  supabaseUrl: process.env.SUPABASE_URL,
+  supabaseKey: process.env.SUPABASE_KEY,
+});
+<% } else if (storage === 'CUSTOM') { %>
+const generateStorageClient = (): StorageClient => {
+  return {
+    getFile: () => {},
+    getFileSignedUrl: () => {},
+    uploadDirectory: () => {},
+    uploadFile: () => {},
+    uploadLocalFile: () => {},
+  };
+};
+export const storageNodeClient = generateStorageClient();
+<% } %>
+
+<% if (db === 'FIREBASE') { %>
+export const dbNodeClient = new FirebaseDbClient({
+  credential: process.env.FIREBASE_CREDENTIAL!,
+  databaseId: process.env.FIREBASE_DATABASE_ID!,
+});
+<% } else if (db === 'LOWDB') { %>
+export const dbNodeClient = new LowDbClient({
+  downloadJSONFile: () => storageNodeClient.getFile({ key: "cursor.json" }),
+  uploadJSONFile: (file: Uint8Array) =>
+    storageNodeClient.uploadFile({ key: "cursor.json", file }),
+});
+<% } else if (db === 'SUPABASE') { %>
+export const dbNodeClient = new SupabaseDbClient({
+  tableName: process.env.SUPABASE_TABLE_NAME!,
+  supabaseUrl: process.env.SUPABASE_URL!,
+  supabaseKey: process.env.SUPABASE_KEY!,
+});
+<% } else if (db === 'CUSTOM') { %>
+const generateDbClient = (): DbClient => {
+  return {
+    create: () => {},
+    delete: () => {},
+    find: () => {},
+    findAll: () => {},
+    readAll: () => {},
+    toUint8Array: () => {},
+    update: () => {},
+  };
+};
+export const dbNodeClient = generateDbClient();
+<% } %>

@@ -1,6 +1,6 @@
 import type { Db, Storage } from "@cloud-push/core";
 
-export const createServerTemplate = ({
+export const createConfigTemplate = ({
 	db,
 	storage,
 }: { db: Db; storage: Storage }) => {
@@ -13,7 +13,7 @@ export const createServerTemplate = ({
 		case "AWS_S3":
 			importMethods.push("AWSS3StorageClient");
 			storageClientInstance = `
-export const storageNodeClient = new AWSS3StorageClient({
+const storageClient = new AWSS3StorageClient({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
     bucketName: process.env.AWS_BUCKET_NAME!,
     region: process.env.AWS_REGION!,
@@ -24,7 +24,7 @@ export const storageNodeClient = new AWSS3StorageClient({
 		case "FIREBASE":
 			importMethods.push("FirebaseStorageClient");
 			storageClientInstance = `
-export const storageNodeClient = new FirebaseStorageClient({
+const storageClient = new FirebaseStorageClient({
     credential: process.env.FIREBASE_CREDENTIAL!,
     bucketName: process.env.FIREBASE_BUCKET_NAME!,
 });
@@ -33,7 +33,7 @@ export const storageNodeClient = new FirebaseStorageClient({
 		case "SUPABASE":
 			importMethods.push("SupabaseStorageClient");
 			storageClientInstance = `
-export const storageNodeClient = new SupabaseStorageClient({
+const storageClient = new SupabaseStorageClient({
     bucketName: process.env.SUPABASE_BUCKET_NAME,
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseKey: process.env.SUPABASE_KEY,
@@ -52,7 +52,7 @@ const generateStorageClient = (): StorageClient => {
 		uploadLocalFile: () => {},
 	};
 };
-export const storageNodeClient = generateStorageClient();
+const storageClient = generateStorageClient();
 `;
 			break;
 		default:
@@ -63,7 +63,7 @@ export const storageNodeClient = generateStorageClient();
 		case "FIREBASE":
 			importMethods.push("FirebaseDbClient");
 			dbClientInstance = `
-export const dbNodeClient = new FirebaseDbClient({
+const dbClient = new FirebaseDbClient({
     credential: process.env.FIREBASE_CREDENTIAL!,
     databaseId: process.env.FIREBASE_DATABASE_ID!,
 });
@@ -72,17 +72,17 @@ export const dbNodeClient = new FirebaseDbClient({
 		case "LOWDB":
 			importMethods.push("LowDbClient");
 			dbClientInstance = `
-export const dbNodeClient = new LowDbClient({
-    downloadJSONFile: () => storageNodeClient.getFile({ key: "cursor.json" }),
+const dbClient = new LowDbClient({
+    downloadJSONFile: () => storageClient.getFile({ key: "cursor.json" }),
     uploadJSONFile: (file: Uint8Array) =>
-    storageNodeClient.uploadFile({ key: "cursor.json", file }),
+    storageClient.uploadFile({ key: "cursor.json", file }),
 });
             `;
 			break;
 		case "SUPABASE":
 			importMethods.push("SupabaseDbClient");
 			dbClientInstance = `
-export const dbNodeClient = new SupabaseDbClient({
+const dbClient = new SupabaseDbClient({
     tableName: process.env.SUPABASE_TABLE_NAME!,
     supabaseUrl: process.env.SUPABASE_URL!,
     supabaseKey: process.env.SUPABASE_KEY!,
@@ -103,7 +103,7 @@ const generateDbClient = (): DbClient => {
 		update: () => {},
 	};
 };
-export const dbNodeClient = generateDbClient();
+const dbClient = generateDbClient();
 `;
 			break;
 		default:
@@ -111,8 +111,13 @@ export const dbNodeClient = generateDbClient();
 	}
 
 	return `
+import { defineConfig } from "@cloud-push/expo";
 import { ${[importMethods.join(", ")]} } from "@cloud-push/cloud";
 ${storageClientInstance}
 ${dbClientInstance}
+export default defineConfig(() => ({
+	storage: storageClient,
+	db: dbClient,
+}));
 `;
 };

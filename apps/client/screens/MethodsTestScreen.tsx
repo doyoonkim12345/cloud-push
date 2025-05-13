@@ -1,5 +1,5 @@
 import * as Updates from "expo-updates";
-import React, { useEffect } from "react";
+import React from "react";
 import { Alert, Button, ScrollView, Text, View } from "react-native";
 
 export function MethodsTestScreen() {

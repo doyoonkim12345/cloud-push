@@ -42,7 +42,7 @@ export function UpdateResponse({
 	}
 
 	const headers = {
-		"expo-protocol-version": "0",
+		"expo-protocol-version": "1",
 		"expo-sfv-version": "0",
 		"cache-control": "private, max-age=0",
 		"content-type": `multipart/mixed; boundary=${form.getBoundary()}`,
