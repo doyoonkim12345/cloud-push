@@ -16,8 +16,6 @@ export default defineConfig(() => ({
 			supabaseKey: process.env.SUPABASE_KEY!,
 		});
 
-		console.log(process.env.SUPABASE_BUCKET_NAME, process.env.SUPABASE_URL);
-
 		return {
 			storage: storageClient,
 			db: dbClient,
