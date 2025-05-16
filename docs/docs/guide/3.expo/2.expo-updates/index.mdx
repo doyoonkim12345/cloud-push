@@ -1,0 +1,134 @@
+# ExpoUpdates
+
+cloud-push는 [`expo-updates`](https://docs.expo.dev/technical-specs/expo-updates-1/)와 **호환되며**, 아래 설정들을 지원합니다.
+
+## install
+
+```bash
+pnpm expo install expo-updates
+```
+
+## 📘 Expo Updates SDK Compatibility
+
+### 🧱 Constants
+
+| Constant                      | Supported |
+|------------------------------|-----------|
+| `Updates.channel`            | ✅        |
+| `Updates.checkAutomatically` | ✅        |
+| `Updates.createdAt`          | ✅        |
+| `Updates.emergencyLaunchReason` | ⏳    |
+| `Updates.isEmbeddedLaunch`   | ✅        |
+| `Updates.isEmergencyLaunch`  | ⏳        |
+| `Updates.isEnabled`          | ✅        |
+| `Updates.latestContext`      | ✅        |
+| `Updates.launchDuration`     | ✅        |
+| `Updates.manifest`           | ✅        |
+| `Updates.runtimeVersion`     | ✅        |
+| `Updates.updateId`           | ✅        |
+
+### 🧩 Hooks
+
+| Hook           | Supported |
+|----------------|-----------|
+| `useUpdates()` | ✅        |
+
+### 🛠 Methods
+
+| Method                  | Supported |
+|-------------------------|-----------|
+| `checkForUpdateAsync()` | ✅        |
+| `clearLogEntriesAsync()`| ✅        |
+| `fetchUpdateAsync()`    | ✅        |
+| `getExtraParamsAsync()` | ❌        |
+| `readLogEntriesAsync()` | ✅        |
+| `reloadAsync()`         | ✅        |
+| `setExtraParamAsync()`  | ❌        |
+
+---
+
+
+
+## app.json / app.config.ts
+
+expo의 [`app.json  or app.config.ts의 updates`](https://docs.expo.dev/versions/latest/config/app/#updates)에서 대부분의 옵션을 지원합니다. 
+
+### ✅ 정상 작동하는 설정
+
+| 옵션                     | 설명 |
+|--------------------------|------|
+| `enabled`                | 업데이트 시스템 활성화 여부 |
+| `checkAutomatically`     | 앱 시작 시 업데이트 체크 방식 |
+| `useEmbeddedUpdate`      | 내장된 업데이트 사용 여부 |
+| `fallbackToCacheTimeout` | 업데이트 응답 대기 시간 (ms) |
+| `url`                    | 업데이트 매니페스트의 원격 URL |
+| `requestHeaders`         | 요청 시 포함할 커스텀 헤더 |
+  
+이 설정들은 Expo SDK에서 **정상적으로 작동**하며, JS 및 네이티브 빌드에서 예측 가능한 동작을 보장합니다.
+
+---
+
+### ⚠️ 미지원 또는 불확실한 설정
+
+| 옵션                        | 지원 여부 | 설명 |
+|-----------------------------|-----------|------|
+| `codeSigningCertificate`    | ❌ 미지원 | 아직 SDK에서 코드 서명 기능이 활성화되어 있지 않습니다. |
+| `codeSigningMetadata`       | ❌ 미지원 | 위와 동일하게 무시됩니다. |
+| `assetPatternsToBeBundled`  | ⚠️ 확인되지 않음 | 일부 환경에서는 동작하지 않을 수 있습니다. |
+| `disableAntiBrickingMeasures` | ⚠️ 확인되지 않음 | 설정 가능하지만 실제로 적용되는지는 명확하지 않습니다. |
+
+> ❗️ **주의:** `disableAntiBrickingMeasures`는 앱을 부팅 불능 상태로 만들 수 있으므로 **프로덕션 환경에서는 사용하지 마세요**.
+
+---
+
+If you're **not using EAS Build**, set the update URL and headers manually:
+
+```diff
+  updates: {
+-    url: "https://u.expo.dev/"
++    url: "https://your-server-domain/api/manifest",
++    requestHeaders: {
++      "expo-channel-name": process.env.APP_VARIANT,
++    },
+  },
+````
+
+<details>
+  <summary>🛠️ If you're using EAS Build</summary>
+
+You don't need to manually set `requestHeaders`. Instead, configure the channel in `eas.json`:
+
+```json
+{
+  "build": {
+    "production": {
+      "channel": "stable"
+    },
+    "preview": {
+      "channel": "beta"
+    }
+  }
+}
+```
+
+> In this example, builds triggered with the `--profile preview` option will use the `beta` channel, while `--profile production` uses `stable`.
+
+</details>
+
+---
+
+### 예시 설정
+
+```ts
+updates: {
+  enabled: true,
+  checkAutomatically: 'ON_LOAD',
+  fallbackToCacheTimeout: 10000,
+  useEmbeddedUpdate: true,
+  url: 'https://my-updates.example.com',
+  requestHeaders: {
+    'x-custom-header': 'value',
+  },
+}
+```
+

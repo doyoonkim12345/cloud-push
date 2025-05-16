@@ -1,0 +1,134 @@
+# Quick Start
+
+
+Start using `cloud-push` in two parts: the **server** and the **expo client**.
+
+## 📡 Server Setup
+
+### 1️⃣ Create server project
+
+```bash
+pnpm create next-app --yes
+```
+### 2️⃣ Install the packages
+
+```bash
+pnpm add @cloud-push/next @cloud-push/cloud @cloud-push/core @tanstack/react-query semver @types/semver
+```
+
+### 3️⃣ Initialize server apis
+
+```bash
+pnpm cloud-push init
+```
+
+### 4️⃣ Deploy server
+
+Deploy it to [Vercel](https://vercel.com)
+
+
+## 📱 Expo Client Setup
+
+
+> **Recommended:** Use **Node.js v18+** and **Expo SDK 52+** for best compatibility.
+
+
+
+### 1️⃣ Install the packages
+
+```bash
+pnpm add @cloud-push/expo @cloud-push/cloud
+```
+
+### 2️⃣ Initialize config
+
+```bash
+pnpm cloud-push init
+```
+
+### 3️⃣ Modify your `app.json` or `app.config.ts`
+
+If you're **not using EAS Build**, set the update URL and headers manually:
+
+```diff
+  updates: {
+-    url: "https://u.expo.dev/"
++    url: "https://your-server-domain/api/manifest",
++    requestHeaders: {
++      "expo-channel-name": process.env.APP_VARIANT,
++    },
+  },
+````
+
+<details>
+  <summary>🛠️ If you're using EAS Build</summary>
+
+You don't need to manually set `requestHeaders`. Instead, configure the channel in `eas.json`:
+
+```json
+{
+  "build": {
+    "production": {
+      "channel": "stable"
+    },
+    "preview": {
+      "channel": "beta"
+    }
+  }
+}
+```
+
+> In this example, builds triggered with the `--profile preview` option will use the `beta` channel, while `--profile production` uses `stable`.
+
+</details>
+```
+
+### 4️⃣ Provide environment variables
+
+Set variables in `.env` or use **EAS Secrets**:
+
+```env
+SUPABASE_URL=...
+SUPABASE_KEY=...
+SUPABASE_BUCKET_NAME=...
+```
+
+> ✅ Provide appropriate values for AWS, Supabase, or Firebase depending on your storage backend.
+
+### 5️⃣ Deploy the update
+
+```bash
+pnpm cloud-push deploy
+```
+
+> 💡 OTA updates will only apply to builds with the same `runtimeVersion`
+
+<details>
+
+
+<summary>🔧 로컬 환경 테스트 주의사항</summary>
+
+## ⚠️ Android Cleartext Warning
+
+Android에서 HTTP 요청을 허용하려면 `usesCleartextTraffic`을 설정해야 합니다.
+
+```ts
+export default {
+  expo: {
+    name: "your-app-name",
+    slug: "your-app-slug",
+    plugins: [
+      [
+        "expo-build-properties",
+        {
+          android: {
+            usesCleartextTraffic: true,
+          },
+          ios: {},
+        },
+      ],
+    ],
+  },
+};
+```
+</details> 

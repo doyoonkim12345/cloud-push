@@ -75,7 +75,9 @@ export class SupabaseDbClient extends DbClient {
 
 		// 조건 적용
 		for (const [key, value] of Object.entries(conditions)) {
-			query = query.eq(key, value);
+			if (typeof value !== "undefined") {
+				query = query.eq(key, value);
+			}
 		}
 
 		// 정렬 옵션 적용 (있을 경우)

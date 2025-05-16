@@ -1,6 +1,6 @@
 import { defineConfig } from "@cloud-push/expo";
 import { SupabaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
-import version from "./version";
+import sharedConfig from "./sharedConfig";
 
 const storageClient = new SupabaseStorageClient({
 	bucketName: process.env.SUPABASE_BUCKET_NAME,
@@ -17,5 +17,8 @@ const dbClient = new SupabaseDbClient({
 export default defineConfig(() => ({
 	storage: storageClient,
 	db: dbClient,
-	runtimeVersion: version.runtimeVersion,
+	envSource: "file",
+	runtimeVersion: sharedConfig.runtimeVersion,
+	channel: sharedConfig.channel,
+	checkStatusUrl: sharedConfig.updateBundleUrl,
 }));

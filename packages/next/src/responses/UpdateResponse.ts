@@ -15,29 +15,20 @@ export function UpdateResponse({
 	const form = new FormData();
 
 	if (manifest) {
-		form.append("manifest", JSON.stringify(manifest), {
+		form.append("manifest", JSON.stringify(manifest ?? {}), {
 			contentType: "application/json",
-			header: {
-				"content-type": "application/json; charset=utf-8",
-			},
 		});
 	}
 
 	if (directive) {
-		form.append("directive", JSON.stringify(directive), {
+		form.append("directive", JSON.stringify(directive ?? {}), {
 			contentType: "application/json",
-			header: {
-				"content-type": "application/json; charset=utf-8",
-			},
 		});
 	}
 
 	if (extensions) {
-		form.append("extensions", JSON.stringify(extensions), {
+		form.append("extensions", JSON.stringify(extensions ?? {}), {
 			contentType: "application/json",
-			header: {
-				"content-type": "application/json; charset=utf-8",
-			},
 		});
 	}
 

@@ -21,8 +21,6 @@ export class SupabaseStorageClient extends StorageClient {
 		super();
 		this.client = createClient(supabaseUrl, supabaseKey);
 		this.bucketName = bucketName;
-
-		console.log(supabaseUrl, supabaseKey);
 	}
 
 	getFile = async ({

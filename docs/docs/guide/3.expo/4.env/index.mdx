@@ -1,0 +1,31 @@
+# Environment variables
+
+
+
+Environment variables는 [dbClient](/guide/4.cloud/2.dbClients.html)와 [storageClient](/guide/4.cloud/1.storageClients.html)를 이용하거나 번들을 만들 때 사용되며 `.env`와 `eas env`를 지원합니다.
+매번 환경변수를 사용해야 할 때 어디서 환경변수를 불러와야 하는지 정할 수 있습니다.
+
+## 지원하는 환경
+
+```ts
+type Environment = "production" | "development" | "preview"
+```
+
+expo와 마찬가지로 환경은 **production**, **development**, **preview**로 제한합니다.
+
+
+
+## 1. `eas env`
+
+`eas env`를 사용하면 [expo.dev](https://expo.dev)로부터 환경변수를 불러옵니다. 이 옵션을 사용하기 위해서는 **무조건 [expo.dev](https://expo.dev)에서 확인할 수 있도록 프로젝트가 설정**이 되어있어야 하며 사용하고자 하는 환경변수가 제대로 환경에 맞게 입력되어 있어야 합니다. 또한 **cloud-push 실행 환경에서도 eas가 사용할 수 있도록 설정**되어 있어야 합니다.
+
+## 2. `.env`
+
+아래로 갈수록 **우선순위가 높습니다** (이전 값을 덮어씀).
+
+| 순서 | 파일명                    | 설명                           | 예시                      |
+|------|---------------------------|--------------------------------|---------------------------|
+| 1    | `.env`                    | 기본값                         | `.env`                   |
+| 2    | `.env.{environment}`      | 환경별 값                      | `.env.development`       |
+| 3    | `.env.local`              | 로컬 공통 오버라이드           | `.env.local`             |
+| 4    | `.env.{environment}.local`| 환경별 로컬 오버라이드 (최우선)| `.env.development.local` |

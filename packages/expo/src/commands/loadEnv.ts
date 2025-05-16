@@ -1,5 +1,6 @@
 import { loadEASEnv } from "@/lib/loadEASEnv";
 import { loadFileEnv } from "@/lib/loadFileEnv";
+import type { ENV_SOURCE } from "@/types";
 import * as prompts from "@clack/prompts";
 import type { Environment } from "@cloud-push/core";
 

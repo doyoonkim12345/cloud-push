@@ -155,7 +155,7 @@ export const createManifest = async ({
 
 	const manifest: Manifest = {
 		id: bundleId,
-		createdAt: new Date(Date.now()).toISOString(),
+		createdAt: new Date().toISOString(),
 		runtimeVersion,
 		metadata: {},
 		assets,

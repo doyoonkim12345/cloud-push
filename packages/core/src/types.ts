@@ -10,3 +10,7 @@ export interface Setting {
 	repositoryUrl?: string;
 	channels: string[];
 }
+
+export interface UpdateStatus {
+	isForceUpdateRequired: boolean;
+}

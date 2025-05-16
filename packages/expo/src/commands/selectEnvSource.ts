@@ -1,3 +1,4 @@
+import type { ENV_SOURCE } from "@/types";
 import * as prompts from "@clack/prompts";
 
 export async function selectEnvSource(): Promise<ENV_SOURCE> {

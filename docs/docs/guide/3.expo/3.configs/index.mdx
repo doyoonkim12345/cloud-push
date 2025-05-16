@@ -1,0 +1,60 @@
+# Configs
+
+## cloud-push.config.ts
+```ts
+type Config = {
+	runtimeVersion?: string;
+	storage: StorageClient;
+	db: DbClient;
+};
+```
+### Example
+
+```ts
+import { defineConfig } from "@cloud-push/expo";
+
+export default defineConfig(() => ({
+	storage: storageClient,
+	db: dbClient,
+}));
+```
+
+## Expo 친화적인 버전 관리
+
+프로젝트의 버전을 관리하는 `version.js`만들어서 cloud-push.config.ts와 app.config.ts에서 사용하시면 `deploy`시에 runtimeVersion을 `version.js`에서 불러오게 되어 수동으로 runtimeVersion을 입력하지 않아도 됩니다.
+
+### version.js
+
+```ts
+module.exports = {
+  runtimeVersion: "1.0.0",
+};
+```
+
+### cloud-push.config.ts
+```ts
+import { defineConfig } from "@cloud-push/expo";
+import version from "./version";
+
+export default defineConfig(() => ({
+	storage: storageClient,
+	db: dbClient,
+	runtimeVersion: version.runtimeVersion,
+}));
+
+```
+
+### app.config.ts
+```ts
+import type { ExpoConfig, ConfigContext } from "expo/config";
+import version from "./version";
+
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
+  version: version.runtimeVersion,
+  runtimeVersion: {
+    policy: "appVersion",
+  },
+});
+
+```

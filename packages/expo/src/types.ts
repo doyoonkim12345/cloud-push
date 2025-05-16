@@ -1,1 +1,1 @@
-type ENV_SOURCE = "eas" | "file";
+export type ENV_SOURCE = "eas" | "file";

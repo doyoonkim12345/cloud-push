@@ -1,11 +1,11 @@
 import type { ExpoConfig, ConfigContext } from "expo/config";
-import version from "./version";
+import sharedConfig from "./sharedConfig";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
 	...config,
 	name: "client",
 	slug: "client",
-	version: version.runtimeVersion,
+	version: sharedConfig.runtimeVersion,
 	runtimeVersion: {
 		policy: "appVersion",
 	},
@@ -22,9 +22,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		supportsTablet: true,
 	},
 	updates: {
-		url: "http://192.168.0.36:3000/api/manifest",
+		url: sharedConfig.updateBundleUrl,
 		requestHeaders: {
-			"expo-channel-name": "development",
+			"expo-channel-name": sharedConfig.channel,
 		},
 	},
 	android: {
@@ -38,6 +38,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		favicon: "./assets/favicon.png",
 	},
 	plugins: [
+		[
+			"expo-splash-screen",
+			{
+				backgroundColor: "#232323",
+				image: "./assets/splash-icon.png",
+				dark: {
+					image: "./assets/splash-icon.png",
+					backgroundColor: "#000000",
+				},
+				imageWidth: 200,
+			},
+		],
 		[
 			"expo-build-properties",
 			{
