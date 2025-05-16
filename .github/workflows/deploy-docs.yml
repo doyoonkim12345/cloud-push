@@ -1,21 +1,26 @@
 name: Build & Deploy Docs
 
 on:
-  push: 
-    branches: [main]                          
+  push:
+    branches: [main]
 
-permissions:                            # ← 필수! contents:write
-  contents: write
-  pages: write
+permissions:
+  contents: read        # 소스 코드 체크아웃용
+  pages: write          # GitHub Pages 배포권한
+  id-token: write       # GitHub Pages에 필요한 권한
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
-      - uses: pnpm/action-setup@v4      # version 지정 X (package.json에 있음)
+      - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v3
         with:
@@ -26,12 +31,22 @@ jobs:
         run: pnpm install
 
       - name: Build docs
-        run: pnpm rspress build         # 결과: docs/dist
+        run: pnpm rspress build
         working-directory: ./docs
 
-      - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/doc_build        # ← 존재 확정
+          path: docs/doc_build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
