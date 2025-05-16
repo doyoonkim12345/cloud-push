@@ -25,7 +25,7 @@ jobs:
         run: pnpm install
 
       - name: Build docs
-        run: pnpm rspress build         # 결과: docs/dist
+        run: cd docs && pnpm rspress build         # 결과: docs/dist
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
