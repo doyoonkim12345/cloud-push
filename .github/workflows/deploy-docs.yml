@@ -1,7 +1,8 @@
 name: Build & Deploy Docs
 
 on:
-  push: {}                              # 모든 브랜치
+  push: 
+    branches: [main]                          
 
 permissions:                            # ← 필수! contents:write
   contents: write
@@ -25,11 +26,12 @@ jobs:
         run: pnpm install
 
       - name: Build docs
-        run: cd docs && pnpm rspress build         # 결과: docs/dist
+        run: pnpm rspress build         # 결과: docs/dist
+        working-directory: ./docs
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v3
+        uses: actions/upload-pages-artifact@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ../docs/doc_build        # ← 존재 확정
+          publish_dir: docs/doc_build        # ← 존재 확정
