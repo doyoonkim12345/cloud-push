@@ -1,0 +1,27 @@
+# Environment variables
+
+Environment variables are used when using [dbClient](/guide/4.cloud/2.dbClients.html) and [storageClient](/guide/4.cloud/1.storageClients.html) or when creating bundles, and support both `.env` and `eas env`.
+You can decide where to load environment variables from each time you need to use them.
+
+## Supported environments
+
+```ts
+type Environment = "production" | "development" | "preview";
+```
+
+As with expo, environments are limited to **production**, **development**, and **preview**.
+
+## 1. `eas env`
+
+If you use `eas env`, environment variables are loaded from [expo.dev](https://expo.dev). To use this option, your project **must be set up so it can be found on [expo.dev](https://expo.dev)]**, and the environment variables you want to use must be properly set for each environment. Also, **the cloud-push execution environment must be set up so that eas can be used**.
+
+## 2. `.env`
+
+The lower you go, the **higher the priority** (overrides previous values).
+
+| Order | Filename                   | Description                              | Example                  |
+| ----- | -------------------------- | ---------------------------------------- | ------------------------ |
+| 1     | `.env`                     | Default                                  | `.env`                   |
+| 2     | `.env.{environment}`       | Per-environment value                    | `.env.development`       |
+| 3     | `.env.local`               | Local common override                    | `.env.local`             |
+| 4     | `.env.{environment}.local` | Per-environment local override (highest) | `.env.development.local` |

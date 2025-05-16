@@ -1,0 +1,125 @@
+# Configs
+
+cloud-push uses two types of config.
+
+## cloud-push.config.ts ( CliConfig )
+
+This config is used when using the CLI. It runs in the node runtime.
+If a value is set in cliConfig, you can omit it during deploy and the config value will be automatically applied.
+
+```ts
+type CliConfig = {
+  loadClients: () => { storage: StorageClient; db: DbClient };
+  runtimeVersion?: string;
+  channel?: string;
+  envSource?: ENV_SOURCE;
+  environment?: Environment;
+};
+```
+
+### Example
+
+```ts
+import { defineConfig } from "@cloud-push/cli";
+
+export default defineConfig(() => ({
+  loadClients: () => {
+    const storageClient = new SupabaseStorageClient({
+      bucketName: process.env.SUPABASE_BUCKET_NAME,
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_KEY,
+    });
+
+    const dbClient = new SupabaseDbClient({
+      tableName: process.env.SUPABASE_TABLE_NAME!,
+      supabaseUrl: process.env.SUPABASE_URL!,
+      supabaseKey: process.env.SUPABASE_KEY!,
+    });
+
+    return {
+      storage: storageClient,
+      db: dbClient,
+    };
+  },
+}));
+```
+
+## app.config.ts ( AppConfig )
+
+These are static values used after build.
+It uses the extra field of app.config.ts provided by expo.
+
+```ts
+interface AppConfig {
+  checkUpdateStatusUrl?: string;
+}
+```
+
+### Example
+
+```ts
+{
+	extra: {
+		eas: {
+			projectId: "12345aaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+		},
+		cloudPush: {
+			checkUpdateStatusUrl: "https://yourdomain/api/udpates/status",
+		} as AppConfig,
+	},
+}
+```
+
+## Best Practice
+
+AppConfig and CliConfig have some values that need to be shared. Create a static json or js file to share values.
+
+### sharedConfig.js
+
+```ts
+module.exports = {
+  runtimeVersion: "1.0.0",
+  channel: "development",
+  updateBundleUrl: "http://yourdomain/api/updates/manifest",
+  currentBundleUrl: "http://yourdomain/api/updates/status",
+};
+```
+
+### cloud-push.config.ts
+
+```ts
+import { defineConfig } from "@cloud-push/expo";
+import sharedConfig from "./sharedConfig";
+
+export default defineConfig(() => ({
+  storage: storageClient,
+  db: dbClient,
+  envSource: "file",
+  runtimeVersion: sharedConfig.runtimeVersion,
+  channel: sharedConfig.channel,
+  environment: "development",
+}));
+```
+
+### app.config.ts
+
+```ts
+import type { ExpoConfig, ConfigContext } from "expo/config";
+import sharedConfig from "./sharedConfig";
+
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
+  version: version.runtimeVersion,
+  runtimeVersion: {
+    policy: "appVersion",
+  },
+  extra: {
+    eas: {
+      projectId: "12345aaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+    },
+    cloudPush: {
+      checkUpdateStatusUrl: "https://yourdomain/api/udpates/status",
+    } as AppConfig,
+  },
+});
+```

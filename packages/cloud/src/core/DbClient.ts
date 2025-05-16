@@ -1,4 +1,4 @@
-import type { Bundle, FindCondition, SortOption } from "@/core/types";
+import type { Bundle, FindCondition, SortOption } from "@/types";
 
 export abstract class DbClient {
 	abstract create: (params: { bundle: Bundle }) => Promise<void>;

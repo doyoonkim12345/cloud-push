@@ -9,10 +9,12 @@
 		"web": "expo start --web"
 	},
 	"dependencies": {
-		"@cloud-push/cloud": "1.0.3",
-		"@cloud-push/expo": "1.0.9",
+		"@cloud-push/cloud": "1.1.0",
+		"@cloud-push/expo": "1.1.0",
+		"@cloud-push/cli": "1.1.0",
 		"expo": "~52.0.43",
 		"expo-build-properties": "~0.13.2",
+		"expo-splash-screen": "~0.29.24",
 		"expo-status-bar": "~2.0.1",
 		"expo-updates": "^0.27.4",
 		"react": "18.3.1",
@@ -20,15 +22,13 @@
 		"react-native-pager-view": "6.5.1"
 	},
 	"devDependencies": {
+		"@react-native/metro-config": "0.76.9",
+		"@rnx-kit/metro-config": "^2.0.1",
+		"@rnx-kit/metro-resolver-symlinks": "^0.2.1",
+		"@expo/metro-config": "^0.19.12",
 		"@babel/core": "^7.25.2",
 		"@types/react": "~18.3.12",
 		"typescript": "^5.3.3"
 	},
-	"private": true,
-	"pnpm": {
-		"overrides": {
-			"@cloud-push/expo": "link:../../packages/expo",
-			"@cloud-push/cloud": "link:../../packages/cloud"
-		}
-	}
+	"private": true
 }

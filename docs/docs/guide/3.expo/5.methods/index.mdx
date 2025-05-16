@@ -1,0 +1,15 @@
+# Methods
+
+## `getConfig`
+
+Retrieves [AppConfig](/guide/3.expo/3.configs.html#appconfigts--appconfig-)
+
+## `getUpdateStatus`
+
+```ts
+interface UpdateStatus {
+  isForceUpdateRequired: boolean;
+}
+```
+
+Sends a request to [`/api/updates/status`](/guide/2.next/3.api.html#apiupdatesstatus) and returns UpdateStatus.

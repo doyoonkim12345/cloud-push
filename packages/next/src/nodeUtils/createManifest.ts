@@ -7,8 +7,8 @@ import type {
 	Manifest,
 	PlatformMetadata,
 } from "@/types";
-import type { StorageClient } from "@cloud-push/cloud";
-import { parseFileAsJson, type Platform } from "@cloud-push/core";
+import type { Platform, StorageClient } from "@cloud-push/cloud";
+import { parseFileAsJson } from "@cloud-push/utils";
 import type { ExpoConfig } from "@expo/config-types";
 import mime from "mime";
 
@@ -155,7 +155,7 @@ export const createManifest = async ({
 
 	const manifest: Manifest = {
 		id: bundleId,
-		createdAt: new Date(Date.now()).toISOString(),
+		createdAt: new Date().toISOString(),
 		runtimeVersion,
 		metadata: {},
 		assets,

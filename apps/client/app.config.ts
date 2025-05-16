@@ -1,11 +1,12 @@
 import type { ExpoConfig, ConfigContext } from "expo/config";
-import version from "./version";
+import sharedConfig from "./sharedConfig";
+import type { AppConfig } from "@cloud-push/expo";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
 	...config,
 	name: "client",
 	slug: "client",
-	version: version.runtimeVersion,
+	version: sharedConfig.runtimeVersion,
 	runtimeVersion: {
 		policy: "appVersion",
 	},
@@ -22,9 +23,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		supportsTablet: true,
 	},
 	updates: {
-		url: "http://192.168.0.36:3000/api/manifest",
+		url: sharedConfig.updateBundleUrl,
 		requestHeaders: {
-			"expo-channel-name": "development",
+			"expo-channel-name": sharedConfig.channel,
 		},
 	},
 	android: {
@@ -39,6 +40,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	},
 	plugins: [
 		[
+			"expo-splash-screen",
+			{
+				backgroundColor: "#232323",
+				image: "./assets/splash-icon.png",
+				dark: {
+					image: "./assets/splash-icon.png",
+					backgroundColor: "#000000",
+				},
+				imageWidth: 200,
+			},
+		],
+		[
 			"expo-build-properties",
 			{
 				android: {
@@ -52,5 +65,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		eas: {
 			projectId: "9d11153f-925e-414c-a409-4fe5c747799e",
 		},
+		cloudPush: {
+			checkUpdateStatusUrl: sharedConfig.updateBundleUrl,
+		} as AppConfig,
 	},
 });

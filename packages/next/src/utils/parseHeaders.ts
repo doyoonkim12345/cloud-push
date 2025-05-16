@@ -1,4 +1,4 @@
-import type { Platform } from "@cloud-push/core";
+import type { Platform } from "@cloud-push/cloud";
 
 export const parseHeaders = ({
 	headers,
