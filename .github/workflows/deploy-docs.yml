@@ -32,4 +32,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/dist        # ← 존재 확정
+          publish_dir: docs/doc_build        # ← 존재 확정
