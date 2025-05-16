@@ -1,36 +1,34 @@
-name: Deploy RSPress Docs
+name: Build & Deploy Docs
 
 on:
-  push:
-    branches:
-      - main
+  push: {}                     # 모든 브랜치에서 실행
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # 1) 저장소 체크아웃
+      - uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      # 2) pnpm 설치 ─ version 입력 ❌ (package.json에 이미 있음)
+      - uses: pnpm/action-setup@v4
+
+      # 3) Node 설치 및 pnpm 캐시
+      - uses: actions/setup-node@v3
         with:
-          node-version: 18
-          cache: 'pnpm'
+          node-version: 18      # 필요하면 .nvmrc 대신 숫자
+          cache: pnpm
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      # 4) 의존성 설치
+      - run: pnpm install
 
-      - name: Install dependencies (monorepo)
-        run: pnpm install
+      # 5) RSPress 문서 빌드 (docs/ 하위 only)
+      - run: pnpm --filter ./docs... rspress build
 
-      - name: Build docs
-        run: pnpm --filter ./docs... rspress build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      # 6) GitHub Pages 배포 — main 브랜치일 때만
+      - uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/dist
