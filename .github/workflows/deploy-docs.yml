@@ -1,9 +1,7 @@
 name: Deploy RSPress Docs
 
 on:
-  push:
-    branches:
-      - main
+  push: {}  # ✅ 모든 브랜치에서 작동
 
 jobs:
   deploy:
@@ -23,13 +21,14 @@ jobs:
         with:
           version: 8
 
-      - name: Install dependencies (monorepo)
+      - name: Install dependencies
         run: pnpm install
 
       - name: Build docs
         run: pnpm --filter ./docs... rspress build
 
       - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'  # ✅ 실제 배포는 main일 때만
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
