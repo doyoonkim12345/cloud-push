@@ -104,7 +104,7 @@ export function DashboardPageContent({
 					<BundleCard
 						key={bundle.bundleId}
 						bundle={bundle}
-						index={index + 1}
+						index={targetBundles.length - (index + 1)}
 						androidLastestBundle={androidLastestBundle}
 						iosLatestBundle={iosLatestBundle}
 						gitRepositoryUrl={setting.repositoryUrl}

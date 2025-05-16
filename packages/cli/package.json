@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "@cloud-push/cli",
-	"version": "1.0.2",
+	"version": "1.1.0",
 	"main": "./dist/config.cjs",
 	"module": "./dist/config.js",
 	"types": "./dist/expo/config.d.ts",
@@ -32,8 +32,8 @@
 		"typescript": "^5.8.2"
 	},
 	"dependencies": {
-		"@cloud-push/cloud": "workspace:^",
-		"@cloud-push/utils": "workspace:^",
+		"@cloud-push/cloud": "1.1.0",
+		"@cloud-push/utils": "1.1.0",
 		"cosmiconfig-typescript-loader": "^6.1.0",
 		"execa": "^9.5.3",
 		"fs-extra": "^11.3.0",

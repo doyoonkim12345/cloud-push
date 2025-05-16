@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "@cloud-push/cloud",
-	"version": "1.0.3",
+	"version": "1.1.0",
 	"description": "",
 	"scripts": {
 		"dev": "rslib build --watch",
@@ -29,7 +29,7 @@
 		"@supabase/supabase-js": "^2.49.4",
 		"firebase-admin": "^13.2.0",
 		"lowdb": "^7.0.1",
-		"@cloud-push/utils" : "1.0.0"
+		"@cloud-push/utils" : "1.1.0"
 	},
 	"devDependencies": {
 		"@aws-sdk/util-stream-node": "^3.374.0",

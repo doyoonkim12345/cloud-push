@@ -1,7 +1,6 @@
 import type { Bundle } from "@cloud-push/cloud";
 
 /**
- * 두 숫자를 더합니다.
  * @returns {Bundle | undefined} undefined가 return 되면 embedded 번들을 사용합니다.
  */
 export const findRollbackTargetBundle = (
