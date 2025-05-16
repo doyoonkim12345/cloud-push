@@ -1,6 +1,6 @@
 # ExpoUpdates
 
-cloud-push는 [`expo-updates`](https://docs.expo.dev/technical-specs/expo-updates-1/)와 **호환되며**, 아래 설정들을 지원합니다.
+cloud-push is **compatible** with [`expo-updates`](https://docs.expo.dev/technical-specs/expo-updates-1/) and supports the following settings.
 
 ## install
 
@@ -12,72 +12,70 @@ pnpm expo install expo-updates
 
 ### 🧱 Constants
 
-| Constant                      | Supported |
-|------------------------------|-----------|
-| `Updates.channel`            | ✅        |
-| `Updates.checkAutomatically` | ✅        |
-| `Updates.createdAt`          | ✅        |
-| `Updates.emergencyLaunchReason` | ⏳    |
-| `Updates.isEmbeddedLaunch`   | ✅        |
-| `Updates.isEmergencyLaunch`  | ⏳        |
-| `Updates.isEnabled`          | ✅        |
-| `Updates.latestContext`      | ✅        |
-| `Updates.launchDuration`     | ✅        |
-| `Updates.manifest`           | ✅        |
-| `Updates.runtimeVersion`     | ✅        |
-| `Updates.updateId`           | ✅        |
+| Constant                        | Supported |
+| ------------------------------- | --------- |
+| `Updates.channel`               | ✅        |
+| `Updates.checkAutomatically`    | ✅        |
+| `Updates.createdAt`             | ✅        |
+| `Updates.emergencyLaunchReason` | ⏳        |
+| `Updates.isEmbeddedLaunch`      | ✅        |
+| `Updates.isEmergencyLaunch`     | ⏳        |
+| `Updates.isEnabled`             | ✅        |
+| `Updates.latestContext`         | ✅        |
+| `Updates.launchDuration`        | ✅        |
+| `Updates.manifest`              | ✅        |
+| `Updates.runtimeVersion`        | ✅        |
+| `Updates.updateId`              | ✅        |
 
 ### 🧩 Hooks
 
 | Hook           | Supported |
-|----------------|-----------|
+| -------------- | --------- |
 | `useUpdates()` | ✅        |
 
 ### 🛠 Methods
 
-| Method                  | Supported |
-|-------------------------|-----------|
-| `checkForUpdateAsync()` | ✅        |
-| `clearLogEntriesAsync()`| ✅        |
-| `fetchUpdateAsync()`    | ✅        |
-| `getExtraParamsAsync()` | ❌        |
-| `readLogEntriesAsync()` | ✅        |
-| `reloadAsync()`         | ✅        |
-| `setExtraParamAsync()`  | ❌        |
+| Method                   | Supported |
+| ------------------------ | --------- |
+| `checkForUpdateAsync()`  | ✅        |
+| `clearLogEntriesAsync()` | ✅        |
+| `fetchUpdateAsync()`     | ✅        |
+| `getExtraParamsAsync()`  | ❌        |
+| `readLogEntriesAsync()`  | ✅        |
+| `reloadAsync()`          | ✅        |
+| `setExtraParamAsync()`   | ❌        |
 
 ---
-
-
 
 ## app.json / app.config.ts
 
-expo의 [`app.json  or app.config.ts의 updates`](https://docs.expo.dev/versions/latest/config/app/#updates)에서 대부분의 옵션을 지원합니다. 
+Most options in [`app.json or app.config.ts updates`](https://docs.expo.dev/versions/latest/config/app/#updates) are supported.
 
-### ✅ 정상 작동하는 설정
+### ✅ Supported settings
 
-| 옵션                     | 설명 |
-|--------------------------|------|
-| `enabled`                | 업데이트 시스템 활성화 여부 |
-| `checkAutomatically`     | 앱 시작 시 업데이트 체크 방식 |
-| `useEmbeddedUpdate`      | 내장된 업데이트 사용 여부 |
-| `fallbackToCacheTimeout` | 업데이트 응답 대기 시간 (ms) |
-| `url`                    | 업데이트 매니페스트의 원격 URL |
-| `requestHeaders`         | 요청 시 포함할 커스텀 헤더 |
-  
-이 설정들은 Expo SDK에서 **정상적으로 작동**하며, JS 및 네이티브 빌드에서 예측 가능한 동작을 보장합니다.
+| Option                   | Description                           |
+| ------------------------ | ------------------------------------- |
+| `enabled`                | Whether to enable the update system   |
+| `checkAutomatically`     | How to check for updates at app start |
+| `useEmbeddedUpdate`      | Whether to use embedded updates       |
+| `fallbackToCacheTimeout` | Update response wait time (ms)        |
+| `url`                    | Remote URL for the update manifest    |
+| `requestHeaders`         | Custom headers to include in requests |
+
+These settings work **properly** in the Expo SDK and guarantee predictable behavior in both JS and native builds.
 
 ---
 
-### ⚠️ 미지원 또는 불확실한 설정
+### ⚠️ Unsupported or uncertain settings
 
-| 옵션                        | 지원 여부 | 설명 |
-|-----------------------------|-----------|------|
-| `codeSigningCertificate`    | ❌ 미지원 | 아직 SDK에서 코드 서명 기능이 활성화되어 있지 않습니다. |
-| `codeSigningMetadata`       | ❌ 미지원 | 위와 동일하게 무시됩니다. |
-| `assetPatternsToBeBundled`  | ⚠️ 확인되지 않음 | 일부 환경에서는 동작하지 않을 수 있습니다. |
-| `disableAntiBrickingMeasures` | ⚠️ 확인되지 않음 | 설정 가능하지만 실제로 적용되는지는 명확하지 않습니다. |
+| Option                        | Supported        | Description                                          |
+| ----------------------------- | ---------------- | ---------------------------------------------------- |
+| `codeSigningCertificate`      | ❌ Not supported | Code signing is not yet enabled in the SDK.          |
+| `codeSigningMetadata`         | ❌ Not supported | Likewise, ignored.                                   |
+| `assetPatternsToBeBundled`    | ⚠️ Not confirmed | May not work in some environments.                   |
+| `disableAntiBrickingMeasures` | ⚠️ Not confirmed | Can be set, but it's unclear if it actually applies. |
 
-> ❗️ **주의:** `disableAntiBrickingMeasures`는 앱을 부팅 불능 상태로 만들 수 있으므로 **프로덕션 환경에서는 사용하지 마세요**.
+> ❗️ **Caution:** `disableAntiBrickingMeasures` can make your app unbootable, so **do not use in production environments**.
 
 ---
 
@@ -91,7 +89,7 @@ If you're **not using EAS Build**, set the update URL and headers manually:
 +      "expo-channel-name": process.env.APP_VARIANT,
 +    },
   },
-````
+```
 
 <details>
   <summary>🛠️ If you're using EAS Build</summary>
@@ -117,7 +115,7 @@ You don't need to manually set `requestHeaders`. Instead, configure the channel 
 
 ---
 
-### 예시 설정
+### Example settings
 
 ```ts
 updates: {
@@ -131,4 +129,3 @@ updates: {
   },
 }
 ```
-

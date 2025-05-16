@@ -1,54 +1,57 @@
 # Configs
 
-cloud-push는 두 가지 종류의 config를 사용합니다.
+cloud-push uses two types of config.
 
 ## cloud-push.config.ts ( CliConfig )
 
-cli를 사용할 때 사용하는 config입니다. node 런타임에서 실행됩니다.
-cliConfig에서 설정된 값이 있으면 deploy시 입력이 생략되고 config의 내용이 자동반영됩니다.
+This config is used when using the CLI. It runs in the node runtime.
+If a value is set in cliConfig, you can omit it during deploy and the config value will be automatically applied.
+
 ```ts
 type CliConfig = {
-	loadClients: () => { storage: StorageClient; db: DbClient };
-	runtimeVersion?: string;
-	channel?: string;
-	envSource?: ENV_SOURCE;
-	environment?: Environment;
+  loadClients: () => { storage: StorageClient; db: DbClient };
+  runtimeVersion?: string;
+  channel?: string;
+  envSource?: ENV_SOURCE;
+  environment?: Environment;
 };
 ```
+
 ### Example
 
 ```ts
 import { defineConfig } from "@cloud-push/cli";
 
 export default defineConfig(() => ({
-	loadClients: () => {
-		const storageClient = new SupabaseStorageClient({
-			bucketName: process.env.SUPABASE_BUCKET_NAME,
-			supabaseUrl: process.env.SUPABASE_URL,
-			supabaseKey: process.env.SUPABASE_KEY,
-		});
+  loadClients: () => {
+    const storageClient = new SupabaseStorageClient({
+      bucketName: process.env.SUPABASE_BUCKET_NAME,
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_KEY,
+    });
 
-		const dbClient = new SupabaseDbClient({
-			tableName: process.env.SUPABASE_TABLE_NAME!,
-			supabaseUrl: process.env.SUPABASE_URL!,
-			supabaseKey: process.env.SUPABASE_KEY!,
-		});
+    const dbClient = new SupabaseDbClient({
+      tableName: process.env.SUPABASE_TABLE_NAME!,
+      supabaseUrl: process.env.SUPABASE_URL!,
+      supabaseKey: process.env.SUPABASE_KEY!,
+    });
 
-		return {
-			storage: storageClient,
-			db: dbClient,
-		};
-	}
+    return {
+      storage: storageClient,
+      db: dbClient,
+    };
+  },
 }));
 ```
+
 ## app.config.ts ( AppConfig )
 
-빌드 이후에 사용되는 정적인 값들 입니다.
-expo에서 제공하는 app.config.ts의 extra 필드를 사용합니다.
+These are static values used after build.
+It uses the extra field of app.config.ts provided by expo.
 
 ```ts
 interface AppConfig {
-    checkUpdateStatusUrl?: string
+  checkUpdateStatusUrl?: string;
 }
 ```
 
@@ -69,55 +72,54 @@ interface AppConfig {
 
 ## Best Practice
 
-AppConfig와 CliConfig는 일부 공유해야하는 값들이 존재합니다. 정적인 json 혹은 js 파일을 만들어서 값들을 공유하도록 합니다.
+AppConfig and CliConfig have some values that need to be shared. Create a static json or js file to share values.
 
 ### sharedConfig.js
 
 ```ts
 module.exports = {
-	runtimeVersion: "1.0.0",
-	channel: "development",
-	updateBundleUrl: "http://yourdomain/api/updates/manifest",
-	currentBundleUrl: "http://yourdomain/api/updates/status",
+  runtimeVersion: "1.0.0",
+  channel: "development",
+  updateBundleUrl: "http://yourdomain/api/updates/manifest",
+  currentBundleUrl: "http://yourdomain/api/updates/status",
 };
-
 ```
 
 ### cloud-push.config.ts
+
 ```ts
 import { defineConfig } from "@cloud-push/expo";
 import sharedConfig from "./sharedConfig";
 
 export default defineConfig(() => ({
-	storage: storageClient,
-	db: dbClient,
-	envSource: "file",
-	runtimeVersion: sharedConfig.runtimeVersion,
-	channel: sharedConfig.channel,
-	environment: "development",
+  storage: storageClient,
+  db: dbClient,
+  envSource: "file",
+  runtimeVersion: sharedConfig.runtimeVersion,
+  channel: sharedConfig.channel,
+  environment: "development",
 }));
-
 ```
 
 ### app.config.ts
+
 ```ts
 import type { ExpoConfig, ConfigContext } from "expo/config";
 import sharedConfig from "./sharedConfig";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
-	...config,
-	version: version.runtimeVersion,
-	runtimeVersion: {
-	policy: "appVersion",
-	},
-  	extra: {
-		eas: {
-			projectId: "12345aaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-		},
-		cloudPush: {
-			checkUpdateStatusUrl: "https://yourdomain/api/udpates/status",
-		} as AppConfig,
-	},
+  ...config,
+  version: version.runtimeVersion,
+  runtimeVersion: {
+    policy: "appVersion",
+  },
+  extra: {
+    eas: {
+      projectId: "12345aaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+    },
+    cloudPush: {
+      checkUpdateStatusUrl: "https://yourdomain/api/udpates/status",
+    } as AppConfig,
+  },
 });
-
 ```

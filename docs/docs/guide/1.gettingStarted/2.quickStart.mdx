@@ -1,6 +1,5 @@
 # Quick Start
 
-
 Start using `cloud-push` in two parts: the **server** and the **expo client**.
 
 ## 📡 Server Setup
@@ -10,6 +9,7 @@ Start using `cloud-push` in two parts: the **server** and the **expo client**.
 ```bash
 pnpm create next-app --yes
 ```
+
 ### 2️⃣ Install the packages
 
 ```bash
@@ -30,10 +30,7 @@ pnpm dev
 
 ## 📱 Expo Client Setup
 
-
 > **Recommended:** Use **Node.js v18+** and **Expo SDK 52+** for best compatibility.
-
-
 
 ### 1️⃣ Install the packages
 
@@ -59,7 +56,7 @@ If you're **not using EAS Build**, set the update URL and headers manually:
 +      "expo-channel-name": process.env.APP_VARIANT,
 +    },
   },
-````
+```
 
 <details>
   <summary>🛠️ If you're using EAS Build</summary>
@@ -106,12 +103,11 @@ pnpm cloud-push deploy
 
 <details>
 
-
-<summary>🔧 로컬 환경 테스트 주의사항</summary>
+<summary>🔧 Local Environment Testing Notes</summary>
 
 ## ⚠️ Android Cleartext Warning
 
-Android에서 HTTP 요청을 허용하려면 `usesCleartextTraffic`을 설정해야 합니다.
+To allow HTTP requests on Android, you need to set `usesCleartextTraffic`.
 
 ```ts
 export default {
@@ -132,4 +128,5 @@ export default {
   },
 };
 ```
-</details> 
+
+</details>

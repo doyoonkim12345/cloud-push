@@ -2,34 +2,34 @@
 
 ## `/api/updates/manifest`
 
-이 api는 [`Expo Updates Protocol v1`](https://docs.expo.dev/technical-specs/expo-updates-1/) 명세를 기반으로, 클라이언트가 서버로 OTA 업데이트를 요청할 때 전달하는 메타데이터의 구조를 설명합니다.  
-클라이언트는 `Header` 또는 `Query Parameter`를 통해 다양한 정보를 전달합니다.
+This API is based on the [`Expo Updates Protocol v1`](https://docs.expo.dev/technical-specs/expo-updates-1/) specification and describes the structure of metadata that clients send when requesting OTA updates from the server.  
+Clients can send various information through `Header` or `Query Parameter`.
 
-## 📥 요청 필드 요약
+## 📥 Request Fields Summary
 
-| 필드명              | 위치            | 키 이름                        | 필수 여부 | 설명 |
-|---------------------|------------------|-------------------------------|-----------|------|
-| `runtimeVersion`     | Header           | `expo-runtime-version`         | ✅         | 앱 런타임 버전. 필수입니다. |
-|                     | Query Param      | `runtime-version`              |           | Header가 없는 경우 fallback |
-| `platform`           | Header           | `expo-platform`                | ✅         | 플랫폼 정보 (`ios`, `android`) |
-|                     | Query Param      | `platform`                     |           | Header가 없는 경우 fallback |
-| `protocolVersion`    | Header           | `expo-protocol-version`        | ✅         | Expo Updates 프로토콜 버전 (정수) |
-| `channel`            | Header           | `expo-channel-name`            | ❌         | 업데이트 채널 이름 (예: `development`) |
-| `embeddedUpdateId`   | Header           | `expo-embedded-update-id`      | ❌         | 앱에 내장된 업데이트 ID |
-| `currentUpdateId`    | Header           | `expo-current-update-id`       | ❌         | 현재 실행 중인 업데이트 ID |
+| Field Name         | Location    | Key Name                  | Required | Description                               |
+| ------------------ | ----------- | ------------------------- | -------- | ----------------------------------------- |
+| `runtimeVersion`   | Header      | `expo-runtime-version`    | ✅       | App runtime version. Required.            |
+|                    | Query Param | `runtime-version`         |          | Fallback if Header is missing             |
+| `platform`         | Header      | `expo-platform`           | ✅       | Platform information (`ios`, `android`)   |
+|                    | Query Param | `platform`                |          | Fallback if Header is missing             |
+| `protocolVersion`  | Header      | `expo-protocol-version`   | ✅       | Expo Updates protocol version (integer)   |
+| `channel`          | Header      | `expo-channel-name`       | ❌       | Update channel name (e.g., `development`) |
+| `embeddedUpdateId` | Header      | `expo-embedded-update-id` | ❌       | Update ID embedded in the app             |
+| `currentUpdateId`  | Header      | `expo-current-update-id`  | ❌       | Currently running update ID               |
 
 <Callout type="info">
-  `runtimeVersion`, `platform`, `protocolVersion`는 업데이트 요청을 식별하는 데 필수입니다.
+  `runtimeVersion`, `platform`, and `protocolVersion` are required to identify update requests.
 </Callout>
 
-## 🧪 동작 우선순위
+## 🧪 Processing Priority
 
-`runtimeVersion`과 `platform` 값은 다음 우선순위로 처리됩니다:
+`runtimeVersion` and `platform` values are processed in the following priority:
 
-1. **Header 값이 우선**: `expo-runtime-version`, `expo-platform`
-2. **없을 경우**: `runtime-version`, `platform` 쿼리 파라미터에서 대체
+1. **Header values take precedence**: `expo-runtime-version`, `expo-platform`
+2. **If missing**: Fallback to `runtime-version`, `platform` query parameters
 
-## 📦 예시 요청
+## 📦 Example Request
 
 ```http
 GET /api/manifest?platform=android&runtime-version=1.0.0 HTTP/1.1
@@ -44,10 +44,10 @@ expo-embedded-update-id: 123e4567-e89b-12d3-a456-426614174999
 
 ## `/api/updates/status`
 
-이 api는 업데이트는 현재 번들의 상태를 확인합니다. 
+This API checks the status of the current bundle update.
 
-## 📥 요청 필드 요약
+## 📥 Request Fields Summary
 
-| 필드명              | 위치            | 키 이름                        | 필수 여부 | 설명 |
-|---------------------|------------------|-------------------------------|-----------|------|
-| `currentUpdateId`    | Header           | `expo-current-update-id`       | ✅         | 현재 실행 중인 업데이트 ID |
+| Field Name        | Location | Key Name                 | Required | Description                 |
+| ----------------- | -------- | ------------------------ | -------- | --------------------------- |
+| `currentUpdateId` | Header   | `expo-current-update-id` | ✅       | Currently running update ID |

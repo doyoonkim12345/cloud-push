@@ -1,20 +1,25 @@
 # Components
 
-## `ReactQueryProvider`
+## `QueryProvider`
 
-@tanstack/react-query를 사용할 수 있도록 합니다.
+Enables the use of @tanstack/react-query.
 
 ## `Header`
-Header 입니다.
 
-## `DashboardPageContent`
-Dashboard 입니다.
+Header component.
 
-## `ChannelSelector`
-channel를 선택할 수 있습니다.
+## `Dashboard`
 
-## `RuntimeVersionSelector`
-runtimeVersion을 선택할 수 있습니다.
+Dashboard component.
 
-## `BundleCard`
-각 번들 별 정보를 보여줍니다.
+## `ChannelSelect`
+
+Allows selection of channels.
+
+## `RuntimeVersionSelect`
+
+Allows selection of runtimeVersion.
+
+## `BundleList`
+
+Shows information for each bundle.

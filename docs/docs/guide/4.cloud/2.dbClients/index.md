@@ -1,14 +1,14 @@
 # dbClients
 
-cursor라는 테이블을 만들어서 번들들의 버전을 관리합니다.
+Create a table called cursor to manage the versions of bundles.
 
 ## NoSQL (lowdb, firebase)
 
-특별한 설정이 필요하지 않습니다.
+No special configuration is required.
 
 ## SQL (supabase)
 
-테이블을 만드셔야 합니다.
+You need to create a table.
 
 ### postgres SQL
 
