@@ -21,15 +21,13 @@
 		"react-native-pager-view": "6.5.1"
 	},
 	"devDependencies": {
+		"@react-native/metro-config": "0.76.9",
+		"@rnx-kit/metro-config": "^2.0.1",
+		"@rnx-kit/metro-resolver-symlinks": "^0.2.1",
+		"@expo/metro-config": "^0.19.12",
 		"@babel/core": "^7.25.2",
 		"@types/react": "~18.3.12",
 		"typescript": "^5.3.3"
 	},
-	"private": true,
-	"pnpm": {
-		"overrides": {
-			"@cloud-push/expo": "link:../../packages/expo",
-			"@cloud-push/cloud": "link:../../packages/cloud"
-		}
-	}
+	"private": true
 }
