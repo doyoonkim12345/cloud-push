@@ -5,7 +5,6 @@
 [![@cloud-push/cloud](https://img.shields.io/badge/@cloud--push/cloud-v1.0.3-blue)](https://www.npmjs.com/package/@cloud-push/cloud)  
 [![@cloud-push/expo](https://img.shields.io/badge/@cloud--push/react--native-v1.0.9-blue)](https://www.npmjs.com/package/@cloud-push/expo)  
 [![@cloud-push/next](https://img.shields.io/badge/@cloud--push/next-v1.0.1-blue)](https://www.npmjs.com/package/@cloud-push/next)  
-[![@cloud-push/core](https://img.shields.io/badge/@cloud--push/core-v1.0.2-blue)](https://www.npmjs.com/package/@cloud-push/core)  
 
 **OTA Update solution compatible with Expo Updates**  
 → Self-hosted update distribution system

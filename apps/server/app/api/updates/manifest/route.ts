@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 			conditions: { bundleId: currentUpdateId },
 		});
 
-		let nextBundle: Bundle | "EMBEDDED";
+		let nextBundle: Bundle | null;
 
 		const isEmbedded = !currentBundle;
 
@@ -58,35 +58,29 @@ export async function GET(request: NextRequest) {
 		});
 
 		if (isEmbedded) {
-			nextBundle = bundles[0] ?? "EMBEDDED";
+			// latest
+			nextBundle = bundles[0] ?? null;
 		} else {
 			switch (currentBundle?.updatePolicy) {
 				case "FORCE_UPDATE":
 				case "NORMAL_UPDATE":
-					nextBundle =
-						findUpdateTargetBundle(bundles, currentUpdateId) ?? "EMBEDDED";
+					nextBundle = findUpdateTargetBundle(bundles, currentUpdateId) ?? null;
 					break;
 				case "ROLLBACK":
 					nextBundle =
-						findRollbackTargetBundle(bundles, currentUpdateId) ?? "EMBEDDED";
+						findRollbackTargetBundle(bundles, currentUpdateId) ?? null;
 					break;
 				default:
-					nextBundle = bundles[0] ?? "EMBEDDED";
+					nextBundle = null;
 					break;
 			}
 		}
 
-		if (nextBundle === "EMBEDDED") {
+		if (!nextBundle) {
 			const directive: Directive = {
 				type: "rollBackToEmbedded",
-				parameters: {
-					commitTime: new Date().toISOString(),
-				},
 			};
-			return UpdateResponse({
-				bundleId: embeddedUpdateId,
-				directive: directive,
-			});
+			return UpdateResponse({ bundleId: embeddedUpdateId, directive });
 		}
 
 		if (nextBundle.bundleId === currentBundle?.bundleId) {

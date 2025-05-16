@@ -13,19 +13,20 @@ pnpm create next-app --yes
 ### 2️⃣ Install the packages
 
 ```bash
-pnpm add @cloud-push/next @cloud-push/cloud @cloud-push/core @tanstack/react-query semver @types/semver
+pnpm add @cloud-push/next @cloud-push/cloud @cloud-push/utils @tanstack/react-query semver @types/semver
 ```
 
 ### 3️⃣ Initialize server apis
 
 ```bash
-pnpm cloud-push init
+npx @cloud-push/cli next-init
 ```
 
-### 4️⃣ Deploy server
+### 4️⃣ Run server
 
-Deploy it to [Vercel](https://vercel.com)
-
+```
+pnpm dev
+```
 
 ## 📱 Expo Client Setup
 
@@ -37,13 +38,13 @@ Deploy it to [Vercel](https://vercel.com)
 ### 1️⃣ Install the packages
 
 ```bash
-pnpm add @cloud-push/expo @cloud-push/cloud
+pnpm add @cloud-push/expo @cloud-push/cloud @cloud-push/cli
 ```
 
 ### 2️⃣ Initialize config
 
 ```bash
-pnpm cloud-push init
+pnpm cloud-push expo-init
 ```
 
 ### 3️⃣ Modify your `app.json` or `app.config.ts`

@@ -1,5 +1,6 @@
 import type { ExpoConfig, ConfigContext } from "expo/config";
 import sharedConfig from "./sharedConfig";
+import type { AppConfig } from "@cloud-push/expo";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
 	...config,
@@ -64,5 +65,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		eas: {
 			projectId: "9d11153f-925e-414c-a409-4fe5c747799e",
 		},
+		cloudPush: {
+			checkUpdateStatusUrl: sharedConfig.updateBundleUrl,
+		} as AppConfig,
 	},
 });

@@ -3,27 +3,18 @@
 	"name": "@cloud-push/expo",
 	"version": "1.0.9",
 	"description": "",
-	"main": "./dist/config.cjs",
-	"module": "./dist/config.js",
-	"types": "./dist/config.d.ts",
-	"bin": {
-		"cloud-push": "./dist/index.js"
-	},
-	"exports": {
-		".": {
-			"node": "./dist/config.cjs",
-			"import": "./dist/config.js",
-			"require": "./dist/config.cjs",
-			"types": "./dist/config.d.ts"
-		}
-	},
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"scripts": {
 		"start": "tsx ./src/index.ts",
 		"dev": "rslib build --watch",
 		"build": "rslib build",
 		"lint": "tsc"
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"keywords": [
 		"expo",
 		"expo-updates",
@@ -54,31 +45,15 @@
 	"license": "ISC",
 	"devDependencies": {
 		"@rslib/core": "^0.5.5",
-		"@types/archiver": "^6.0.3",
-		"@types/commander": "^2.12.5",
-		"@types/inquirer": "^9.0.7",
-		"@types/node": "^20",
-		"execa": "^9.5.2",
-		"fast-glob": "^3.3.3",
-		"fflate": "^0.8.2",
-		"picocolors": "^1.1.1",
-		"tsx": "^4.19.3",
-		"typescript": "^5.8.2",
-		"workspace-tools": "^0.38.1"
+		"expo-constants": "^17.1.6",
+		"expo-updates": "^0.27.4"
+	},
+	"peerDependencies": {
+		"expo-constants": "^17.1.6",
+		"expo-updates": "^0.27.4"
 	},
 	"dependencies": {
-		"@clack/prompts": "^0.10.0",
-		"@cloud-push/core": "1.0.2",
 		"@cloud-push/cloud": "1.0.3",
-		"@types/semver": "^7.5.8",
-		"boxen": "^8.0.1",
-		"chalk": "^5.4.1",
-		"commander": "^13.1.0",
-		"cosmiconfig": "^9.0.0",
-		"cosmiconfig-typescript-loader": "^6.1.0",
-		"dotenv": "^16.4.7",
-		"read-package-up": "^11.0.0",
-		"semver": "^7.7.1",
-		"uuid": "^11.1.0"
+		"@cloud-push/utils": "1.0.0"
 	}
 }

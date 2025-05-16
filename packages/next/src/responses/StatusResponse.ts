@@ -1,4 +1,4 @@
-import type { UpdateStatus } from "@cloud-push/core";
+import { UpdateStatus } from "@cloud-push/cloud";
 
 export function StatusResponse({
 	status,

@@ -13,10 +13,11 @@
 	"packageManager": "pnpm@10.6.1",
 	"pnpm": {
 		"overrides": {
-			"@cloud-push/core": "workspace:*",
 			"@cloud-push/expo": "workspace:*",
 			"@cloud-push/cloud": "workspace:*",
-			"@cloud-push/next": "workspace:*"
+			"@cloud-push/next": "workspace:*",
+			"@cloud-push/utils": "workspace:*",
+			"@cloud-push/cli": "workspace:*"
 		}
 	},
 	"devDependencies": {

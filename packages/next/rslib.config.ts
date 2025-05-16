@@ -1,14 +1,6 @@
 import { defineConfig } from "@rslib/core";
 
 export default defineConfig({
-	output: {
-		copy: [
-			{
-				from: "./src/templates",
-				to: "templates",
-			},
-		],
-	},
 	lib: [
 		{
 			format: "esm",
@@ -16,15 +8,8 @@ export default defineConfig({
 			source: {
 				entry: {
 					index: "./src/index.ts",
-					cli: "./src/cli/index.ts",
 					node: "./src/node.ts",
 				},
-			},
-			autoExternal: {
-				dependencies: true,
-				peerDependencies: true,
-				optionalDependencies: true,
-				devDependencies: false,
 			},
 		},
 		{
@@ -33,15 +18,8 @@ export default defineConfig({
 			source: {
 				entry: {
 					index: "./src/index.ts",
-					cli: "./src/cli/index.ts",
 					node: "./src/node.ts",
 				},
-			},
-			autoExternal: {
-				dependencies: true,
-				peerDependencies: true,
-				optionalDependencies: true,
-				devDependencies: false,
 			},
 		},
 	],

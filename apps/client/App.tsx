@@ -4,7 +4,7 @@ import { MethodsTestScreen } from "./screens/MethodsTestScreen";
 import PagerView from "react-native-pager-view";
 import ConstantsTestScreen from "./screens/ConstantsTestScreen";
 import { HooksTestScreen } from "./screens/HooksTestScreen";
-import * as Updates from "expo-updates";
+import { getUpdateStatus } from "@cloud-push/expo";
 
 export default function App() {
 	// const appState = useRef(AppState.currentState);
@@ -37,22 +37,21 @@ export default function App() {
 	// 	return () => subscription.remove();
 	// }, []);
 
-	// const handlePress = async () => {
-	// 	const updateId = Updates.manifest.id;
-	// 	if (updateId) {
-	// 		const status = await getUpdateStatus(updateId);
-	// 		if (status.isForceUpdateRequired) {
-	// 			Alert.alert("강제 업데이트가 필요합니다.");
-	// 		} else {
-	// 			Alert.alert("업데이트가 필요 없습니다.");
-	// 		}
-	// 	}
-	// };
+	const handlePress = async () => {
+	
+		const status = await getUpdateStatus();
+		if (status?.isForceUpdateRequired) {
+			Alert.alert("강제 업데이트가 필요합니다.");
+		} else {
+			Alert.alert("업데이트가 필요 없습니다.");
+		}
+		
+	};
 
 	return (
 		<View style={{ flex: 1 }}>
 			<PagerView style={{ flex: 1 }} initialPage={0}>
-				<Button title="test" />
+				<Button onPress={handlePress} title="test" />
 				<ConstantsTestScreen />
 				<HooksTestScreen />
 				<MethodsTestScreen />

@@ -7,8 +7,8 @@ import type {
 	Manifest,
 	PlatformMetadata,
 } from "@/types";
-import type { StorageClient } from "@cloud-push/cloud";
-import { parseFileAsJson, type Platform } from "@cloud-push/core";
+import type { Platform, StorageClient } from "@cloud-push/cloud";
+import { parseFileAsJson } from "@cloud-push/utils";
 import type { ExpoConfig } from "@expo/config-types";
 import mime from "mime";
 
