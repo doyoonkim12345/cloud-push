@@ -1,1 +1,0 @@
-{"version":3,"file":"LowDbLoader.d.ts","sourceRoot":"","sources":["../../src/lowdb/LowDbLoader.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,GAAG,EAAU,MAAM,OAAO,CAAC;AAGpC,eAAO,MAAM,WAAW;gBACL,CAAC,UAAU,CAAC;wBASJ,CAAC,QAAQ,MAAM,iBAAiB,CAAC;wBAKjC,CAAC,YAAY,MAAM,iBAAiB,CAAC;CAK/D,CAAC"}

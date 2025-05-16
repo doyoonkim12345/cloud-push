@@ -1,3 +1,0 @@
-[submodule "apps/server"]
-	path = apps/server
-	url = https://github.com/doyoonkim12345/cloud-push-nexus.git

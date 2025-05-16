@@ -1,0 +1,46 @@
+{
+  "private": true,
+  "name": "cloud-push",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build-utils": "pnpm --filter @cloud-push/utils run build",
+    "build-cloud": "pnpm --filter @cloud-push/cloud run build",
+    "build-expo": "pnpm --filter @cloud-push/expo run build",
+    "build-next": "pnpm --filter @cloud-push/next run build",
+    "build-cli": "pnpm --filter @cloud-push/cli run build",
+    "build-all": "pnpm run build-utils && pnpm run build-cloud && pnpm run build-expo && pnpm run build-next && pnpm run build-cli",
+    "publish-utils": "pnpm --filter @cloud-push/utils exec npm publish --access public",
+    "publish-cloud": "pnpm --filter @cloud-push/cloud exec npm publish --access public",
+    "publish-expo": "pnpm --filter @cloud-push/expo exec npm publish --access public",
+    "publish-next": "pnpm --filter @cloud-push/next exec npm publish --access public",
+    "publish-cli": "pnpm --filter @cloud-push/cli exec npm publish --access public",
+    "publish-all": "pnpm run publish-utils && pnpm run publish-cloud && pnpm run publish-expo && pnpm run publish-next && pnpm run publish-cli",
+    "deploy": "pnpm run build-all && pnpm run publish-all",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.1",
+  "pnpm": {
+    "overrides": {
+      "@cloud-push/expo": "workspace:*",
+      "@cloud-push/cloud": "workspace:*",
+      "@cloud-push/next": "workspace:*",
+      "@cloud-push/utils": "workspace:*",
+      "@cloud-push/cli": "workspace:*"
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@react-native-community/cli-server-api": "^18.0.0"
+  },
+  "dependencies": {
+    "expo": "~52.0.46",
+    "react": "18.3.1",
+    "react-native": "0.76.9"
+  }
+}

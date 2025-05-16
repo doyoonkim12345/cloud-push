@@ -1,0 +1,59 @@
+{
+	"type": "module",
+	"name": "@cloud-push/expo",
+	"version": "1.1.0",
+	"description": "",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"start": "tsx ./src/index.ts",
+		"dev": "rslib build --watch",
+		"build": "rslib build",
+		"lint": "tsc"
+	},
+	"files": [
+		"dist"
+	],
+	"keywords": [
+		"expo",
+		"expo-updates",
+		"react-native",
+		"expo-managed",
+		"expo-build",
+		"expo-dev-client",
+		"expo-router",
+		"eas",
+		"eas-update",
+		"eas-cli",
+		"eas-build",
+		"ota",
+		"over-the-air",
+		"live-update",
+		"app-update",
+		"background-updates",
+		"codepush",
+		"cloud-update",
+		"expo-publish",
+		"versioning",
+		"runtimeVersion",
+		"mobile",
+		"updates",
+		"react-native-updates"
+	],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@rslib/core": "^0.5.5",
+		"expo-constants": "^17.1.6",
+		"expo-updates": "^0.27.4"
+	},
+	"peerDependencies": {
+		"expo-constants": "^17.1.6",
+		"expo-updates": "^0.27.4"
+	},
+	"dependencies": {
+		"@cloud-push/cloud": "1.1.0",
+		"@cloud-push/utils": "1.1.0"
+	}
+}

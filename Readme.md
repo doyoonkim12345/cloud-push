@@ -2,13 +2,19 @@
   <img src="./logo.png" alt="Logo" width="300" />
 </p>
 
-[![@cloud-push/cloud](https://img.shields.io/badge/@cloud--push/cloud-v1.0.3-blue)](https://www.npmjs.com/package/@cloud-push/cloud)  
-[![@cloud-push/react-native](https://img.shields.io/badge/@cloud--push/react--native-v1.0.9-blue)](https://www.npmjs.com/package/@cloud-push/react-native)  
-[![@cloud-push/next](https://img.shields.io/badge/@cloud--push/next-v1.0.1-blue)](https://www.npmjs.com/package/@cloud-push/next)  
-[![@cloud-push/core](https://img.shields.io/badge/@cloud--push/core-v1.0.2-blue)](https://www.npmjs.com/package/@cloud-push/core)  
+[![@cloud-push/cloud](https://img.shields.io/badge/@cloud--push/cloud-v1.1.0-blue)](https://www.npmjs.com/package/@cloud-push/cloud)  
+[![@cloud-push/expo](https://img.shields.io/badge/@cloud--push/expo-v1.1.0-blue)](https://www.npmjs.com/package/@cloud-push/expo)  
+[![@cloud-push/next](https://img.shields.io/badge/@cloud--push/next-v1.1.0-blue)](https://www.npmjs.com/package/@cloud-push/next)  
+[![@cloud-push/cli](https://img.shields.io/badge/@cloud--push/cli-v1.1.0-blue)](https://www.npmjs.com/package/@cloud-push/expo)  
+[![@cloud-push/utils](https://img.shields.io/badge/@cloud--push/utils-v1.1.0-blue)](https://www.npmjs.com/package/@cloud-push/next)  
 
 **OTA Update solution compatible with Expo Updates**  
 → Self-hosted update distribution system
+
+## 📚 Documentation
+
+You can find the full usage guide and API reference in the  
+👉 [**Cloud Push Docs**](https://doyoonkim12345.github.io/cloud-push/)
 
 ## 🚀 Motivation
 
@@ -33,106 +39,12 @@ It follows [Expo Updates technical specs](https://docs.expo.dev/technical-specs/
 - 🧪 EAS build supported
 
 
-## ⚙️ Quick Start
-
-Start using `cloud-push` in two parts: the **server** and the **expo client**.
-
----
-
-### 📡 Server Setup
-
-1. Use the template: [cloud-push-nexus](https://github.com/doyoonkim12345/cloud-push-nexus)
-2. Deploy it to [Vercel](https://vercel.com)
-
----
-
-### 📱 Expo Client Setup
-
-#### 1️⃣ Install the package
-
-```bash
-pnpm add @cloud-push/react-native @cloud-push/cloud
-```
-
-#### 2️⃣ Initialize config
-
-```bash
-pnpm cloud-push init
-```
-
-#### 3️⃣ Modify your `app.json` or `app.config.ts`
-
-```diff
-  updates: {
--    url: "https://u.expo.dev/"
-+    url: "https://your-server-domain/api/manifest",
-+    requestHeaders: {
-+      "expo-channel-name": process.env.APP_VARIANT,
-+    },
-  },
-```
-
-#### 4️⃣ Provide environment variables
-
-Set variables in `.env` or use **EAS Secrets**:
-
-```env
-SUPABASE_URL=...
-SUPABASE_KEY=...
-SUPABASE_BUCKET_NAME=...
-```
-
-> ✅ Provide appropriate values for AWS, Supabase, or Firebase depending on your storage backend.
-
-#### 5️⃣ Deploy the update
-
-```bash
-pnpm cloud-push deploy
-```
-
-> 💡 OTA updates will only apply to builds with the same `runtimeVersion`
-
-
-## ⚠️ Android Cleartext Warning
-
-Allow HTTP requests by setting `usesCleartextTraffic`:
-
-```ts
-export default {
-  expo: {
-    name: "your-app-name",
-    slug: "your-app-slug",
-    plugins: [
-      [
-        "expo-build-properties",
-        {
-          android: {
-            usesCleartextTraffic: true,
-          },
-          ios: {},
-        },
-      ],
-    ],
-  },
-};
-```
-
-## ⚙️ cloud-push.config type
-
-```ts
-type Config = {
-  runtimeVersion?: string;
-  storage: StorageClient;
-  db: DbClient;
-};
-```
-
 ## 🛠 Configuration Examples
 
 ### Supabase
 
 ```ts
-import { defineConfig } from "@cloud-push/react-native";
+import { defineConfig } from "@cloud-push/expo";
 import { SupabaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
 import version from "./version";
 
@@ -158,7 +70,7 @@ export default defineConfig(() => ({
 ### AWS S3 + lowdb
 
 ```ts
-import { defineConfig } from "@cloud-push/react-native";
+import { defineConfig } from "@cloud-push/expo";
 import { AWSS3StorageClient, LowDbClient } from "@cloud-push/cloud";
 import version from "./version";
 
@@ -171,7 +83,7 @@ const storageClient = new AWSS3StorageClient({
 
 const dbClient = new LowDbClient({
   downloadJSONFile: () => storageClient.getFile({ key: "cursor.json" }),
-  uploadJSONFile: (file: Buffer) =>
+  uploadJSONFile: (file: Uint8Array) =>
     storageClient.uploadFile({ key: "cursor.json", file }),
 });
 
@@ -185,7 +97,7 @@ export default defineConfig(() => ({
 ### Firebase
 
 ```ts
-import { defineConfig } from "@cloud-push/react-native";
+import { defineConfig } from "@cloud-push/expo";
 import { FirebaseStorageClient, FirebaseDbClient } from "@cloud-push/cloud";
 import version from "./version";
 
@@ -209,7 +121,7 @@ export default defineConfig(() => ({
 ### Custom
 
 ```ts
-import { defineConfig } from "@cloud-push/react-native";
+import { defineConfig } from "@cloud-push/expo";
 import { StorageClient, DbClient } from "@cloud-push/cloud";
 import version from "./version";
 
@@ -227,7 +139,7 @@ const dbClient: DbClient = {
   find: () => {},
   findAll: () => {},
   readAll: () => {},
-  toBuffer: () => {},
+  toUint8Array: () => {},
   update: () => {},
 };
 
@@ -261,7 +173,7 @@ export default defineConfig(() => ({
 
 | Hook           | Supported |
 |----------------|-----------|
-| `useUpdates()` | ⏳        |
+| `useUpdates()` | ✅        |
 
 ### 🛠 Methods
 

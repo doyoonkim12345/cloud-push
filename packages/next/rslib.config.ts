@@ -8,7 +8,7 @@ export default defineConfig({
 			source: {
 				entry: {
 					index: "./src/index.ts",
-					cli: "./src/cli.ts",
+					node: "./src/node.ts",
 				},
 			},
 		},
@@ -18,7 +18,7 @@ export default defineConfig({
 			source: {
 				entry: {
 					index: "./src/index.ts",
-					cli: "./src/cli.ts",
+					node: "./src/node.ts",
 				},
 			},
 		},

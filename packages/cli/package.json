@@ -1,0 +1,42 @@
+{
+	"type": "module",
+	"name": "@cloud-push/cli",
+	"version": "1.1.0",
+	"main": "./dist/config.cjs",
+	"module": "./dist/config.js",
+	"types": "./dist/expo/config.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/config.js",
+			"require": "./dist/config.cjs",
+			"types": "./dist/expo/config.d.ts",
+			"node": "./dist/config.cjs"
+		}
+	},
+	"bin": {
+		"cloud-push": "./dist/index.js"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "rslib build --watch",
+		"build": "rslib build"
+	},
+	"author": "",
+	"license": "ISC",
+	"files": [
+		"dist"
+	],
+	"devDependencies": {
+		"@rslib/core": "^0.5.5",
+		"@types/node": "^22.13.14",
+		"typescript": "^5.8.2"
+	},
+	"dependencies": {
+		"@cloud-push/cloud": "1.1.0",
+		"@cloud-push/utils": "1.1.0",
+		"cosmiconfig-typescript-loader": "^6.1.0",
+		"execa": "^9.5.3",
+		"fs-extra": "^11.3.0",
+		"uuidv4": "^6.2.13"
+	}
+}
