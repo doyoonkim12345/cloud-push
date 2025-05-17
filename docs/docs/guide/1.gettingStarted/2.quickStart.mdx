@@ -22,7 +22,20 @@ pnpm add @cloud-push/next @cloud-push/cloud @cloud-push/utils @tanstack/react-qu
 npx @cloud-push/cli next-init
 ```
 
-### 4️⃣ Run server
+### 4️⃣ Provide environment variables
+
+Set variables in `.env`
+
+```env
+SUPABASE_URL=...
+SUPABASE_KEY=...
+SUPABASE_BUCKET_NAME=...
+```
+
+> ✅ Provide appropriate values for AWS, Supabase, or Firebase depending on your storage backend.
+
+
+### 5️⃣ Run server
 
 ```
 pnpm dev
@@ -79,7 +92,6 @@ You don't need to manually set `requestHeaders`. Instead, configure the channel 
 > In this example, builds triggered with the `--profile preview` option will use the `beta` channel, while `--profile production` uses `stable`.
 
 </details>
-
 
 
 ### 4️⃣ Provide environment variables
