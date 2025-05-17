@@ -34,7 +34,7 @@ export default defineConfig({
 			{
 				name: "keywords",
 				content:
-					"Expo, OTA updates, React Native, Cloud Push, app deployment, update management, expo OTA, expo update system, eas, eas update, free code push, code push",
+					"Expo, OTA updates, React Native, Cloud Push, app deployment, update management, expo OTA, expo update system, eas, eas update, free code push, code push, hot-updater, react-native-ota, expo-updates",
 			},
 		],
 		["meta", { property: "og:title", content: "Cloud Push" }],
