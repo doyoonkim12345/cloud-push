@@ -20,4 +20,46 @@ export default defineConfig({
 			},
 		],
 	},
+	head: [
+		[
+			"meta",
+			{
+				name: "description",
+				content:
+					"Cloud Push is a simple and frontend-developer-friendly OTA update manager for Expo apps. Easily distribute and manage updates with CLI and web dashboard.",
+			},
+		],
+		[
+			"meta",
+			{
+				name: "keywords",
+				content:
+					"Expo, OTA updates, React Native, Cloud Push, app deployment, update management, expo OTA, expo update system, eas, eas update, free code push, code push",
+			},
+		],
+		["meta", { property: "og:title", content: "Cloud Push" }],
+		[
+			"meta",
+			{
+				property: "og:description",
+				content:
+					"A seamless OTA update solution for Expo apps with CLI and dashboard support.",
+			},
+		],
+		["meta", { property: "og:type", content: "website" }],
+		[
+			"meta",
+			{
+				property: "og:url",
+				content: "https://doyoonkim12345.github.io/cloud-push/",
+			},
+		],
+		[
+			"meta",
+			{
+				property: "og:image",
+				content: "https://doyoonkim12345.github.io/cloud-push/logo.png",
+			},
+		],
+	],
 });
