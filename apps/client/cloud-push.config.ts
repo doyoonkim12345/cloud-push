@@ -25,4 +25,5 @@ export default defineConfig(() => ({
 	runtimeVersion: sharedConfig.runtimeVersion,
 	channel: sharedConfig.channel,
 	environment: "development",
+	privateKeyPath: sharedConfig.privateKeyPath,
 }));

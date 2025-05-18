@@ -12,6 +12,7 @@ import { selectEnvironment } from "@/expo/commands/selectEnvironment";
 import { loadConfig } from "@/expo/lib/loadConfig";
 import type { CliConfig } from "@/expo/config";
 import { v4 } from "uuid";
+import { signBundle } from "../commands/signBundle";
 
 export async function setupDeployment(bundlePath: string) {
 	// 5. 설정 로드
@@ -38,6 +39,12 @@ export async function setupDeployment(bundlePath: string) {
 
 	// 7. 번들 내보내기
 	await exportBundles({ platforms, bundlePath, environment });
+
+	if (config.privateKeyPath) {
+		signBundle({
+			privateKeyPath: config.privateKeyPath,
+		});
+	}
 
 	// 8. Expo 설정 내보내기
 	await exportExpoConfig({ expoConfigPath: bundlePath });

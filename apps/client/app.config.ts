@@ -27,6 +27,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		requestHeaders: {
 			"expo-channel-name": sharedConfig.channel,
 		},
+		codeSigningMetadata: {
+			alg: "rsa-v1_5-sha256",
+			keyid: "main",
+		},
+		codeSigningCertificate: sharedConfig.publicKeyPath,
 	},
 	android: {
 		adaptiveIcon: {

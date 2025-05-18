@@ -1,0 +1,18 @@
+# Code Sigining
+
+https://docs.expo.dev/eas-update/code-signing/ 을 따릅니다.
+
+## 1. Generate Keys
+
+key를 생성합니다. 
+
+```sh
+npx expo-updates codesigning:generate --key-output-directory ../keys --certificate-output-directory certs --certificate-validity-duration-years 10 --certificate-common-name "Your Organization Name"
+```
+
+## 2. Fill CliConfig
+
+app.config.ts
+
+```ts
+```

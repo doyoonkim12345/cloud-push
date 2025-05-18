@@ -3,4 +3,6 @@ module.exports = {
 	channel: "development",
 	updateBundleUrl: "http://192.168.0.10:3000/api/updates/manifest",
 	currentBundleUrl: "http://192.168.0.10:3000/api/updates/status",
+	privateKeyPath: "./certs",
+	publicKeyPath: "../keys",
 };
