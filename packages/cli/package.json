@@ -28,15 +28,27 @@
 	],
 	"devDependencies": {
 		"@rslib/core": "^0.5.5",
+		"@types/fs-extra": "^11.0.4",
 		"@types/node": "^22.13.14",
 		"typescript": "^5.8.2"
 	},
 	"dependencies": {
+		"@clack/prompts": "^0.10.1",
 		"@cloud-push/cloud": "1.1.0",
 		"@cloud-push/utils": "1.1.0",
+		"@types/ejs": "^3.1.5",
+		"@types/semver": "^7.7.0",
+		"D": "^1.0.0",
+		"commander": "^13.1.0",
+		"cosmiconfig": "^9.0.0",
 		"cosmiconfig-typescript-loader": "^6.1.0",
+		"dotenv": "^16.5.0",
+		"ejs": "^3.1.10",
 		"execa": "^9.5.3",
 		"fs-extra": "^11.3.0",
+		"globby": "^14.1.0",
+		"semver": "^7.7.2",
+		"uuid": "^11.1.0",
 		"uuidv4": "^6.2.13"
 	}
 }
