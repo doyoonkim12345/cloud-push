@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
 			platform,
 			protocolVersion,
 			runtimeVersion,
+			expectSignature,
 		} = parseHeaders({
 			headers: request.headers,
 			url: new URL(request.url),
@@ -76,14 +77,24 @@ export async function GET(request: NextRequest) {
 			}
 		}
 
-		if (!nextBundle) {
+		if (!currentBundle && !nextBundle) {
 			const directive: Directive = {
 				type: "rollBackToEmbedded",
+				parameters: {
+					commitTime: new Date().toISOString(),
+				},
 			};
+			console.log("rollBackToEmbedded");
 			return UpdateResponse({ bundleId: embeddedUpdateId, directive });
 		}
 
+		if (!nextBundle) {
+			console.log("NoUpdateResponse");
+			return NoUpdateResponse();
+		}
+
 		if (nextBundle.bundleId === currentBundle?.bundleId) {
+			console.log("NoUpdateResponse");
 			return NoUpdateResponse();
 		}
 
@@ -94,8 +105,11 @@ export async function GET(request: NextRequest) {
 			storageClient: storageNodeClient,
 			channel,
 		});
-
-		return UpdateResponse({ manifest, bundleId: nextBundle.bundleId });
+		console.log("UpdateResponse");
+		return UpdateResponse({
+			manifest,
+			bundleId: nextBundle.bundleId,
+		});
 	} catch (error) {
 		return ErrorResponse(error as Error);
 	}
