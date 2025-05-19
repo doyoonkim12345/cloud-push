@@ -111,7 +111,7 @@ const dbClient = generateDbClient();
 	}
 
 	return `
-import { defineConfig } from "@cloud-push/expo";
+import { defineConfig } from "@cloud-push/cli";
 import { ${[importMethods.join(", ")]} } from "@cloud-push/cloud";
 ${storageClientInstance}
 ${dbClientInstance}

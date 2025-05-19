@@ -67,7 +67,7 @@ import { defineConfig } from "@cloud-push/cli";
 import { FirebaseStorageClient, FirebaseDbClient } from "@cloud-push/cloud";
 
 export default defineConfig(() => ({
-  loadClients: () => {
+  	loadClients: () => {
 		const storageClient = new FirebaseStorageClient({
 			credential: process.env.FIREBASE_CREDENTIAL!,
 			bucketName: process.env.BUCKET_NAME!,
