@@ -1,4 +1,7 @@
-# Code Sigining
+import PemToEnv from "../../../components/PemToEnv"
+
+
+# Code Signing
 
 https://docs.expo.dev/eas-update/code-signing/ 을 따릅니다.
 
@@ -10,9 +13,10 @@ key를 생성합니다.
 npx expo-updates codesigning:generate --key-output-directory ../keys --certificate-output-directory certs --certificate-validity-duration-years 10 --certificate-common-name "Your Organization Name"
 ```
 
-## 2. Fill CliConfig
+## 2. PrivateKey 를 string으로 변환합니다.
 
-app.config.ts
+<PemToEnv />
 
-```ts
-```
+## 3. 변환한 privateKey를 server 환경 변수로 사용합니다.
+
+## 4. 

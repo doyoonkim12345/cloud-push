@@ -19,6 +19,8 @@ export const parseHeaders = ({
 	const embeddedUpdateId = headers.get("expo-embedded-update-id");
 	const currentUpdateId = headers.get("expo-current-update-id");
 
+	const expectSignature = headers.get("expo-expect-signature");
+
 	return {
 		runtimeVersion,
 		platform,
@@ -26,5 +28,6 @@ export const parseHeaders = ({
 		currentUpdateId,
 		channel,
 		embeddedUpdateId,
+		expectSignature,
 	};
 };
