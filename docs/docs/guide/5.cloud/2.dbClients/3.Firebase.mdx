@@ -1,0 +1,88 @@
+import JsonToString from "../../../../components/JsonToString"
+
+# Firebase
+
+## FirebaseDbClient
+
+### 1. Credential 만들기
+
+serviceAccountKey.json의 내용을 string으로 변환하여 credential을 만듭니다.
+
+아래 textarea에서 string으로 변환 할 수 있습니다.
+
+<JsonToString />
+
+### 2. DATABASE_ID 입력
+
+### 3. Firestore 인덱스 설정
+
+이 앱은 특정 쿼리를 실행하기 위해 **복합 색인(Compound Index)** 설정이 필요합니다.  
+다음 색인을 Firebase 콘솔에서 수동으로 추가하거나, 앱 실행 중 Firestore 에러 메시지에서 제공되는 "색인 생성(Index creation)" 링크를 클릭하여 자동 생성할 수 있습니다.
+
+---
+
+### ✅ 필요한 색인 목록 (컬렉션 ID: `bundles`)
+
+#### 1. 색인 조합 1
+- `channel` (오름차순)
+- `runtimeVersion` (오름차순)
+- `supportIos` (오름차순)
+- `createdAt` (내림차순)
+- `__name__` (내림차순)
+
+#### 2. 색인 조합 2
+- `channel` (오름차순)
+- `createdAt` (내림차순)
+- `__name__` (내림차순)
+
+#### 3. 색인 조합 3
+- `channel` (오름차순)
+- `runtimeVersion` (오름차순)
+- `supportAndroid` (오름차순)
+- `createdAt` (내림차순)
+
+---
+
+### 🛠️ 색인 생성 방법
+1. [Firebase 콘솔](https://console.firebase.google.com/)에 접속합니다.
+2. Firestore Database > **색인(Index)** 탭으로 이동합니다.
+3. **색인 추가** 버튼을 클릭합니다.
+4. 위 필드 조합을 입력하여 각각의 색인을 추가합니다.
+
+
+
+```ts
+import { FirebaseDbClient } from "@cloud-push/cloud";
+
+const dbClient = new FirebaseDbClient({
+  credential: process.env.FIREBASE_CREDENTIAL!,
+  databaseId: process.env.FIREBASE_DATABASE_ID!,
+});
+```
+
+## Examples
+
+```ts
+import { defineConfig } from "@cloud-push/cli";
+import { FirebaseStorageClient, FirebaseDbClient } from "@cloud-push/cloud";
+
+export default defineConfig(() => ({
+  loadClients: () => {
+		const storageClient = new FirebaseStorageClient({
+			credential: process.env.FIREBASE_CREDENTIAL!,
+			bucketName: process.env.BUCKET_NAME!,
+		});
+
+		const dbClient = new FirebaseDbClient({
+			credential: process.env.FIREBASE_CREDENTIAL!,
+			databaseId: process.env.FIREBASE_DATABASE_ID!,
+		});
+
+		return {
+			storage: storageClient,
+			db: dbClient,
+		};
+	},
+}));
+```
+
