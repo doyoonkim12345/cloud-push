@@ -2,11 +2,13 @@
   <img src="./logo.png" alt="Logo" width="300" />
 </p>
 
-[![@cloud-push/cloud](https://img.shields.io/badge/@cloud--push/cloud-v1.1.0-blue)](https://www.npmjs.com/package/@cloud-push/cloud)  
-[![@cloud-push/expo](https://img.shields.io/badge/@cloud--push/expo-v1.1.0-blue)](https://www.npmjs.com/package/@cloud-push/expo)  
-[![@cloud-push/next](https://img.shields.io/badge/@cloud--push/next-v1.1.0-blue)](https://www.npmjs.com/package/@cloud-push/next)  
-[![@cloud-push/cli](https://img.shields.io/badge/@cloud--push/cli-v1.1.0-blue)](https://www.npmjs.com/package/@cloud-push/expo)  
-[![@cloud-push/utils](https://img.shields.io/badge/@cloud--push/utils-v1.1.0-blue)](https://www.npmjs.com/package/@cloud-push/next)  
+[![@cloud-push/cloud](https://img.shields.io/badge/@cloud--push/cloud-v1.1.1-blue)](https://www.npmjs.com/package/@cloud-push/cloud)  
+[![@cloud-push/expo](https://img.shields.io/badge/@cloud--push/expo-v1.1.1-blue)](https://www.npmjs.com/package/@cloud-push/expo)  
+[![@cloud-push/next](https://img.shields.io/badge/@cloud--push/next-v1.1.1-blue)](https://www.npmjs.com/package/@cloud-push/next)  
+[![@cloud-push/cli](https://img.shields.io/badge/@cloud--push/cli-v1.1.1-blue)](https://www.npmjs.com/package/@cloud-push/expo)  
+[![@cloud-push/utils](https://img.shields.io/badge/@cloud--push/utils-v1.1.1-blue)](https://www.npmjs.com/package/@cloud-push/next)  
+
+## **Typescript Only, Zero kotlin, Zero Swift, Zero java, Zero Object-C**
 
 **OTA Update solution compatible with Expo Updates**  
 → Self-hosted update distribution system
@@ -44,109 +46,85 @@ It follows [Expo Updates technical specs](https://docs.expo.dev/technical-specs/
 ### Supabase
 
 ```ts
-import { defineConfig } from "@cloud-push/expo";
+import { defineConfig } from "@cloud-push/cli";
 import { SupabaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
-import version from "./version";
-
-const storageClient = new SupabaseStorageClient({
-  bucketName: process.env.SUPABASE_BUCKET_NAME!,
-  supabaseUrl: process.env.SUPABASE_URL!,
-  supabaseKey: process.env.SUPABASE_KEY!,
-});
-
-const dbClient = new SupabaseDbClient({
-  tableName: process.env.SUPABASE_TABLE_NAME!,
-  supabaseUrl: process.env.SUPABASE_URL!,
-  supabaseKey: process.env.SUPABASE_KEY!,
-});
 
 export default defineConfig(() => ({
-  runtimeVersion: version.runtimeVersion,
-  storage: storageClient,
-  db: dbClient,
+  loadClients: () => {
+
+    const storageClient = new SupabaseStorageClient({
+      bucketName: process.env.SUPABASE_BUCKET_NAME!,
+      supabaseUrl: process.env.SUPABASE_URL!,
+      supabaseKey: process.env.SUPABASE_KEY!,
+    });
+
+    const dbClient = new SupabaseDbClient({
+      tableName: process.env.SUPABASE_TABLE_NAME!,
+      supabaseUrl: process.env.SUPABASE_URL!,
+      supabaseKey: process.env.SUPABASE_KEY!,
+    });
+    
+		return {
+			storage: storageClient,
+			db: dbClient,
+		};
+	},
 }));
 ```
 
 ### AWS S3 + lowdb
 
 ```ts
-import { defineConfig } from "@cloud-push/expo";
+import { defineConfig } from "@cloud-push/cli";
 import { AWSS3StorageClient, LowDbClient } from "@cloud-push/cloud";
-import version from "./version";
-
-const storageClient = new AWSS3StorageClient({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-  bucketName: process.env.AWS_BUCKET_NAME!,
-  region: process.env.AWS_REGION!,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-});
-
-const dbClient = new LowDbClient({
-  downloadJSONFile: () => storageClient.getFile({ key: "cursor.json" }),
-  uploadJSONFile: (file: Uint8Array) =>
-    storageClient.uploadFile({ key: "cursor.json", file }),
-});
 
 export default defineConfig(() => ({
-  runtimeVersion: version.runtimeVersion,
-  storage: storageClient,
-  db: dbClient,
+  loadClients: () => {
+    
+    const storageClient = new AWSS3StorageClient({
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      bucketName: process.env.AWS_BUCKET_NAME!,
+      region: process.env.AWS_REGION!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    });
+
+    const dbClient = new LowDbClient({
+      downloadJSONFile: () => storageClient.getFile({ key: "cursor.json" }),
+      uploadJSONFile: (file: Uint8Array) =>
+        storageClient.uploadFile({ key: "cursor.json", file }),
+    });
+
+    return {
+      storage: storageClient,
+      db: dbClient,
+    };
+  },
 }));
 ```
 
 ### Firebase
 
 ```ts
-import { defineConfig } from "@cloud-push/expo";
+import { defineConfig } from "@cloud-push/cli";
 import { FirebaseStorageClient, FirebaseDbClient } from "@cloud-push/cloud";
-import version from "./version";
-
-const storageClient = new FirebaseStorageClient({
-  credential: process.env.FIREBASE_CREDENTIAL!,
-  bucketName: process.env.FIREBASE_BUCKET_NAME!,
-});
-
-const dbClient = new FirebaseDbClient({
-  credential: process.env.FIREBASE_CREDENTIAL!,
-  databaseId: process.env.FIREBASE_DATABASE_ID!,
-});
 
 export default defineConfig(() => ({
-  runtimeVersion: version.runtimeVersion,
-  storage: storageClient,
-  db: dbClient,
-}));
-```
+  	loadClients: () => {
+		const storageClient = new FirebaseStorageClient({
+			credential: process.env.FIREBASE_CREDENTIAL!,
+			bucketName: process.env.BUCKET_NAME!,
+		});
 
-### Custom
+		const dbClient = new FirebaseDbClient({
+			credential: process.env.FIREBASE_CREDENTIAL!,
+			databaseId: process.env.FIREBASE_DATABASE_ID!,
+		});
 
-```ts
-import { defineConfig } from "@cloud-push/expo";
-import { StorageClient, DbClient } from "@cloud-push/cloud";
-import version from "./version";
-
-const storageClient: StorageClient = {
-  getFile: () => {},
-  getFileSignedUrl: () => {},
-  uploadDirectory: () => {},
-  uploadFile: () => {},
-  uploadLocalFile: () => {},
-};
-
-const dbClient: DbClient = {
-  create: () => {},
-  delete: () => {},
-  find: () => {},
-  findAll: () => {},
-  readAll: () => {},
-  toUint8Array: () => {},
-  update: () => {},
-};
-
-export default defineConfig(() => ({
-  runtimeVersion: version.runtimeVersion,
-  storage: storageClient,
-  db: dbClient,
+		return {
+			storage: storageClient,
+			db: dbClient,
+		};
+	},
 }));
 ```
 
