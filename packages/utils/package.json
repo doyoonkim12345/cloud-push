@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "@cloud-push/utils",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -20,9 +20,7 @@
 	},
 	"author": "",
 	"license": "ISC",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"devDependencies": {
 		"@rslib/core": "^0.5.5",
 		"@types/node": "^22.13.14",
