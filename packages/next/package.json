@@ -1,6 +1,6 @@
 {
 	"name": "@cloud-push/next",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"type": "module",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
@@ -46,7 +46,8 @@
 	},
 	"dependencies": {
 		"form-data": "^4.0.2",
-		"mime": "^4.0.7"
+		"mime": "^4.0.7",
+		"structured-headers": "^2.0.0"
 	},
 	"files": ["dist"]
 }

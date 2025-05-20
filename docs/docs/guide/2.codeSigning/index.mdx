@@ -1,0 +1,72 @@
+import PemToEnv from "../../../components/PemToEnv"
+
+
+# Code Signing
+
+Follows https://docs.expo.dev/eas-update/code-signing/
+
+## 1. Generate Keys
+
+Generate the key.
+
+```sh
+npx expo-updates codesigning:generate --key-output-directory ../keys --certificate-output-directory certs --certificate-validity-duration-years 10 --certificate-common-name "Your Organization Name"
+```
+
+## 2. Convert PrivateKey to string
+
+Convert the privateKey to string to use as an environment variable.
+
+<PemToEnv />
+
+## 3. Complete the config
+
+### server
+
+#### `cloud-push.server.ts`
+
+```ts
+import { SupabaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
+import type { CloudPushConfig } from "@cloud-push/next";
+
+export const storageNodeClient = new SupabaseStorageClient({
+	bucketName: process.env.SUPABASE_BUCKET_NAME,
+	supabaseUrl: process.env.SUPABASE_URL,
+	supabaseKey: process.env.SUPABASE_KEY,
+});
+
+export const dbNodeClient = new SupabaseDbClient({
+	tableName: process.env.SUPABASE_TABLE_NAME!,
+	supabaseUrl: process.env.SUPABASE_URL!,
+	supabaseKey: process.env.SUPABASE_KEY!,
+});
+
+const cloudPushConfig: CloudPushConfig = {
+	codeSigningPrivateKey: process.env.CLOUD_PUSH_PRIVATE_KEY,
+};
+
+export default cloudPushConfig;
+```
+
+
+### expo client
+
+#### `cloud-push.config.ts`
+
+```diff
+  updates: {
+    url: "https://your-server-domain/api/updates/manifest",
+    requestHeaders: {
+        "expo-channel-name": process.env.APP_VARIANT,
+    },
++    codeSigningMetadata: {
++        alg: "rsa-v1_5-sha256",
++        keyid: "main",
++    },
++    codeSigningCertificate: "./certs/certificate.pem",
+},
+```
+
+## 4. Completed
+
+Please rebuild both the server and client.

@@ -7,6 +7,7 @@ export type CliConfig = {
 	channel?: string;
 	envSource?: ENV_SOURCE;
 	environment?: Environment;
+	privateKeyPath?: string;
 };
 
 export const defineConfig = async (

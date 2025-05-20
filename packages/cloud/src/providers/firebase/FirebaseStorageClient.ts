@@ -41,7 +41,7 @@ export class FirebaseStorageClient extends StorageClient {
 			}
 		}
 
-		// 수동으로 Uint8Array 병합
+		// Manually merge Uint8Array
 		const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
 		const result = new Uint8Array(totalLength);
 		let offset = 0;
@@ -55,7 +55,7 @@ export class FirebaseStorageClient extends StorageClient {
 
 	getFileSignedUrl = async ({
 		key,
-		expiresIn = 3600, // 1시간
+		expiresIn = 3600, // 1 hour
 	}: {
 		key: string;
 		expiresIn?: number;

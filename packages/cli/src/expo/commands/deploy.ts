@@ -2,7 +2,7 @@ import * as prompts from "@clack/prompts";
 import * as path from "node:path";
 import { uploadBundle } from "./uploadBundle";
 import { updateVersionCursor } from "./updateCursor";
-import {  getCwd } from "@cloud-push/cloud";
+import { getCwd } from "@cloud-push/cloud";
 import { updateSetting } from "./updateSetting";
 import { getCommitUrl } from "@cloud-push/utils";
 import { setupDeployment } from "@/expo/lib/setupDeployment";
@@ -70,6 +70,6 @@ export async function deploy(): Promise<void> {
 		prompts.outro("Deployment failed");
 	} finally {
 		// 정리 단계
-		await cleanup(bundlePath);
+		// await cleanup(bundlePath);
 	}
 }

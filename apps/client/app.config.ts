@@ -11,7 +11,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		policy: "appVersion",
 	},
 	orientation: "portrait",
-	icon: "./assets/icon.png",
+	icon: "./assets/cloud-push-logo.png",
 	userInterfaceStyle: "light",
 	newArchEnabled: true,
 	splash: {
@@ -21,12 +21,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	},
 	ios: {
 		supportsTablet: true,
+		bundleIdentifier: "com.durun-onout.client",
 	},
 	updates: {
 		url: sharedConfig.updateBundleUrl,
 		requestHeaders: {
 			"expo-channel-name": sharedConfig.channel,
 		},
+		codeSigningMetadata: {
+			alg: "rsa-v1_5-sha256",
+			keyid: "main",
+		},
+		codeSigningCertificate: sharedConfig.certificatePath,
 	},
 	android: {
 		adaptiveIcon: {

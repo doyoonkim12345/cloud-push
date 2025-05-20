@@ -1,0 +1,86 @@
+import JsonToString from "../../../../components/JsonToString"
+
+# Firebase
+
+## FirebaseDbClient
+
+### 1. Create Credential
+
+Convert the contents of serviceAccountKey.json to a string to create the credential.
+
+You can convert it to a string in the textarea below.
+
+<JsonToString />
+
+### 2. Enter DATABASE_ID
+
+### 3. Firestore Index Configuration
+
+This app requires **Compound Index** configuration to execute specific queries.  
+You can either manually add these indexes in the Firebase console or automatically create them by clicking the "Index creation" link provided in Firestore error messages during app execution.
+
+---
+
+### ✅ Required Index List (Collection ID: `bundles`)
+
+#### 1. Index Combination 1
+- `channel` (Ascending)
+- `runtimeVersion` (Ascending)
+- `supportIos` (Ascending)
+- `createdAt` (Descending)
+- `__name__` (Descending)
+
+#### 2. Index Combination 2
+- `channel` (Ascending)
+- `createdAt` (Descending)
+- `__name__` (Descending)
+
+#### 3. Index Combination 3
+- `channel` (Ascending)
+- `runtimeVersion` (Ascending)
+- `supportAndroid` (Ascending)
+- `createdAt` (Descending)
+
+---
+
+### 🛠️ How to Create Indexes
+1. Access the [Firebase Console](https://console.firebase.google.com/).
+2. Navigate to Firestore Database > **Indexes** tab.
+3. Click the **Add Index** button.
+4. Add each index by entering the field combinations above.
+
+```ts
+import { FirebaseDbClient } from "@cloud-push/cloud";
+
+const dbClient = new FirebaseDbClient({
+  credential: process.env.FIREBASE_CREDENTIAL!,
+  databaseId: process.env.FIREBASE_DATABASE_ID!,
+});
+```
+
+## Examples
+
+```ts
+import { defineConfig } from "@cloud-push/cli";
+import { FirebaseStorageClient, FirebaseDbClient } from "@cloud-push/cloud";
+
+export default defineConfig(() => ({
+  	loadClients: () => {
+		const storageClient = new FirebaseStorageClient({
+			credential: process.env.FIREBASE_CREDENTIAL!,
+			bucketName: process.env.BUCKET_NAME!,
+		});
+
+		const dbClient = new FirebaseDbClient({
+			credential: process.env.FIREBASE_CREDENTIAL!,
+			databaseId: process.env.FIREBASE_DATABASE_ID!,
+		});
+
+		return {
+			storage: storageClient,
+			db: dbClient,
+		};
+	},
+}));
+```
+

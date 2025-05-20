@@ -52,3 +52,7 @@ export interface ExpoMetadata {
 	bundler: string;
 	fileMetadata: FileMetadata;
 }
+
+export type CloudPushConfig = {
+	codeSigningPrivateKey?: string;
+};

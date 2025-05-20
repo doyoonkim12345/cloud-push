@@ -1,0 +1,50 @@
+import JsonToString from "../../../../components/JsonToString"
+
+# Firebase
+
+## FirebaseDbClient
+
+### 1. Create Credential
+
+Convert the contents of serviceAccountKey.json to a string to create the credential.
+
+You can convert it to a string in the textarea below.
+
+<JsonToString />
+
+### 2. Enter BUCKET_NAME
+
+```ts
+import { FirebaseStorageClient } from "@cloud-push/cloud";
+
+const storageClient = new FirebaseStorageClient({
+	credential: process.env.FIREBASE_CREDENTIAL!,
+	bucketName: process.env.BUCKET_NAME!,
+});
+```
+
+## Examples
+
+```ts
+import { defineConfig } from "@cloud-push/cli";
+import { FirebaseStorageClient, FirebaseDbClient } from "@cloud-push/cloud";
+
+export default defineConfig(() => ({
+  loadClients: () => {
+		const storageClient = new FirebaseStorageClient({
+			credential: process.env.FIREBASE_CREDENTIAL!,
+			bucketName: process.env.BUCKET_NAME!,
+		});
+
+		const dbClient = new FirebaseDbClient({
+			credential: process.env.FIREBASE_CREDENTIAL!,
+			databaseId: process.env.FIREBASE_DATABASE_ID!,
+		});
+
+		return {
+			storage: storageClient,
+			db: dbClient,
+		};
+	},
+}));
+```

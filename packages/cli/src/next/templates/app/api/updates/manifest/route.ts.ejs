@@ -1,7 +1,10 @@
 import type { NextRequest } from "next/server";
 import type { Bundle } from "@cloud-push/cloud";
-import { dbNodeClient, storageNodeClient } from "@/cloud-push.server";
-import { createManifest } from "@cloud-push/next/node";
+import cloudPushConfig, {
+	dbNodeClient,
+	storageNodeClient,
+} from "@/cloud-push.server";
+import { createManifest, createSignature } from "@cloud-push/next/node";
 import {
 	type Directive,
 	ErrorResponse,
@@ -21,6 +24,7 @@ export async function GET(request: NextRequest) {
 			platform,
 			protocolVersion,
 			runtimeVersion,
+			expectSignature,
 		} = parseHeaders({
 			headers: request.headers,
 			url: new URL(request.url),
@@ -76,14 +80,41 @@ export async function GET(request: NextRequest) {
 			}
 		}
 
-		if (!nextBundle) {
+		if (!currentBundle && !nextBundle) {
 			const directive: Directive = {
 				type: "rollBackToEmbedded",
+				parameters: {
+					commitTime: new Date().toISOString(),
+				},
 			};
-			return UpdateResponse({ bundleId: embeddedUpdateId, directive });
+			console.log("rollBackToEmbedded");
+
+			const sig =
+				cloudPushConfig.codeSigningPrivateKey && expectSignature
+					? createSignature(
+							expectSignature.alg,
+							JSON.stringify(directive),
+							cloudPushConfig.codeSigningPrivateKey,
+						)
+					: undefined;
+
+			return UpdateResponse({
+				bundleId: embeddedUpdateId,
+				directive,
+				signature:
+					sig && expectSignature?.keyid
+						? { sig, keyid: expectSignature.keyid }
+						: undefined,
+			});
+		}
+
+		if (!nextBundle) {
+			console.log("NoUpdateResponse");
+			return NoUpdateResponse();
 		}
 
 		if (nextBundle.bundleId === currentBundle?.bundleId) {
+			console.log("NoUpdateResponse");
 			return NoUpdateResponse();
 		}
 
@@ -94,9 +125,27 @@ export async function GET(request: NextRequest) {
 			storageClient: storageNodeClient,
 			channel,
 		});
+		console.log("UpdateResponse");
 
-		return UpdateResponse({ manifest, bundleId: nextBundle.bundleId });
+		const sig =
+			cloudPushConfig.codeSigningPrivateKey && expectSignature
+				? createSignature(
+						expectSignature.alg,
+						JSON.stringify(manifest),
+						cloudPushConfig.codeSigningPrivateKey,
+					)
+				: undefined;
+
+		return UpdateResponse({
+			manifest,
+			bundleId: nextBundle.bundleId,
+			signature:
+				sig && expectSignature?.keyid
+					? { sig, keyid: expectSignature.keyid }
+					: undefined,
+		});
 	} catch (error) {
+		console.error(error);
 		return ErrorResponse(error as Error);
 	}
 }
