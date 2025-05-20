@@ -32,7 +32,7 @@ Clients can send various information through `Header` or `Query Parameter`.
 ## 📦 Example Request
 
 ```http
-GET /api/manifest?platform=android&runtime-version=1.0.0 HTTP/1.1
+GET /api/updates/manifest?platform=android&runtime-version=1.0.0 HTTP/1.1
 Host: example.com
 expo-platform: android
 expo-runtime-version: 1.0.0
