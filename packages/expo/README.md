@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="./logo.png" alt="Logo" width="300" />
-</p>
-
 [![@cloud-push/cloud](https://img.shields.io/badge/@cloud--push/cloud-v1.1.3-blue)](https://www.npmjs.com/package/@cloud-push/cloud)  
 [![@cloud-push/expo](https://img.shields.io/badge/@cloud--push/expo-v1.1.3-blue)](https://www.npmjs.com/package/@cloud-push/expo)  
 [![@cloud-push/next](https://img.shields.io/badge/@cloud--push/next-v1.1.3-blue)](https://www.npmjs.com/package/@cloud-push/next)  
