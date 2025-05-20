@@ -1,0 +1,81 @@
+# Channels
+
+## What is a channel?
+
+A channel is a group of bundles that are used to manage the different versions of an app.
+
+## 1. Configure the app's channel in `app.config.ts`
+
+Set up the channel and rebuild the app.
+
+If you're **not using EAS Build**, set the update URL and headers manually:
+
+```diff
+  updates: {
+-    url: "https://u.expo.dev/"
++    url: "https://your-server-domain/api/updates/manifest",
++    requestHeaders: {
++      "expo-channel-name": process.env.APP_VARIANT,
++    },
+  },
+```
+
+<details>
+  <summary>🛠️ If you're using EAS Build</summary>
+
+You don't need to manually set `requestHeaders`. Instead, configure the channel in `eas.json`:
+
+```json
+{
+  "build": {
+    "production": {
+      "channel": "stable"
+    },
+    "preview": {
+      "channel": "beta"
+    }
+  }
+}
+```
+
+> In this example, builds triggered with the `--profile preview` option will use the `beta` channel, while `--profile production` uses `stable`.
+
+</details>
+
+## 2. Configure the bundle's channel in `cloud-push.config.ts` (Optional)
+
+If you don't set the bundle's channel in `cloud-push.config.ts`, you'll be prompted to set it during deployment.
+
+```ts
+export default defineConfig(() => ({
+	loadClients: () => {
+		const storageClient = new SupabaseStorageClient({
+			bucketName: process.env.SUPABASE_BUCKET_NAME,
+			supabaseUrl: process.env.SUPABASE_URL,
+			supabaseKey: process.env.SUPABASE_KEY,
+		});
+
+		const dbClient = new SupabaseDbClient({
+			tableName: process.env.SUPABASE_TABLE_NAME!,
+			supabaseUrl: process.env.SUPABASE_URL!,
+			supabaseKey: process.env.SUPABASE_KEY!,
+		});
+
+		return {
+			storage: storageClient,
+			db: dbClient,
+		};
+	},
+	channel: "development",
+}));
+```
+
+## 3. Deploy
+
+Deploy the bundle.
+
+```bash
+pnpm cloud-push deploy
+```
+
+
