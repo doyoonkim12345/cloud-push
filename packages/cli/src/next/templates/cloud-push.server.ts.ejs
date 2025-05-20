@@ -75,4 +75,10 @@ const generateDbClient = (): DbClient => {
   };
 };
 export const dbNodeClient = generateDbClient();
+
+const cloudPushConfig: CloudPushConfig = {
+	codeSigningPrivateKey: process.env.CLOUD_PUSH_PRIVATE_KEY,
+};
+
+export default cloudPushConfig;
 <% } %>

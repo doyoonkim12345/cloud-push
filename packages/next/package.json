@@ -46,7 +46,10 @@
 	},
 	"dependencies": {
 		"form-data": "^4.0.2",
-		"mime": "^4.0.7"
+		"mime": "^4.0.7",
+		"structured-headers": "^2.0.0"
 	},
-	"files": ["dist"]
+	"files": [
+		"dist"
+	]
 }

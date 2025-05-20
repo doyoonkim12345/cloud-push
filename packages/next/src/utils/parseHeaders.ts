@@ -1,4 +1,7 @@
+import type { CryptoAlgorithm } from "@/nodeUtils";
 import type { Platform } from "@cloud-push/cloud";
+import { convertDictionaryToObject } from "@cloud-push/utils";
+import { parseDictionary } from "structured-headers";
 
 export const parseHeaders = ({
 	headers,
@@ -20,6 +23,9 @@ export const parseHeaders = ({
 	const currentUpdateId = headers.get("expo-current-update-id");
 
 	const expectSignature = headers.get("expo-expect-signature");
+	const expectSignatureParsed = expectSignature
+		? parseDictionary(expectSignature)
+		: null;
 
 	return {
 		runtimeVersion,
@@ -28,6 +34,12 @@ export const parseHeaders = ({
 		currentUpdateId,
 		channel,
 		embeddedUpdateId,
-		expectSignature,
+		expectSignature: expectSignatureParsed
+			? convertDictionaryToObject<{
+					sig: boolean;
+					keyid: string;
+					alg: CryptoAlgorithm;
+				}>(expectSignatureParsed)
+			: null,
 	};
 };

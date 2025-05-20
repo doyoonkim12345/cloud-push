@@ -1,7 +1,10 @@
 import type { NextRequest } from "next/server";
 import type { Bundle } from "@cloud-push/cloud";
-import { dbNodeClient, storageNodeClient } from "@/cloud-push.server";
-import { createManifest } from "@cloud-push/next/node";
+import cloudPushConfig, {
+	dbNodeClient,
+	storageNodeClient,
+} from "@/cloud-push.server";
+import { createManifest, createSignature } from "@cloud-push/next/node";
 import {
 	type Directive,
 	ErrorResponse,
@@ -85,7 +88,24 @@ export async function GET(request: NextRequest) {
 				},
 			};
 			console.log("rollBackToEmbedded");
-			return UpdateResponse({ bundleId: embeddedUpdateId, directive });
+
+			const sig =
+				cloudPushConfig.codeSigningPrivateKey && expectSignature
+					? createSignature(
+							expectSignature.alg,
+							JSON.stringify(directive),
+							cloudPushConfig.codeSigningPrivateKey,
+						)
+					: undefined;
+
+			return UpdateResponse({
+				bundleId: embeddedUpdateId,
+				directive,
+				signature:
+					sig && expectSignature?.keyid
+						? { sig, keyid: expectSignature.keyid }
+						: undefined,
+			});
 		}
 
 		if (!nextBundle) {
@@ -106,11 +126,26 @@ export async function GET(request: NextRequest) {
 			channel,
 		});
 		console.log("UpdateResponse");
+
+		const sig =
+			cloudPushConfig.codeSigningPrivateKey && expectSignature
+				? createSignature(
+						expectSignature.alg,
+						JSON.stringify(manifest),
+						cloudPushConfig.codeSigningPrivateKey,
+					)
+				: undefined;
+
 		return UpdateResponse({
 			manifest,
 			bundleId: nextBundle.bundleId,
+			signature:
+				sig && expectSignature?.keyid
+					? { sig, keyid: expectSignature.keyid }
+					: undefined,
 		});
 	} catch (error) {
+		console.error(error);
 		return ErrorResponse(error as Error);
 	}
 }

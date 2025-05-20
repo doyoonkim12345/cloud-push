@@ -113,11 +113,17 @@ const dbClient = generateDbClient();
 	return `
 import { defineConfig } from "@cloud-push/cli";
 import { ${[importMethods.join(", ")]} } from "@cloud-push/cloud";
-${storageClientInstance}
-${dbClientInstance}
+
 export default defineConfig(() => ({
-	storage: storageClient,
-	db: dbClient,
+	loadClients: () => {
+		const storageClient = ${storageClientInstance};
+		const dbClient = ${dbClientInstance};	
+
+		return {
+			storage: storageClient,
+			db: dbClient,
+		};
+	},
 }));
 `;
 };

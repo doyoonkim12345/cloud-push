@@ -14,6 +14,7 @@ export type Bundle = {
 	channel: string;
 	gitHash: string;
 	updatePolicy: UpdatePolicy;
+	codeSigning?: boolean;
 };
 
 // File information interface definition

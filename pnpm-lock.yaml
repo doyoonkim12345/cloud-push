@@ -292,6 +292,9 @@ importers:
       mime:
         specifier: ^4.0.7
         version: 4.0.7
+      structured-headers:
+        specifier: ^2.0.0
+        version: 2.0.0
     devDependencies:
       '@cloud-push/cloud':
         specifier: workspace:*
@@ -331,6 +334,10 @@ importers:
         version: 5.8.3
 
   packages/utils:
+    dependencies:
+      structured-headers:
+        specifier: ^2.0.0
+        version: 2.0.0
     devDependencies:
       '@rslib/core':
         specifier: ^0.5.5
@@ -7602,6 +7609,10 @@ packages:
 
   structured-headers@0.4.1:
     resolution: {integrity: sha512-0MP/Cxx5SzeeZ10p/bZI0S6MpgD+yxAhi1BOQ34jgnMXsCq3j1t6tQnZu+KdlL7dvJTLT3g9xN8tl10TqgFMcg==}
+
+  structured-headers@2.0.0:
+    resolution: {integrity: sha512-qX9utDaDolZWTcAep0EZDSQASTu4mx16Jh5dBSpplfvK3ro1CF8mWqRByAwncRojnlaCCUZA2jPcCqKNnp7uCA==}
+    engines: {node: '>=18', npm: '>=6'}
 
   stubs@3.0.0:
     resolution: {integrity: sha512-PdHt7hHUJKxvTCgbKX9C1V/ftOcjJQgz8BZwNfV5c4B6dcGqlpelTbJ999jBGZ2jYiPAwcX5dP6oBwVlBlUbxw==}
@@ -17803,6 +17814,8 @@ snapshots:
   strnum@1.1.2: {}
 
   structured-headers@0.4.1: {}
+
+  structured-headers@2.0.0: {}
 
   stubs@3.0.0:
     optional: true
