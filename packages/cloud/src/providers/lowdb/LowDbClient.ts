@@ -77,14 +77,16 @@ export class LowDbClient extends DbClient {
 				const aValue = a[field];
 				const bValue = b[field];
 
-				// 값 비교
-				if (aValue < bValue) {
-					return direction === "asc" ? -1 : 1;
+				if (typeof aValue === "number" && typeof bValue === "number") {
+					// 값 비교
+					if (aValue < bValue) {
+						return direction === "asc" ? -1 : 1;
+					}
+					if (aValue > bValue) {
+						return direction === "asc" ? 1 : -1;
+					}
+					// 값이 같으면 다음 정렬 기준으로 넘어감
 				}
-				if (aValue > bValue) {
-					return direction === "asc" ? 1 : -1;
-				}
-				// 값이 같으면 다음 정렬 기준으로 넘어감
 			}
 
 			// 모든 정렬 기준이 같으면 0 반환

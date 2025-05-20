@@ -116,8 +116,8 @@ import { ${[importMethods.join(", ")]} } from "@cloud-push/cloud";
 
 export default defineConfig(() => ({
 	loadClients: () => {
-		const storageClient = ${storageClientInstance};
-		const dbClient = ${dbClientInstance};	
+		${storageClientInstance}
+		${dbClientInstance}
 
 		return {
 			storage: storageClient,

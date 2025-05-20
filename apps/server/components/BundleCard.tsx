@@ -21,19 +21,19 @@ export function BundleCard({
 	const isIosLatestBundle = iosLatestBundle?.bundleId === bundle.bundleId;
 
 	return (
-		<div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition">
-			<div className="flex justify-between items-start mb-4">
-				<div>
-					<h3 className="font-semibold text-gray-800 flex items-center gap-4">
+		<div className="bg-white rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 hover:shadow-lg transition w-full max-w-full">
+			<div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
+				<div className="flex-1">
+					<h3 className="font-semibold text-gray-800 flex flex-wrap items-center gap-2 text-base sm:text-lg">
 						<span className="text-blue-600">#{index + 1}</span> Bundle ID
-						<div className="flex gap-2">
+						<div className="flex flex-wrap gap-1">
 							{isAndroidLatestBundle && (
-								<span className="px-2 py-1 text-xs font-medium text-white bg-green-500 rounded">
+								<span className="px-2 py-0.5 text-xs font-medium text-white bg-green-500 rounded">
 									Android Latest
 								</span>
 							)}
 							{isIosLatestBundle && (
-								<span className="px-2 py-1 text-xs font-medium text-white bg-green-500 rounded">
+								<span className="px-2 py-0.5 text-xs font-medium text-white bg-green-500 rounded">
 									iOS Latest
 								</span>
 							)}
@@ -44,7 +44,7 @@ export function BundleCard({
 					</p>
 				</div>
 
-				<div className="space-y-2">
+				<div className="flex flex-wrap gap-2">
 					{(
 						["FORCE_UPDATE", "NORMAL_UPDATE", "ROLLBACK"] as UpdatePolicy[]
 					).map((policy) => (
@@ -52,7 +52,7 @@ export function BundleCard({
 							type="button"
 							key={policy}
 							onClick={() => onUpdatePolicyChange(bundle, policy)}
-							className={`px-4 py-1 rounded-md text-xs font-medium transition ${
+							className={`px-3 py-1 rounded-md text-xs font-medium transition ${
 								bundle.updatePolicy === policy
 									? "bg-blue-600 text-white"
 									: "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -90,14 +90,13 @@ export function BundleCard({
 					rel="noreferrer"
 				>
 					<strong>Commit:</strong>{" "}
-					<span className="underline">{bundle.gitHash}</span>
+					<span className="underline break-all">{bundle.gitHash}</span>
 				</a>
-				{/* ✅ 수정된 부분: <p> 태그 밖에 <ul> 위치 */}
 				<div>
 					<p className="mb-1">
 						<strong>Policy Target:</strong>
 					</p>
-					<ul className="ml-4 list-disc text-xs">
+					<ul className="ml-4 list-disc text-xs sm:text-sm">
 						{bundle.updatePolicy === "ROLLBACK" ? (
 							<>
 								{bundle.supportAndroid && (
