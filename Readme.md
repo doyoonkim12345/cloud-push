@@ -1,9 +1,10 @@
 # Cloud Push
 
-## **Typescript Only, Zero kotlin, Zero Swift, Zero java, Zero Object-C**
-
-**OTA Update solution compatible with Expo Updates**  
+## **OTA Update solution compatible with Expo Updates**
 → Self-hosted update distribution system
+
+**Typescript Only, Zero kotlin, Zero Swift, Zero java, Zero Object-C**  
+
 
 https://github.com/user-attachments/assets/fa3834b0-528c-424f-a527-aa99fcdfa7b2
 
