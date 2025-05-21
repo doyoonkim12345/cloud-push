@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/1.gettingStarted/</loc>
+  </url>
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/2.channels/</loc>
+  </url>
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/3.codeSigning/</loc>
+  </url>
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/4.expo/</loc>
+  </url>
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/5.next/1.commands/</loc>
+  </url>
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/5.next/2.dashboard/</loc>
+  </url>
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/5.next/3.api/</loc>
+  </url>
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/5.next/4.configs/</loc>
+  </url>
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/5.next/5.components/</loc>
+  </url>
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/6.cloud/1.storageClients/</loc>
+  </url>
+  <url>
+    <loc>https://doyoonkim12345.github.io/cloud-push/guide/6.cloud/2.dbClients/</loc>
+  </url>
+</urlset>

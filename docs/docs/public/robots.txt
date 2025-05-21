@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+sitemap: https://doyoonkim12345.github.io/cloud-push/sitemap.xml
