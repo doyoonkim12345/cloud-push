@@ -1,6 +1,9 @@
-<p align="center">
-  <img src="./logo.png" alt="Logo" width="300" />
-</p>
+# Cloud Push
+
+## **Typescript Only, Zero kotlin, Zero Swift, Zero java, Zero Object-C**
+
+**OTA Update solution compatible with Expo Updates**  
+→ Self-hosted update distribution system
 
 https://github.com/user-attachments/assets/fa3834b0-528c-424f-a527-aa99fcdfa7b2
 
@@ -10,10 +13,7 @@ https://github.com/user-attachments/assets/fa3834b0-528c-424f-a527-aa99fcdfa7b2
 [![@cloud-push/cli](https://img.shields.io/badge/@cloud--push/cli-v1.1.3-blue)](https://www.npmjs.com/package/@cloud-push/expo)  
 [![@cloud-push/utils](https://img.shields.io/badge/@cloud--push/utils-v1.1.3-blue)](https://www.npmjs.com/package/@cloud-push/next)  
 
-## **Typescript Only, Zero kotlin, Zero Swift, Zero java, Zero Object-C**
 
-**OTA Update solution compatible with Expo Updates**  
-→ Self-hosted update distribution system
 
 ## 📚 Documentation
 
