@@ -11,10 +11,11 @@ export type Bundle = {
 	supportAndroid: boolean;
 	createdAt: number;
 	environment: Environment;
-	channel: string;
+	branch: string
 	gitHash: string;
 	updatePolicy: UpdatePolicy;
 	codeSigning?: boolean;
+	enabled: boolean;
 };
 
 // File information interface definition
@@ -45,6 +46,7 @@ export type Environment = "production" | "development" | "preview";
 
 export interface Setting {
 	repositoryUrl?: string;
+	runtimeVersions: string[]
 	channels: string[];
 }
 

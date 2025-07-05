@@ -92,10 +92,10 @@ export async function GET(request: NextRequest) {
 			const sig =
 				cloudPushConfig.codeSigningPrivateKey && expectSignature
 					? createSignature(
-							expectSignature.alg,
-							JSON.stringify(directive),
-							cloudPushConfig.codeSigningPrivateKey,
-						)
+						expectSignature.alg,
+						JSON.stringify(directive),
+						cloudPushConfig.codeSigningPrivateKey,
+					)
 					: undefined;
 
 			return UpdateResponse({
@@ -125,15 +125,15 @@ export async function GET(request: NextRequest) {
 			storageClient: storageNodeClient,
 			channel,
 		});
-		console.log("UpdateResponse");
+		console.log("UpdateResponse", nextBundle.bundleId);
 
 		const sig =
 			cloudPushConfig.codeSigningPrivateKey && expectSignature
 				? createSignature(
-						expectSignature.alg,
-						JSON.stringify(manifest),
-						cloudPushConfig.codeSigningPrivateKey,
-					)
+					expectSignature.alg,
+					JSON.stringify(manifest),
+					cloudPushConfig.codeSigningPrivateKey,
+				)
 				: undefined;
 
 		return UpdateResponse({

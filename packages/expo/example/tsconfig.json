@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@cloud-push/expo": ["../src/index"],
+      "@cloud-push/expo/*": ["../src/*"]
+    }
+  }
+}

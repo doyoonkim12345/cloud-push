@@ -1,4 +1,4 @@
-import type { StorageClient,Setting } from "@cloud-push/cloud";
+import type { StorageClient, Setting } from "@cloud-push/cloud";
 import {
 	createJsonUint8Array,
 	parseFileAsJson,
@@ -9,10 +9,12 @@ export const updateSetting = async ({
 	storageClient,
 	gitRepositoryUrl,
 	channel,
+	runtimeVersion
 }: {
 	storageClient: StorageClient;
 	gitRepositoryUrl: string;
 	channel: string;
+	runtimeVersion: string;
 }) => {
 	const spinner = prompts.spinner();
 
@@ -25,13 +27,14 @@ export const updateSetting = async ({
 			const settingJson = await storageClient.getFile({ key: "setting.json" });
 			setting = parseFileAsJson<Setting>(settingJson);
 		} catch (e) {
-			setting = { channels: [channel], repositoryUrl: gitRepositoryUrl };
+			setting = { channels: [channel], runtimeVersions: [runtimeVersion], repositoryUrl: gitRepositoryUrl };
 		}
 
 		const newSettingJson = createJsonUint8Array<Setting>({
 			...setting,
 			repositoryUrl: gitRepositoryUrl,
 			channels: [...new Set([...setting.channels, channel])],
+			runtimeVersions: [...new Set([...setting.runtimeVersions, runtimeVersion])],
 		});
 		await storageClient.uploadFile({
 			key: "setting.json",

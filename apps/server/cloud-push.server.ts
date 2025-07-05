@@ -1,5 +1,4 @@
 import type { CloudPushConfig } from "@cloud-push/next";
-
 import { SupabaseStorageClient, SupabaseDbClient } from "@cloud-push/cloud";
 
 export const storageNodeClient = new SupabaseStorageClient({
@@ -8,17 +7,14 @@ export const storageNodeClient = new SupabaseStorageClient({
   supabaseKey: process.env.SUPABASE_KEY,
 });
 
-
-
 export const dbNodeClient = new SupabaseDbClient({
   tableName: process.env.SUPABASE_TABLE_NAME!,
   supabaseUrl: process.env.SUPABASE_URL!,
   supabaseKey: process.env.SUPABASE_KEY!,
 });
 
-
 const cloudPushConfig: CloudPushConfig = {
-	codeSigningPrivateKey: process.env.CLOUD_PUSH_PRIVATE_KEY,
+  codeSigningPrivateKey: process.env.CODE_SIGNING_PRIVATE_KEY,
 };
 
 export default cloudPushConfig;

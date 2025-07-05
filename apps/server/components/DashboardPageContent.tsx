@@ -32,6 +32,8 @@ export function DashboardPageContent({
 		...settingQueries.detail(),
 	});
 
+	console.log(setting);
+
 	const setChannel = (targetChannel: string) => {
 		const newSearchParams = new URLSearchParams(window.location.search);
 		newSearchParams.set("channel", targetChannel);
@@ -73,12 +75,8 @@ export function DashboardPageContent({
 		targetBundles?.filter((e) => e.supportAndroid) ?? [];
 	const iosUpdatableBundles = targetBundles?.filter((e) => e.supportIos) ?? [];
 
-	const androidLastestBundle = androidUpdatableBundles?.filter(
-		(e) => e.updatePolicy === "NORMAL_UPDATE",
-	)[0];
-	const iosLatestBundle = iosUpdatableBundles?.filter(
-		(e) => e.updatePolicy === "NORMAL_UPDATE",
-	)[0];
+	const androidLastestBundle = androidUpdatableBundles[0]
+	const iosLatestBundle = iosUpdatableBundles[0]
 
 	return (
 		<div className="min-h-screen bg-gray-50 p-6 space-y-6">
@@ -98,6 +96,24 @@ export function DashboardPageContent({
 				runtimeVersions={runtimeVersions}
 				selectedRuntimeVersion={runtimeVersion}
 			/>
+
+			<div className="bg-white rounded-xl shadow p-6">
+				<h2 className="text-lg font-semibold mb-4">Runtime Version Information</h2>
+				<div className="flex w-full">
+					<div className="flex flex-col flex-wrap gap-2 w-full">
+						<h3 className="text-lg font-semibold">Android</h3>
+						<div className="flex justify-between gap-2 w-full">
+							<div>bundleId : {androidLastestBundle?.bundleId ?? 'embedded'}</div>
+						</div>
+						<h3 className="text-lg font-semibold">Ios</h3>
+						<div className="flex justify-between gap-2 w-full">
+							<div>bundleId : {iosLatestBundle?.bundleId ?? 'embedded'}</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+
 			{/* 번들 리스트 */}
 			<div className="space-y-4">
 				{targetBundles?.map((bundle, index) => (
@@ -108,10 +124,10 @@ export function DashboardPageContent({
 						androidLastestBundle={androidLastestBundle}
 						iosLatestBundle={iosLatestBundle}
 						gitRepositoryUrl={setting.repositoryUrl}
-						onUpdatePolicyChange={handleUpdatePolicyChange}
+						enabled={bundle.enabled}
 					/>
 				))}
 			</div>
-		</div>
+		</div >
 	);
 }

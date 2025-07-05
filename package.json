@@ -35,12 +35,6 @@
 		}
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.9.4",
-		"@react-native-community/cli-server-api": "^18.0.0"
-	},
-	"dependencies": {
-		"expo": "~52.0.46",
-		"react": "18.3.1",
-		"react-native": "0.76.9"
+		"@biomejs/biome": "^2.0.6"
 	}
 }

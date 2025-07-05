@@ -1,6 +1,6 @@
 import type { ExpoConfig, ConfigContext } from "expo/config";
 import sharedConfig from "./sharedConfig";
-import type { AppConfig } from "@cloud-push/expo";
+import type { AppConfig } from "../../packages/expo-2/dist";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
 	...config,

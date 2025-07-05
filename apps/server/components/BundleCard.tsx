@@ -6,15 +6,17 @@ export function BundleCard({
 	index,
 	androidLastestBundle,
 	iosLatestBundle,
-	onUpdatePolicyChange,
 	gitRepositoryUrl,
+	enabled,
+	onEnabledChange
 }: {
 	bundle: Bundle;
 	index: number;
 	androidLastestBundle?: Bundle;
 	iosLatestBundle?: Bundle;
-	onUpdatePolicyChange: (bundle: Bundle, updatePolicy: UpdatePolicy) => void;
 	gitRepositoryUrl?: string;
+	enabled: boolean;
+	onEnabledChange: (enabled: boolean) => void;
 }) {
 	const isAndroidLatestBundle =
 		androidLastestBundle?.bundleId === bundle.bundleId;
@@ -43,25 +45,6 @@ export function BundleCard({
 						{bundle.bundleId}
 					</p>
 				</div>
-
-				<div className="flex flex-wrap gap-2">
-					{(
-						["FORCE_UPDATE", "NORMAL_UPDATE", "ROLLBACK"] as UpdatePolicy[]
-					).map((policy) => (
-						<button
-							type="button"
-							key={policy}
-							onClick={() => onUpdatePolicyChange(bundle, policy)}
-							className={`px-3 py-1 rounded-md text-xs font-medium transition ${
-								bundle.updatePolicy === policy
-									? "bg-blue-600 text-white"
-									: "bg-gray-200 text-gray-700 hover:bg-gray-300"
-							}`}
-						>
-							{policy.replace("_", " ")}
-						</button>
-					))}
-				</div>
 			</div>
 
 			<div className="text-sm text-gray-700 space-y-1">
@@ -81,9 +64,9 @@ export function BundleCard({
 					href={
 						gitRepositoryUrl
 							? getCommitUrl({
-									repositoryUrl: gitRepositoryUrl,
-									gitHash: bundle.gitHash,
-								})
+								repositoryUrl: gitRepositoryUrl,
+								gitHash: bundle.gitHash,
+							})
 							: undefined
 					}
 					target="_blank"
@@ -92,36 +75,9 @@ export function BundleCard({
 					<strong>Commit:</strong>{" "}
 					<span className="underline break-all">{bundle.gitHash}</span>
 				</a>
-				<div>
-					<p className="mb-1">
-						<strong>Policy Target:</strong>
-					</p>
-					<ul className="ml-4 list-disc text-xs sm:text-sm">
-						{bundle.updatePolicy === "ROLLBACK" ? (
-							<>
-								{bundle.supportAndroid && (
-									<li>
-										Android → {androidLastestBundle?.bundleId ?? "embedded"}
-									</li>
-								)}
-								{bundle.supportIos && (
-									<li>iOS → {iosLatestBundle?.bundleId ?? "embedded"}</li>
-								)}
-							</>
-						) : (
-							<>
-								{bundle.supportAndroid && (
-									<li>
-										Android → {androidLastestBundle?.bundleId ?? "latest"}
-									</li>
-								)}
-								{bundle.supportIos && (
-									<li>iOS → {iosLatestBundle?.bundleId ?? "latest"}</li>
-								)}
-							</>
-						)}
-					</ul>
-				</div>
+				<p>
+					<strong>Enabled:</strong> {enabled ? "✅" : "❌"}
+				</p>
 			</div>
 		</div>
 	);

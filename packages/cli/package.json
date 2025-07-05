@@ -23,7 +23,9 @@
 	},
 	"author": "",
 	"license": "ISC",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"devDependencies": {
 		"@rslib/core": "^0.5.5",
 		"@types/fs-extra": "^11.0.4",

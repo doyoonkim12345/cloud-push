@@ -1,15 +1,64 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-	"formatter": {
-		"enabled": true
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true,
-			"suspicious": {
-				"noExplicitAny": "warn"
-			}
-		}
-	}
+  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+
+  "files": {
+    "include": [
+      "apps/**",
+      "packages/**",
+      "!**/dist/**",
+      "!**/.next/**",
+      "!**/build/**",
+      "!**/ios/**",
+      "!**/android/**"
+    ]
+  },
+
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
+  },
+
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double",
+      "trailingCommas": "all",
+      "semicolons": "always",
+      "arrowParentheses": "always"
+    },
+    "jsxRuntime": "reactClassic"
+  },
+
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "correctness": {},
+      "style": {},
+      "performance": {},
+      "security": {},
+      "complexity": {},
+      "suspicious": {
+        "noExplicitAny": "error",
+        "noConsole": "warn",
+        "noDebugger": "error"
+      }
+    }
+  },
+
+  "overrides": [
+    {
+      "include": ["**/__tests__/**", "**/*.test.{js,ts,tsx}"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ]
 }

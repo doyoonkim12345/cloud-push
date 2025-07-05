@@ -46,6 +46,7 @@ export async function deploy(): Promise<void> {
 			storageClient,
 			gitRepositoryUrl,
 			channel,
+			runtimeVersion,
 		});
 
 		prompts.outro("🚀 Deployment Successful");
@@ -70,6 +71,6 @@ export async function deploy(): Promise<void> {
 		prompts.outro("Deployment failed");
 	} finally {
 		// 정리 단계
-		// await cleanup(bundlePath);
+		await cleanup(bundlePath);
 	}
 }

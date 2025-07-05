@@ -1,0 +1,12 @@
+{
+	"platforms": ["apple", "android", "web"],
+	"apple": {
+		"modules": ["CloudPushExpoModule"]
+	},
+	"android": {
+		"modules": ["com.cloudpush.expo.CloudPushExpoModule"]
+	},
+	"ios": {
+		"podspecPath": "./ios/CloudPushExpoModule.podspec"
+	}
+}

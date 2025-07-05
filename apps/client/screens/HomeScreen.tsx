@@ -1,23 +1,31 @@
 import React from "react";
 import * as Updates from "expo-updates";
-import { getUpdateStatus } from "@cloud-push/expo";
-import { Alert, View, Button, Text, Image } from "react-native";
+import { View, Button, Text, Image, } from "react-native";
+import { fetchUpdateWithProgressAsync, addProgressListener } from "@cloud-push/expo";
+
 
 export default function HomeScreen() {
-	const handlePress = async () => {
-		const status = await getUpdateStatus();
-		if (status?.isForceUpdateRequired) {
-			Alert.alert("Force update is Required");
-		} else {
-			Alert.alert("No update is required");
-		}
-	};
-
 	const handleFetchAndReloadClick = async () => {
 		const update = await Updates.checkForUpdateAsync();
 		if (update.isAvailable) {
 			await Updates.fetchUpdateAsync();
 			await Updates.reloadAsync();
+		}
+	};
+
+	const handleManualUpdateClick = async () => {
+
+		try {
+
+			fetchUpdateWithProgressAsync()
+
+			const subscription = addProgressListener((progress) => {
+				console.log("progress", progress);
+			});
+
+			subscription.remove();
+		} catch (error) {
+			console.log("error", error);
 		}
 	};
 
@@ -28,8 +36,9 @@ export default function HomeScreen() {
 				style={{ width: 100, height: 100 }}
 				source={require("../assets/cloud-push-logo.png")}
 			/>
-			<Button title="test force update" onPress={handlePress} />
+
 			<Button title="fetch & reload" onPress={handleFetchAndReloadClick} />
+			<Button title="manual update" onPress={handleManualUpdateClick} />
 		</View>
 	);
 }
