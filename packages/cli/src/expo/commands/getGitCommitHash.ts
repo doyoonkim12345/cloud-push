@@ -20,6 +20,5 @@ export const getGitCommitHash = async () => {
 		return gitHash;
 	} catch (e) {
 		spinner.stop(`❌ Getting git commit hash failed: ${(e as Error).message}`);
-		throw e; // 상위 호출자에게 오류 전파
 	}
 };

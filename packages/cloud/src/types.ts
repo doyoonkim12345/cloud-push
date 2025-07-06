@@ -13,8 +13,11 @@ export type Bundle = {
 	environment: Environment;
 	channel: string;
 	gitHash: string;
+	message?: string;
 	updatePolicy: UpdatePolicy;
 	codeSigning?: boolean;
+	updateId: string
+	branch?: string
 };
 
 // File information interface definition
@@ -46,6 +49,10 @@ export type Environment = "production" | "development" | "preview";
 export interface Setting {
 	repositoryUrl?: string;
 	channels: string[];
+}
+
+export interface BranchCursor {
+	[channel: string]: string
 }
 
 export interface UpdateStatus {

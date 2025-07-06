@@ -13,6 +13,9 @@ import { loadConfig } from "@/expo/lib/loadConfig";
 import type { CliConfig } from "@/expo/config";
 import { v4 } from "uuid";
 import { signBundle } from "../commands/signBundle";
+import { getBranch } from "../commands/getBranch";
+import { getMessage } from "../commands/getMessage";
+import { getGitCommitMessage } from "../commands/getGitCommitMessage";
 
 export async function setupDeployment(bundlePath: string) {
 	// 5. 설정 로드
@@ -34,8 +37,14 @@ export async function setupDeployment(bundlePath: string) {
 
 	const channel = await getChannel(config.channel);
 
+	const branch = await getBranch(channel);
+
 	// 6. 런타임 버전 가져오기
 	const runtimeVersion: string = await getRuntimeVersion(config.runtimeVersion);
+
+	const gitCommitMessage = await getGitCommitMessage();
+
+	const message = await getMessage(gitCommitMessage);
 
 	// 7. 번들 내보내기
 	await exportBundles({ platforms, bundlePath, environment });
@@ -61,6 +70,8 @@ export async function setupDeployment(bundlePath: string) {
 	// 12. git repository url 가져오기
 	const gitRepositoryUrl = await getRepositoryUrl();
 
+	const updateId = v4();
+
 	return {
 		bundleId,
 		cloudPath,
@@ -73,5 +84,8 @@ export async function setupDeployment(bundlePath: string) {
 		gitHash,
 		gitRepositoryUrl,
 		channel,
+		branch,
+		message,
+		updateId
 	};
 }

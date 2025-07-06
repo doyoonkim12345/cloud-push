@@ -10,14 +10,20 @@ export async function updateVersionCursor({
 	runtimeVersion,
 	gitHash,
 	dbClient,
+	message,
+	branch,
+	updateId
 }: {
 	bundleId: string;
 	environment: Environment;
 	channel: string;
 	platforms: Platform[];
 	runtimeVersion: string;
-	gitHash: string;
+	gitHash?: string;
 	dbClient: DbClient;
+	message: string;
+	branch: string;
+	updateId: string;
 }): Promise<void> {
 	const cursorSpinner = prompts.spinner();
 
@@ -31,7 +37,10 @@ export async function updateVersionCursor({
 				bundleId,
 				createdAt: Date.now(),
 				environment,
-				gitHash,
+				gitHash: gitHash ?? "",
+				message,
+				branch,
+				updateId,
 				supportAndroid: platforms.includes("android"),
 				supportIos: platforms.includes("ios"),
 				runtimeVersion,
