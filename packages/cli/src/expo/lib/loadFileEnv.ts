@@ -1,24 +1,38 @@
 import * as dotenv from "dotenv";
 import * as path from "node:path";
 import { promises as fs } from "node:fs";
-import { type Environment, getCwd } from "@cloud-push/cloud";
+import type { Environment } from "@cloud-push/cloud";
+import * as prompts from "@clack/prompts";
+import { getCwd } from "@/lib/getCwd";
 
-export async function loadFileEnv(environment: Environment) {
+export async function loadFileEnv(environment?: Environment) {
+	const spinner = prompts.spinner();
+	spinner.start(`Loading local env files for "${environment}"...`);
+
 	// 환경별 파일 설정
 	const envFiles = [
-		`.env.${environment}.local`, // 예: .env.development.local
+		environment ? `.env.${environment}.local` : null, // 예: .env.development.local
 		".env.local", // 모든 환경에서 사용되지만 test 환경 제외
-		`.env.${environment}`, // 예: .env.development
+		environment ? `.env.${environment}` : null, // 예: .env.development
 		".env", // 기본 파일
-	];
+	].filter(Boolean).map((e) => e!);
+
+	let loaded = false;
 
 	for (const file of envFiles) {
 		const filePath = path.resolve(getCwd(), file);
 		try {
-			// 비동기로 파일 존재 여부 확인
 			await fs.access(filePath);
-			// 파일이 존재하면 로드
 			dotenv.config({ path: filePath, override: true });
-		} catch (error) {}
+			loaded = true;
+		} catch {
+			// 파일 없을 경우 무시
+		}
+	}
+
+	if (loaded) {
+		spinner.stop(`Environment files for "${environment}" loaded.`);
+	} else {
+		spinner.stop(`No environment files found for "${environment}".`);
 	}
 }

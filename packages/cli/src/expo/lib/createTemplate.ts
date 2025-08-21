@@ -1,9 +1,8 @@
 import type { Db, Storage } from "@cloud-push/cloud";
 
 export const createConfigTemplate = ({
-	db,
 	storage,
-}: { db: Db; storage: Storage }) => {
+}: { storage: Storage }) => {
 	const importMethods: string[] = [];
 
 	let storageClientInstance = "";
@@ -59,56 +58,6 @@ const storageClient = generateStorageClient();
 			break;
 	}
 
-	switch (db) {
-		case "FIREBASE":
-			importMethods.push("FirebaseDbClient");
-			dbClientInstance = `
-const dbClient = new FirebaseDbClient({
-    credential: process.env.FIREBASE_CREDENTIAL!,
-    databaseId: process.env.FIREBASE_DATABASE_ID!,
-});
-            `;
-			break;
-		case "LOWDB":
-			importMethods.push("LowDbClient");
-			dbClientInstance = `
-const dbClient = new LowDbClient({
-    downloadJSONFile: () => storageClient.getFile({ key: "cursor.json" }),
-    uploadJSONFile: (file: Uint8Array) =>
-    storageClient.uploadFile({ key: "cursor.json", file }),
-});
-            `;
-			break;
-		case "SUPABASE":
-			importMethods.push("SupabaseDbClient");
-			dbClientInstance = `
-const dbClient = new SupabaseDbClient({
-    tableName: process.env.SUPABASE_TABLE_NAME!,
-    supabaseUrl: process.env.SUPABASE_URL!,
-    supabaseKey: process.env.SUPABASE_KEY!,
-});
-            `;
-			break;
-		case "CUSTOM":
-			importMethods.push("DbClient");
-			dbClientInstance = `
-const generateDbClient = (): DbClient => {
-	return {
-		create: () => {},
-		delete: () => {},
-		find: () => {},
-		findAll: () => {},
-		readAll: () => {},
-		toUint8Array: () => {},
-		update: () => {},
-	};
-};
-const dbClient = generateDbClient();
-`;
-			break;
-		default:
-			break;
-	}
 
 	return `
 import { defineConfig } from "@cloud-push/cli";

@@ -1,7 +1,7 @@
-import type { CryptoAlgorithm } from "@/nodeUtils";
 import type { Platform } from "@cloud-push/cloud";
-import { convertDictionaryToObject } from "@cloud-push/utils";
 import { parseDictionary } from "structured-headers";
+import { convertDictionaryToObject } from "./convertDictionaryToObject";
+import type { CryptoAlgorithm } from "./createSignature";
 
 export const parseHeaders = ({
 	headers,
@@ -36,10 +36,10 @@ export const parseHeaders = ({
 		embeddedUpdateId,
 		expectSignature: expectSignatureParsed
 			? convertDictionaryToObject<{
-					sig: boolean;
-					keyid: string;
-					alg: CryptoAlgorithm;
-				}>(expectSignatureParsed)
+				sig: boolean;
+				keyid: string;
+				alg: CryptoAlgorithm;
+			}>(expectSignatureParsed)
 			: null,
 	};
 };

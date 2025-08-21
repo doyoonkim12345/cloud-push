@@ -1,21 +1,20 @@
 import type { NextRequest } from "next/server";
-import type { Bundle } from "@cloud-push/cloud";
-import cloudPushConfig, {
-	dbNodeClient,
+import {
 	storageNodeClient,
 } from "@/cloud-push.server";
-import { createManifest, createSignature } from "@cloud-push/next/node";
 import {
-	type Directive,
 	ErrorResponse,
-	findRollbackTargetBundle,
-	findUpdateTargetBundle,
+	type Manifest,
 	NoUpdateResponse,
 	parseHeaders,
 	UpdateResponse,
 } from "@cloud-push/next";
+import { ExpoClient } from "@cloud-push/cloud";
+import { parseFileAsJson, type BranchMetadata } from "@cloud-push/cli";
+import * as path from "node:path";
 
 export async function GET(request: NextRequest) {
+
 	try {
 		const {
 			currentUpdateId,
@@ -30,122 +29,68 @@ export async function GET(request: NextRequest) {
 			url: new URL(request.url),
 		});
 
+
 		if (
 			!runtimeVersion ||
 			!platform ||
 			!protocolVersion ||
 			!embeddedUpdateId ||
-			!currentUpdateId ||
 			!channel
 		) {
+			console.log("Not Enough Params", {
+				runtimeVersion,
+				platform,
+				protocolVersion,
+				embeddedUpdateId,
+				currentUpdateId,
+				channel,
+			})
 			return ErrorResponse(new Error("Not Enough Params"));
 		}
 
-		await dbNodeClient.init?.();
+		const expoAppId = process.env.EXPO_APP_ID!;
+		const expoToken = process.env.EXPO_TOKEN!;
 
-		const currentBundle = await dbNodeClient.find({
-			conditions: { bundleId: currentUpdateId },
+		if (!expoAppId || !expoToken) {
+			return ErrorResponse(new Error("Expo App ID or Token is not set"));
+		}
+
+		const expoClient = new ExpoClient({
+			appId: expoAppId,
+			token: expoToken,
 		});
 
-		let nextBundle: Bundle | null;
+		const channelMapping = await expoClient.getChannelMapping(channel)
 
-		const isEmbedded = !currentBundle;
+		const branchId = channelMapping?.branchMapping.data[0].branchId
 
-		const bundles = await dbNodeClient.findAll({
-			conditions: {
-				runtimeVersion,
-				channel,
-				supportAndroid: platform === "android" ? true : undefined,
-				supportIos: platform === "ios" ? true : undefined,
-			},
-			sortOptions: [{ direction: "desc", field: "createdAt" }],
-		});
 
-		if (isEmbedded) {
-			// latest
-			nextBundle = bundles[0] ?? null;
-		} else {
-			switch (currentBundle?.updatePolicy) {
-				case "FORCE_UPDATE":
-				case "NORMAL_UPDATE":
-					nextBundle = findUpdateTargetBundle(bundles, currentUpdateId) ?? null;
-					break;
-				case "ROLLBACK":
-					nextBundle =
-						findRollbackTargetBundle(bundles, currentUpdateId) ?? null;
-					break;
-				default:
-					nextBundle = null;
-					break;
+		if (!branchId) {
+			return ErrorResponse(new Error("Branch ID not found"))
+		}
+
+		const branchMetadataJson = await storageNodeClient.getFile({ key: path.join(branchId, "metadata.json") })
+		const branchMetadata = parseFileAsJson<BranchMetadata>(branchMetadataJson)
+
+		const pushId: string | undefined = branchMetadata.pushes[0].id
+
+		if (pushId) {
+			if (pushId !== currentUpdateId) {
+
+				const manifestJson = await storageNodeClient.getFile({
+					key: path.join(branchId, pushId, `manifest-${platform}.json`)
+				})
+
+				const manifest = parseFileAsJson<Manifest>(manifestJson)
+
+				return UpdateResponse({
+					updateId: pushId,
+					manifest,
+				})
 			}
 		}
-
-		if (!currentBundle && !nextBundle) {
-			const directive: Directive = {
-				type: "rollBackToEmbedded",
-				parameters: {
-					commitTime: new Date().toISOString(),
-				},
-			};
-			console.log("rollBackToEmbedded");
-
-			const sig =
-				cloudPushConfig.codeSigningPrivateKey && expectSignature
-					? createSignature(
-							expectSignature.alg,
-							JSON.stringify(directive),
-							cloudPushConfig.codeSigningPrivateKey,
-						)
-					: undefined;
-
-			return UpdateResponse({
-				bundleId: embeddedUpdateId,
-				directive,
-				signature:
-					sig && expectSignature?.keyid
-						? { sig, keyid: expectSignature.keyid }
-						: undefined,
-			});
-		}
-
-		if (!nextBundle) {
-			console.log("NoUpdateResponse");
-			return NoUpdateResponse();
-		}
-
-		if (nextBundle.bundleId === currentBundle?.bundleId) {
-			console.log("NoUpdateResponse");
-			return NoUpdateResponse();
-		}
-
-		const manifest = await createManifest({
-			bundleId: nextBundle.bundleId,
-			platform,
-			runtimeVersion,
-			storageClient: storageNodeClient,
-			channel,
-		});
-		console.log("UpdateResponse");
-
-		const sig =
-			cloudPushConfig.codeSigningPrivateKey && expectSignature
-				? createSignature(
-						expectSignature.alg,
-						JSON.stringify(manifest),
-						cloudPushConfig.codeSigningPrivateKey,
-					)
-				: undefined;
-
-		return UpdateResponse({
-			manifest,
-			bundleId: nextBundle.bundleId,
-			signature:
-				sig && expectSignature?.keyid
-					? { sig, keyid: expectSignature.keyid }
-					: undefined,
-		});
+		return NoUpdateResponse()
 	} catch (error) {
-		console.error(error);
 		return ErrorResponse(error as Error);
 	}
 }

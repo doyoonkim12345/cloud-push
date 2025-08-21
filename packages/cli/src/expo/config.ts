@@ -1,13 +1,10 @@
-import type { DbClient, Environment, StorageClient } from "@cloud-push/cloud";
-import type { ENV_SOURCE } from "@/types";
+export * from '@/lib'
+export * from '@/expo/features/metadata/types'
+
+import type { StorageClient } from "@cloud-push/cloud";
 
 export type CliConfig = {
-	loadClients: () => { storage: StorageClient; db: DbClient };
-	runtimeVersion?: string;
-	channel?: string;
-	envSource?: ENV_SOURCE;
-	environment?: Environment;
-	privateKeyPath?: string;
+	storage: StorageClient;
 };
 
 export const defineConfig = async (

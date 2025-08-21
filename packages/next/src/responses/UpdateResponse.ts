@@ -1,16 +1,16 @@
 import type { Directive, Extensions, Manifest } from "@/types";
-import { convertObjectToDictionary } from "@cloud-push/utils";
+import { convertObjectToDictionary } from "@/utils/convertObjectToDictionary";
 import FormData from "form-data";
 import { serializeDictionary } from "structured-headers";
 
 export function UpdateResponse({
-	bundleId,
+	updateId,
 	manifest,
 	directive,
 	extensions,
 	signature,
 }: {
-	bundleId: string;
+	updateId: string;
 	manifest?: Manifest;
 	directive?: Directive;
 	extensions?: Extensions;
@@ -46,7 +46,7 @@ export function UpdateResponse({
 		"expo-sfv-version": "0",
 		"cache-control": "private, max-age=0",
 		"content-type": `multipart/mixed; boundary=${form.getBoundary()}`,
-		"expo-current-update-id": bundleId,
+		"expo-current-update-id": updateId,
 
 		...form.getHeaders(), // 중요: form 자체가 필요한 헤더들 추가
 	};

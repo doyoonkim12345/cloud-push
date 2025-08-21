@@ -1,9 +1,14 @@
 export abstract class StorageClient {
 	abstract getFile: (params: { key: string }) => Promise<Uint8Array>;
-	abstract getFileSignedUrl: (params: {
+	abstract getFileUrl: (params: {
 		key: string;
 		expiresIn?: number;
 	}) => Promise<string>;
+	abstract moveDirectory: (params: {
+		fromDir: string;
+		toDir: string;
+		overwrite?: boolean;
+	}) => Promise<void>;
 	abstract uploadFile: (params: {
 		key: string;
 		file: Uint8Array;

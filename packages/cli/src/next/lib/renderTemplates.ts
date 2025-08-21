@@ -1,10 +1,11 @@
-import { type Db, type Storage, getCwd } from "@cloud-push/cloud";
 
+import { getCwd } from "@/lib/getCwd";
 import { renderFile } from "ejs";
 import { copy, outputFile } from "fs-extra";
 import { globby } from "globby";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+import type { Storage } from "@cloud-push/cloud";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,7 +16,7 @@ const cwd = getCwd();
 
 const outDir = path.resolve(cwd); // 원하는 출력 디렉토리
 
-export async function renderTemplates(params: { db: Db; storage: Storage }) {
+export async function renderTemplates(params: { storage: Storage }) {
 	const files = await globby("**/*.ejs", { cwd: srcDir });
 
 	for (const file of files) {

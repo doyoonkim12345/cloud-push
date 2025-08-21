@@ -53,7 +53,7 @@ export class FirebaseStorageClient extends StorageClient {
 		return result;
 	};
 
-	getFileSignedUrl = async ({
+	getFileUrl = async ({
 		key,
 		expiresIn = 3600, // 1 hour
 	}: {
@@ -66,6 +66,10 @@ export class FirebaseStorageClient extends StorageClient {
 			expires: Date.now() + expiresIn * 1000,
 		});
 		return url;
+	};
+
+	moveDirectory = async (params: { fromDir: string; toDir: string; overwrite?: boolean; }) => {
+
 	};
 
 	uploadFile = async ({

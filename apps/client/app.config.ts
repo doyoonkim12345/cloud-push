@@ -4,6 +4,7 @@ import type { AppConfig } from "@cloud-push/expo";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
 	...config,
+	owner: "durun_onout",
 	name: "client",
 	slug: "client",
 	version: sharedConfig.runtimeVersion,
@@ -26,13 +27,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	updates: {
 		url: sharedConfig.updateBundleUrl,
 		requestHeaders: {
-			"expo-channel-name": sharedConfig.channel,
+			"expo-channel-name": 'feconf',//process.env.EXPO_CHANNEL_NAME,
 		},
-		codeSigningMetadata: {
-			alg: "rsa-v1_5-sha256",
-			keyid: "main",
-		},
-		codeSigningCertificate: sharedConfig.certificatePath,
+		fallbackToCacheTimeout: 30 * 1000
+		// codeSigningMetadata: {
+		// 	alg: "rsa-v1_5-sha256",
+		// 	keyid: "main",
+		// },
+		// codeSigningCertificate: sharedConfig.certificatePath,
 	},
 	android: {
 		adaptiveIcon: {
@@ -69,10 +71,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 	],
 	extra: {
 		eas: {
-			projectId: "9d11153f-925e-414c-a409-4fe5c747799e",
+			"projectId": "d8a690b9-2a40-4d9c-b8ab-dee5b91f4ee7"
 		},
 		cloudPush: {
-			checkUpdateStatusUrl: sharedConfig.updateBundleUrl,
+			checkUpdateStatusUrl: "http://192.168.0.4:3000/api/updates/status",
 		} as AppConfig,
 	},
 });

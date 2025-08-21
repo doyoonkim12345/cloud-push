@@ -1,5 +1,5 @@
 import * as prompts from "@clack/prompts";
-import { Storage } from "@cloud-push/cloud";
+import type { Storage } from "@cloud-push/cloud";
 
 // Function to select environment
 export async function selectStorageClient(): Promise<Storage> {

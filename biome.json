@@ -1,15 +1,157 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-	"formatter": {
-		"enabled": true
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true,
-			"suspicious": {
-				"noExplicitAny": "warn"
-			}
-		}
-	}
+  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+
+  "files": {
+    "includes": [
+      "**/*",
+      "!apps/**/.next",
+      "!apps/**/build",
+      "!packages/**/dist",
+      "!docs/dist",
+      "!**/*.d.ts.map",
+      "!**/node_modules",
+      "!**/*.log"
+    ],
+    "ignoreUnknown": true,
+    "maxSize": 2097152
+  },
+
+  "formatter": {
+    "enabled": true,
+    "lineWidth": 120,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "recommended": true
+      },
+      "complexity": {
+        "recommended": true,
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": {
+            "maxAllowedComplexity": 20
+          }
+        }
+      },
+      "correctness": {
+        "recommended": true,
+        "useExhaustiveDependencies": "warn"
+      },
+      "performance": {
+        "recommended": true
+      },
+      "security": {
+        "recommended": true
+      },
+      "style": {
+        "recommended": true,
+        "noDefaultExport": "off",
+        "useNamingConvention": "off"
+      },
+      "suspicious": {
+        "recommended": true,
+        "noConsole": "warn",
+        "noDebugger": "error"
+      }
+    }
+  },
+
+  "javascript": {
+    "jsxRuntime": "transparent"
+  },
+
+  "overrides": [
+    {
+      "includes": ["apps/client/**"],
+      "javascript": {
+        "globals": ["__DEV__", "expo", "require", "fetch"]
+      },
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          },
+          "style": {
+            "noDefaultExport": "off"
+          }
+        }
+      }
+    },
+
+    {
+      "includes": ["apps/server/**"],
+      "javascript": {
+        "globals": ["process", "__dirname", "__filename"]
+      },
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "warn"
+          },
+          "style": {
+            "noDefaultExport": "off"
+          }
+        }
+      }
+    },
+
+    {
+      "includes": ["packages/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "error"
+          },
+          "style": {
+            "noDefaultExport": "warn"
+          }
+        }
+      }
+    },
+
+    {
+      "includes": ["docs/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          },
+          "style": {
+            "noDefaultExport": "off"
+          }
+        }
+      }
+    },
+
+    {
+      "includes": ["**/*.{spec,test}.{js,jsx,ts,tsx}", "**/__tests__/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          },
+          "performance": {
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    },
+
+    {
+      "includes": ["**/*.config.{js,ts}", "**/config/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    }
+  ]
 }

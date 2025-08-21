@@ -1,7 +1,7 @@
 import { cosmiconfig } from "cosmiconfig";
 import { TypeScriptLoader } from "cosmiconfig-typescript-loader";
-import { getCwd } from "@cloud-push/cloud";
 import type { CliConfig } from "@/expo/config";
+import { getCwd } from "@/lib/getCwd";
 
 const MODULE_NAME = "cloud-push";
 

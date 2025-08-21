@@ -51,21 +51,100 @@ export class SupabaseStorageClient extends StorageClient {
 		expiresIn?: number;
 	}) => {
 		// Supabase Storage에서 서명된 URL 생성
-		const { data, error } = await this.client.storage
+		const { data, } = await this.client.storage
 			.from(this.bucketName)
-			.createSignedUrl(key, expiresIn);
+			.getPublicUrl(key)
 
-		if (error) {
-			throw new Error(`Error creating signed URL: ${error.message}`);
-		}
 
-		if (!data || !data.signedUrl) {
+		if (!data || !data.publicUrl) {
 			throw new Error("Failed to generate signed URL");
 		}
 
-		return data.signedUrl;
+		return data.publicUrl;
 	};
 
+	// 클래스 내부 메서드로 추가
+	moveDirectory = async ({
+		fromDir,
+		toDir,
+		overwrite = false,
+	}: {
+		fromDir: string;
+		toDir: string;
+		overwrite?: boolean;
+	}) => {
+		const norm = (s: string) => s.replace(/^\/+|\/+$/g, ""); // 양끝 슬래시 정리
+		const src = norm(fromDir);
+		const dst = norm(toDir);
+
+		if (!src) throw new Error("fromDir is required");
+		if (!dst) throw new Error("toDir is required");
+		if (dst === src || dst.startsWith(src + "/")) {
+			throw new Error("Destination cannot be the same as or a child of source");
+		}
+
+		// 재귀적으로 파일만 수집
+		const listAllFiles = async (path = src): Promise<string[]> => {
+			const files: string[] = [];
+			let offset = 0;
+			const limit = 100; // Supabase 기본 페이지 크기
+
+			while (true) {
+				const { data, error } = await this.client.storage
+					.from(this.bucketName)
+					.list(path === "" ? undefined : path, {
+						limit,
+						offset,
+						sortBy: { column: "name", order: "asc" },
+					});
+
+				if (error) {
+					throw new Error(`Error listing "${path}": ${error.message}`);
+				}
+				if (!data || data.length === 0) break;
+
+				for (const item of data) {
+					const itemPath = (path ? `${path}/` : "") + item.name;
+
+					// 파일/폴더 구분: 파일은 metadata가 존재(사이즈 등), 폴더는 null
+					// (SDK가 반환하는 구조를 이용)
+					if ((item as any).metadata) {
+						files.push(itemPath);
+					} else {
+						// 하위 폴더 재귀
+						const childFiles = await listAllFiles(itemPath);
+						files.push(...childFiles);
+					}
+				}
+
+				if (data.length < limit) break;
+				offset += limit;
+			}
+
+			return files;
+		};
+
+		const files = await listAllFiles();
+
+		// 이동 (덮어쓰기 옵션 처리)
+		for (const srcPath of files) {
+			const suffix = srcPath.slice(src.length).replace(/^\/+/, ""); // src 이후 상대 경로
+			const dstPath = dst ? `${dst}/${suffix}` : suffix;
+
+			if (overwrite) {
+				// 대상이 이미 있으면 move가 실패하므로 미리 제거
+				await this.client.storage.from(this.bucketName).remove([dstPath]);
+			}
+
+			const { error } = await this.client.storage
+				.from(this.bucketName)
+				.move(srcPath, dstPath);
+
+			if (error) {
+				throw new Error(`Move failed: "${srcPath}" -> "${dstPath}": ${error.message}`);
+			}
+		}
+	};
 	uploadFile = async ({
 		key,
 		file,

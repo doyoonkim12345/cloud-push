@@ -4,7 +4,6 @@ import {
 	S3Client,
 } from "@aws-sdk/client-s3";
 import type { Readable } from "node:stream";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { Upload } from "@aws-sdk/lib-storage";
@@ -16,17 +15,20 @@ interface AWSS3ClientProps {
 	accessKeyId: string;
 	secretAccessKey: string;
 	bucketName: string;
+	cdnUrl: string;
 }
 
 export class AWSS3StorageClient extends StorageClient {
 	private client: S3Client;
 	private bucketName: string;
+	private cdnUrl: string;
 
 	constructor({
 		region,
 		accessKeyId,
 		secretAccessKey,
 		bucketName,
+		cdnUrl
 	}: AWSS3ClientProps) {
 		super();
 		this.client = new S3Client({
@@ -37,6 +39,7 @@ export class AWSS3StorageClient extends StorageClient {
 			},
 		});
 		this.bucketName = bucketName;
+		this.cdnUrl = cdnUrl;
 	}
 
 	getFile = async ({ key }: { key: string }): Promise<Uint8Array> => {
@@ -78,21 +81,18 @@ export class AWSS3StorageClient extends StorageClient {
 		return result;
 	};
 
-	getFileSignedUrl = async ({
+	getFileUrl = async ({
 		key,
 		expiresIn,
 	}: {
 		key: string;
 		expiresIn?: number;
 	}) => {
-		const command = new GetObjectCommand({
-			Bucket: this.bucketName,
-			Key: key,
-		});
+		return path.join(this.cdnUrl, key)
+	};
 
-		const url = await getSignedUrl(this.client, command, { expiresIn });
+	moveDirectory = async (params: { fromDir: string; toDir: string; overwrite?: boolean; }) => {
 
-		return url;
 	};
 
 	uploadFile = async ({
