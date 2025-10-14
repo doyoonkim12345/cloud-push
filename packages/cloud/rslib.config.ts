@@ -5,10 +5,12 @@ export default defineConfig({
     {
       format: "esm",
       dts: true,
+      source: { entry: { index: "./src/index.ts" }, },
     },
     {
       format: "cjs",
       dts: true,
+      source: { entry: { index: "./src/index.ts" } }
     },
   ],
 });

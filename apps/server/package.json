@@ -14,6 +14,10 @@
     "@cloud-push/next": "workspace:^",
     "@tanstack/react-query": "^5.81.5",
     "next": "15.3.2",
+<<<<<<< Updated upstream
+=======
+    "next-safe-action": "^8.0.10",
+>>>>>>> Stashed changes
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

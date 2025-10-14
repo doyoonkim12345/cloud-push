@@ -1,14 +1,6 @@
 import { defineConfig } from "@rslib/core";
 
 export default defineConfig({
-	output: {
-		copy: [
-			{
-				from: "./src/next/templates",
-				to: "templates",
-			},
-		],
-	},
 	lib: [
 		{
 			format: "esm",
@@ -16,7 +8,7 @@ export default defineConfig({
 			source: {
 				entry: {
 					index: "./src/index.ts",
-					config: "./src/expo/config.ts",
+					config: "./src/config.ts",
 				},
 			},
 		},
@@ -26,7 +18,7 @@ export default defineConfig({
 			source: {
 				entry: {
 					index: "./src/index.ts",
-					config: "./src/expo/config.ts",
+					config: "./src/config.ts",
 				},
 			},
 		},

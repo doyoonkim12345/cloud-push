@@ -1,0 +1,1 @@
+{"version":3,"file":"updateGroup.d.ts","sourceRoot":"","sources":["../../../src/server/apis/updateGroup.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,aAAa,CAAA;AAGzC,OAAO,EAAmD,aAAa,EAAe,MAAM,mBAAmB,CAAA;AAE/G,wBAAsB,iBAAiB,CAAC,EAAE,OAAO,EAAE,aAAa,EAAE,EAAE;IAAE,OAAO,EAAE,WAAW,CAAC;IAAC,aAAa,EAAE,aAAa,CAAA;CAAE,qBAWzH"}

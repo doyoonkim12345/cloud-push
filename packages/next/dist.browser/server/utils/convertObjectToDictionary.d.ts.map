@@ -1,0 +1,1 @@
+{"version":3,"file":"convertObjectToDictionary.d.ts","sourceRoot":"","sources":["../../../src/server/utils/convertObjectToDictionary.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,UAAU,EAAE,MAAM,oBAAoB,CAAC;AAErD,eAAO,MAAM,yBAAyB,GAAI,KAAK;IAC9C,CAAC,GAAG,EAAE,MAAM,GAAG,MAAM,GAAG,MAAM,GAAG,OAAO,CAAC;CACzC,KAAG,UAcH,CAAC"}

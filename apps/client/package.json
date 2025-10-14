@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
 	"name": "@cloud-push/client",
 	"version": "1.0.0",
 	"main": "index.ts",
@@ -32,4 +33,30 @@
 		"typescript": "^5.3.3"
 	},
 	"private": true
+=======
+  "name": "@cloud-push/client",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@cloud-push/cli": "workspace:*",
+    "@cloud-push/cloud": "workspace:*",
+    "@cloud-push/expo": "workspace:*",
+    "expo": "~54.0.10",
+    "expo-status-bar": "~3.0.8",
+    "expo-updates": "~29.0.11",
+    "react": "19.1.0",
+    "react-native": "0.81.4"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.0",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+>>>>>>> Stashed changes
 }

@@ -1,5 +1,5 @@
 import { defineConfig } from "@cloud-push/cli";
-import { SupabaseStorageClient, } from "@cloud-push/cloud";
+import { SupabaseStorageClient } from "@cloud-push/cloud";
 
 export default defineConfig(() => ({
     storage: new SupabaseStorageClient({

@@ -1,10 +1,18 @@
 /**
+<<<<<<< Updated upstream
  * ExpoClient – Expo GraphQL API helper
  * ------------------------------------
  * © 2025 Cloud-Push
  */
 
 
+=======
+ * ExpoClient – Expo GraphQL API helper (with Rollout utilities)
+ * -------------------------------------------------------------
+ * © 2025 Cloud-Push
+ */
+
+>>>>>>> Stashed changes
 const EXPO_GRAPHQL_URL = 'https://api.expo.dev/graphql';
 
 /* ──────────────── Common Types ──────────────── */
@@ -16,8 +24,24 @@ export type ExpoAuth = {
 export type ExpoChannel = { id: string; name: string };
 export type ExpoBranch = { id: string; name: string };
 
+<<<<<<< Updated upstream
 type BranchMappingLogicEntry = { branchId: string; branchMappingLogic: string };
 type BranchMapping = { version: number; data: BranchMappingLogicEntry[] };
+=======
+// BranchMapping node grammar (aligned with EAS CLI)
+// - alwaysTrue node is the literal string 'true'
+// - rollout node: { clientKey: 'rolloutToken', branchMappingOperator: 'hash_lt', operand: number }
+// - rtv node:     { clientKey: 'runtimeVersion', branchMappingOperator: '==',      operand: string }
+// - constrained:  ['and', rolloutNode, rtvNode]  (order agnostic)
+export type BranchMappingNode =
+  | 'true'
+  | { clientKey: 'rolloutToken'; branchMappingOperator: 'hash_lt'; operand: number }
+  | { clientKey: 'runtimeVersion'; branchMappingOperator: '=='; operand: string }
+  | ['and', BranchMappingNode, BranchMappingNode];
+
+export type BranchMappingLogicEntry = { branchId: string; branchMappingLogic: BranchMappingNode };
+export type BranchMapping = { version: number; data: BranchMappingLogicEntry[] };
+>>>>>>> Stashed changes
 
 export type ExpoChannelMapping = { id: string; branchName: string };
 export type ExpoBranchMapping = { branchName: string; branchId: string; channelName: string | null };
@@ -45,9 +69,16 @@ export type FetchEnvVarsOptions = {
 export type RolloutInfo = {
   /** editUpdateChannel 반환 id (rollout id 아님) */
   channelId: string;
+<<<<<<< Updated upstream
   oldBranchId: string;
   newBranchId: string;
   percent: number;
+=======
+  oldBranchId: string; // default branch
+  newBranchId: string; // rollout branch
+  percent: number;     // 0..100
+  runtimeVersion?: string; // constrained rollout일 경우
+>>>>>>> Stashed changes
 };
 
 /* ────────────────────────────────────────────── */
@@ -162,6 +193,12 @@ export class ExpoClient {
     return (await this.graphqlRequest<R>(q, { appId: this.appId })).data.app.byId.updateBranches;
   }
 
+<<<<<<< Updated upstream
+=======
+  /**
+   * 채널의 기본(standard) 매핑을 name→id로 풀어 반환 (rollout이거나 커스텀이면 null)
+   */
+>>>>>>> Stashed changes
   async fetchChannelMapping(channelName: string): Promise<ExpoChannelMapping | null> {
     const q = `
       query ($appId: String!, $channelName: String!) {
@@ -184,6 +221,7 @@ export class ExpoClient {
     };
 
     const { data } = await this.graphqlRequest<R>(q, { appId: this.appId, channelName });
+<<<<<<< Updated upstream
 
     if (!data.app.byId.updateChannelByName) {
       return null;
@@ -197,6 +235,18 @@ export class ExpoClient {
 
     const branch = data.app.byId.updateBranches.find(b => b.id === entry.branchId);
     return branch ? { id: data.app.byId.updateChannelByName.id, branchName: branch.name } : null;
+=======
+    const node = data.app.byId.updateChannelByName;
+    if (!node) return null;
+
+    const mapping: BranchMapping = JSON.parse(node.branchMapping);
+    // standard: exactly one rule with alwaysTrue
+    const entry = mapping.data.find(e => e.branchMappingLogic === 'true');
+    if (!entry) return null;
+
+    const branch = data.app.byId.updateBranches.find(b => b.id === entry.branchId);
+    return branch ? { id: node.id, branchName: branch.name } : null;
+>>>>>>> Stashed changes
   }
 
   async fetchBranchesMapping(): Promise<ExpoBranchMapping[]> {
@@ -226,7 +276,11 @@ export class ExpoClient {
 
     for (const ch of data.app.byId.updateChannels) {
       const map: BranchMapping = JSON.parse(ch.branchMapping);
+<<<<<<< Updated upstream
       const m = map.data.find(d => { try { return JSON.parse(d.branchMappingLogic) === 'true'; } catch { return false; } });
+=======
+      const m = map.data.find(d => d.branchMappingLogic === 'true');
+>>>>>>> Stashed changes
       if (m) list.push({ branchName: idToName[m.branchId] ?? '(unknown)', branchId: m.branchId, channelName: ch.name });
     }
     for (const b of data.app.byId.updateBranches)
@@ -308,6 +362,7 @@ export class ExpoClient {
     }
   }
 
+<<<<<<< Updated upstream
   /** 1) 롤아웃 시작 */
   async startChannelRollout(
     channelName: string,
@@ -428,6 +483,94 @@ export class ExpoClient {
     );
   }
 
+=======
+  /* ─────────────────── Rollout helpers (aligned with EAS CLI) ─────────────────── */
+  private buildConstrainedRolloutMapping(params: {
+    defaultBranchId: string;
+    rolloutBranchId: string;
+    percent: number; // integer 0..100
+    runtimeVersion: string;
+  }): BranchMapping {
+    const { defaultBranchId, rolloutBranchId, percent, runtimeVersion } = params;
+    if (!Number.isInteger(percent) || percent < 0 || percent > 100) {
+      throw new Error(`percent must be an integer between 0 and 100 inclusive. Received: ${percent}`);
+    }
+    const rolloutNode: BranchMappingNode = {
+      operand: percent / 100,
+      clientKey: 'rolloutToken',
+      branchMappingOperator: 'hash_lt',
+    };
+    const rtvNode: BranchMappingNode = {
+      operand: runtimeVersion,
+      clientKey: 'runtimeVersion',
+      branchMappingOperator: '==',
+    };
+
+    return {
+      version: 0,
+      data: [
+        { branchId: rolloutBranchId, branchMappingLogic: ['and', rolloutNode, rtvNode] },
+        { branchId: defaultBranchId, branchMappingLogic: 'true' },
+      ],
+    };
+  }
+
+  private parseRollout(mapping: BranchMapping):
+    | { kind: 'constrained'; defaultBranchId: string; rolloutBranchId: string; percent: number; runtimeVersion: string }
+    | { kind: 'legacy'; defaultBranchId: string; rolloutBranchId: string; percent: number }
+    | null {
+    // constrained: first rule is ['and', rolloutNode, rtvNode], fallback 'true'
+    if (
+      mapping.data.length === 2 &&
+      mapping.data[1].branchMappingLogic === 'true' &&
+      Array.isArray(mapping.data[0].branchMappingLogic) &&
+      mapping.data[0].branchMappingLogic[0] === 'and'
+    ) {
+      const nodes = mapping.data[0].branchMappingLogic.slice(1) as BranchMappingNode[];
+      const rolloutNode = nodes.find(
+        (n: any) => typeof n === 'object' && !Array.isArray(n) && n.clientKey === 'rolloutToken' && n.branchMappingOperator === 'hash_lt'
+      ) as any;
+      const rtvNode = nodes.find(
+        (n: any) => typeof n === 'object' && !Array.isArray(n) && n.clientKey === 'runtimeVersion' && n.branchMappingOperator === '=='
+      ) as any;
+      if (rolloutNode && rtvNode) {
+        return {
+          kind: 'constrained',
+          defaultBranchId: mapping.data[1].branchId,
+          rolloutBranchId: mapping.data[0].branchId,
+          percent: Math.round((rolloutNode.operand as number) * 100),
+          runtimeVersion: String(rtvNode.operand),
+        };
+      }
+    }
+
+    // legacy: first rule is rollout node, fallback 'true'
+    if (
+      mapping.data.length === 2 &&
+      mapping.data[1].branchMappingLogic === 'true' &&
+      typeof mapping.data[0].branchMappingLogic === 'object' &&
+      !Array.isArray(mapping.data[0].branchMappingLogic)
+    ) {
+      const rollout = mapping.data[0].branchMappingLogic as any;
+      if (rollout.clientKey === 'rolloutToken' && rollout.branchMappingOperator === 'hash_lt') {
+        return {
+          kind: 'legacy',
+          defaultBranchId: mapping.data[1].branchId,
+          rolloutBranchId: mapping.data[0].branchId,
+          percent: Math.round((rollout.operand as number) * 100),
+        };
+      }
+    }
+
+    return null;
+  }
+
+  private isStandardMapping(mapping: BranchMapping): mapping is BranchMapping {
+    return mapping.data.length === 1 && mapping.data[0].branchMappingLogic === 'true';
+  }
+
+  /* ───── Introspection ───── */
+>>>>>>> Stashed changes
   async getChannelMapping(
     channelName: string
   ): Promise<{ channelId: string; branchMappingJson: string; branchMapping: BranchMapping } | null> {
@@ -435,10 +578,14 @@ export class ExpoClient {
       query ($appId: String!, $channelName: String!) {
         app {
           byId(appId: $appId) {
+<<<<<<< Updated upstream
             updateChannelByName(name: $channelName) {
               id
               branchMapping
             }
+=======
+            updateChannelByName(name: $channelName) { id branchMapping }
+>>>>>>> Stashed changes
           }
         }
       }`;
@@ -471,4 +618,130 @@ export class ExpoClient {
     };
   }
 
+<<<<<<< Updated upstream
+=======
+  /**
+   * 현재 채널의 롤아웃 상태 조회
+   */
+  async getChannelRolloutState(channelName: string): Promise<
+    | { kind: 'none'; channelId: string; mapping: BranchMapping; defaultBranchId: string }
+    | { kind: 'constrained'; channelId: string; mapping: BranchMapping; defaultBranchId: string; rolloutBranchId: string; percent: number; runtimeVersion: string }
+    | { kind: 'legacy'; channelId: string; mapping: BranchMapping; defaultBranchId: string; rolloutBranchId: string; percent: number }
+  > {
+    const m = await this.getChannelMapping(channelName);
+    if (!m) throw new Error(`Channel '${channelName}' not found`);
+
+    const parsed = this.parseRollout(m.branchMapping);
+    if (parsed) {
+      return { channelId: m.channelId, mapping: m.branchMapping, ...parsed };
+    }
+
+    // not rollout → must be standard to be safe
+    if (!this.isStandardMapping(m.branchMapping)) {
+      throw new Error(`Channel '${channelName}' has a custom branchMapping. Map to a single branch before creating a rollout.`);
+    }
+    return { kind: 'none', channelId: m.channelId, mapping: m.branchMapping, defaultBranchId: m.branchMapping.data[0].branchId };
+  }
+
+  /** 1) 롤아웃 시작 (RTV 제한형)
+   * @param runtimeVersion 필수. 두 브랜치가 공통으로 지원하는 RTV를 지정하세요.
+   */
+  async startChannelRollout(
+    channelName: string,
+    newBranchId: string,
+    percent: number /* 1–99 권장 */,
+    runtimeVersion: string
+  ): Promise<RolloutInfo> {
+    if (!Number.isInteger(percent) || percent < 0 || percent > 100) {
+      throw new Error('percent must be an integer between 0 and 100');
+    }
+
+    const state = await this.getChannelRolloutState(channelName);
+    if (state.kind !== 'none') {
+      throw new Error(`A rollout already exists on channel '${channelName}'. End it before starting a new one.`);
+    }
+
+    if (state.defaultBranchId === newBranchId) {
+      throw new Error(`Channel '${channelName}' is already mapped to the target branch.`);
+    }
+
+    const branchMapping = this.buildConstrainedRolloutMapping({
+      defaultBranchId: state.defaultBranchId,
+      rolloutBranchId: newBranchId,
+      percent,
+      runtimeVersion,
+    });
+
+    await this.graphqlRequest(
+      `
+      mutation ($channelId:ID!,$branchMapping:String!){
+        updateChannel{ editUpdateChannel(channelId:$channelId,branchMapping:$branchMapping){id} }
+      }`,
+      { channelId: state.channelId, branchMapping: JSON.stringify(branchMapping) }
+    );
+
+    return { channelId: state.channelId, oldBranchId: state.defaultBranchId, newBranchId, percent, runtimeVersion };
+  }
+
+  /** 2) 롤아웃 비율 수정 (레거시/제약형 모두 지원) */
+  async updateChannelRolloutPercent(channelName: string, percent: number): Promise<void> {
+    if (!Number.isInteger(percent) || percent < 0 || percent > 100) {
+      throw new Error('percent must be an integer between 0 and 100');
+    }
+
+    const m = await this.getChannelMapping(channelName);
+    if (!m) throw new Error(`Channel '${channelName}' not found`);
+
+    const parsed = this.parseRollout(m.branchMapping);
+    if (!parsed) throw new Error('Channel is not in rollout state');
+
+    const newMapping = { ...m.branchMapping } as BranchMapping;
+
+    if (parsed.kind === 'constrained') {
+      const stmt = newMapping.data[0].branchMappingLogic as ['and', BranchMappingNode, BranchMappingNode];
+      const parts = stmt.slice(1) as BranchMappingNode[];
+      const rolloutNode = parts.find(
+        (n: any) => typeof n === 'object' && !Array.isArray(n) && n.clientKey === 'rolloutToken'
+      ) as any;
+      if (!rolloutNode) throw new Error('Invalid rollout mapping: rollout node missing');
+      rolloutNode.operand = percent / 100;
+    } else {
+      const rolloutNode = newMapping.data[0].branchMappingLogic as any;
+      rolloutNode.operand = percent / 100;
+    }
+
+    await this.graphqlRequest(
+      `
+      mutation ($channelId:ID!,$branchMapping:String!){
+        updateChannel{ editUpdateChannel(channelId:$channelId,branchMapping:$branchMapping){id} }
+      }`,
+      { channelId: m.channelId, branchMapping: JSON.stringify(newMapping) }
+    );
+  }
+
+  /** 3) 롤아웃 종료: promoteNewBranch=true → 100% 전환, false → 원복 */
+  async endChannelRollout(
+    channelName: string,
+    {
+      promoteNewBranch = true,
+    }: { promoteNewBranch?: boolean } = {}
+  ): Promise<void> {
+    const m = await this.getChannelMapping(channelName);
+    if (!m) throw new Error(`Channel '${channelName}' not found`);
+
+    const parsed = this.parseRollout(m.branchMapping);
+    if (!parsed) throw new Error('Channel is not in rollout state');
+
+    const targetBranchId = promoteNewBranch ? parsed.rolloutBranchId : parsed.defaultBranchId;
+    const branchMapping: BranchMapping = { version: 0, data: [{ branchId: targetBranchId, branchMappingLogic: 'true' }] };
+
+    await this.graphqlRequest(
+      `
+      mutation ($channelId:ID!,$branchMapping:String!){
+        updateChannel{ editUpdateChannel(channelId:$channelId,branchMapping:$branchMapping){id} }
+      }`,
+      { channelId: m.channelId, branchMapping: JSON.stringify(branchMapping) }
+    );
+  }
+>>>>>>> Stashed changes
 }

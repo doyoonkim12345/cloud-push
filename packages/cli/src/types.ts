@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 export type Asset = {
     hash?: string;
     key: string;
@@ -53,6 +54,8 @@ export interface ExpoMetadata {
     fileMetadata: FileMetadata;
 }
 
+=======
+>>>>>>> Stashed changes
 export type CloudPushConfig = {
     codeSigningPrivateKey?: string;
 };

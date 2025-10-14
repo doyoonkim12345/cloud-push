@@ -1,0 +1,1 @@
+{"version":3,"file":"StatusResponse.d.ts","sourceRoot":"","sources":["../../../src/server/responses/StatusResponse.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,mBAAmB,CAAC;AAEtD,wBAAgB,cAAc,CAAC,EAC9B,MAAM,GACN,EAAE;IACF,MAAM,EAAE,YAAY,CAAC;CACrB,GAAG,QAAQ,CAUX"}

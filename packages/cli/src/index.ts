@@ -2,10 +2,16 @@
 
 import { Command } from "commander";
 import * as prompts from "@clack/prompts";
+<<<<<<< Updated upstream
 import { init as expoInit } from '@/expo/commands/init'
 import { init as nextInit } from '@/next/commands/init'
 import { update } from "./expo/commands/update";
 import { republish } from "./expo/commands/republish";
+=======
+import { init as expoInit } from '@/commands/init'
+import { update } from "./commands/update";
+import { republish } from "./commands/republish";
+>>>>>>> Stashed changes
 
 const program = new Command();
 
@@ -64,8 +70,12 @@ program.command("republish")
 	.description("Republish an update group")
 	.action(republish)
 
+<<<<<<< Updated upstream
 program.command("next-init").action(nextInit);
 program.command("expo-init").action(expoInit);
+=======
+program.command("init").action(expoInit);
+>>>>>>> Stashed changes
 
 // 프로그램 실행
 program.parse(process.argv);

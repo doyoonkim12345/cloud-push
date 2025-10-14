@@ -27,9 +27,10 @@ export class SupabaseStorageClient extends StorageClient {
 		key,
 		mimeType,
 	}: { key: string; mimeType?: string }): Promise<Uint8Array> => {
+
 		const { data, error } = await this.client.storage
 			.from(this.bucketName)
-			.download(key);
+			.download(`${key}?v=${Date.now()}`);
 
 		if (error) {
 			throw new Error(`Error downloading file: ${error.message}`);
@@ -43,7 +44,7 @@ export class SupabaseStorageClient extends StorageClient {
 		return new Uint8Array(arrayBuffer); // ✅ 변경
 	};
 
-	getFileSignedUrl = async ({
+	getFileUrl = async ({
 		key,
 		expiresIn = 3600,
 	}: {

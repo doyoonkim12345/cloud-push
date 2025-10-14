@@ -1,0 +1,1 @@
+{"version":3,"file":"runtimeVersionMetadata.d.ts","sourceRoot":"","sources":["../../../src/server/apis/runtimeVersionMetadata.ts"],"names":[],"mappings":"AAAA,OAAO,EAAsD,KAAK,aAAa,EAA+B,MAAM,mBAAmB,CAAA;AAIvI,wBAAsB,yBAAyB,CAAC,EAAE,aAAa,EAAE,EAAE;IAAE,aAAa,EAAE,aAAa,CAAA;CAAE,qBASlG"}

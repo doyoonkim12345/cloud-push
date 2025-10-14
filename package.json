@@ -33,5 +33,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0"
+<<<<<<< Updated upstream
+=======
+  },
+  "dependencies": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+>>>>>>> Stashed changes
   }
 }

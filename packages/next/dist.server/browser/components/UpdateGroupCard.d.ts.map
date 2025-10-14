@@ -1,0 +1,1 @@
+{"version":3,"file":"UpdateGroupCard.d.ts","sourceRoot":"","sources":["../../../src/browser/components/UpdateGroupCard.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,WAAW,EAAE,MAAM,mBAAmB,CAAC;AAErD,wBAAgB,eAAe,CAC9B,EAAE,KAAK,EAAE,0BAA0B,EAAE,GAAG,WAAW,EAAE,EAAE,WAAW,GAAG;IAAE,KAAK,EAAE,MAAM,CAAC;IAAC,0BAA0B,EAAE,CAAC,aAAa,EAAE,MAAM,KAAK,IAAI,CAAA;CAAE,2CA0HnJ"}

@@ -5,6 +5,7 @@
     "target": "ESNext",
     "strict": true,
     "outDir": "dist",
+    "rootDir": "src",
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "declaration": true,
